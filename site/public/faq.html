@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FAQ — NetSpace Policy Hub</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script>tailwind.config = { darkMode: "class", theme: { extend: { colors: { "primary": "#84dcc6", "primary-dark": "#5ec9af", "bg-light": "#f6f8f7", "neutral-soft": "#e9f1ef", "text-main": "#101917", "text-muted": "#5a8c7f" }, fontFamily: { sans: ["Inter", "sans-serif"] } } } }</script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height .35s cubic-bezier(.4, 0, .2, 1), opacity .3s
+        }
+
+        .faq-answer.open {
+            max-height: 500px
+        }
+
+        .faq-icon {
+            transition: transform .3s
+        }
+
+        .faq-item.open .faq-icon {
+            transform: rotate(180deg)
+        }
+
+        .faq-item.open {
+            border-color: #84dcc6
+        }
+    </style>
+</head>
+
+<body class="bg-bg-light text-text-main antialiased">
+    <header class="sticky top-0 z-50 bg-white border-b border-neutral-soft">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-4 py-4">
+            <a href="index.html" class="flex items-center gap-3">
+                <div class="bg-primary p-2 rounded-lg"><span
+                        class="material-symbols-outlined text-text-main text-[20px]">shield_person</span></div>
+                <div>
+                    <div class="font-extrabold text-base text-text-main">NetSpace</div>
+                    <div class="text-xs text-text-muted -mt-0.5">Policy Hub</div>
+                </div>
+            </a>
+            <nav class="hidden md:flex items-center gap-8">
+                <a class="text-sm font-semibold hover:text-primary" href="policies.html">Chính sách</a>
+                <a class="text-sm font-semibold hover:text-primary" href="categories.html">Danh mục</a>
+                <a class="text-sm font-semibold hover:text-primary" href="updates.html">Cập nhật</a>
+                <a class="text-sm font-bold text-primary border-b-2 border-primary pb-0.5" href="faq.html">FAQ</a>
+            </nav>
+            <button onclick="openModal()"
+                class="hidden sm:flex items-center gap-2 bg-primary hover:bg-primary-dark text-text-main px-4 py-2.5 rounded-lg text-sm font-bold">
+                <span class="material-symbols-outlined text-[18px]">support_agent</span>Hỏi HR
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 sm:px-6 py-10">
+        <nav class="flex items-center gap-2 text-xs text-text-muted mb-6">
+            <a href="index.html" class="hover:text-primary">Trang chủ</a>
+            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+            <span class="font-semibold text-text-main">FAQ</span>
+        </nav>
+        <h1 class="text-3xl font-black text-text-main mb-2">Câu hỏi Thường gặp</h1>
+        <p class="text-text-muted text-sm mb-10">Những thắc mắc phổ biến nhất của nhân viên về chính sách và quyền lợi
+            tại NetSpace.</p>
+
+        <!-- Search FAQ -->
+        <div class="relative mb-8">
+            <span
+                class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-[20px]">search</span>
+            <input id="faq-search" type="text" placeholder="Tìm câu hỏi..." oninput="filterFAQ()"
+                class="w-full pl-10 pr-4 py-3.5 rounded-xl border border-neutral-soft bg-white text-sm focus:ring-primary focus:border-primary outline-none" />
+        </div>
+
+        <!-- Category tabs -->
+        <div class="flex gap-2 flex-wrap mb-8">
+            <button onclick="setFaqCat('all')" id="fc-all"
+                class="faq-cat active text-xs px-4 py-2 rounded-full border border-neutral-soft bg-primary text-text-main font-bold">Tất
+                cả</button>
+            <button onclick="setFaqCat('hr')" id="fc-hr"
+                class="faq-cat text-xs px-4 py-2 rounded-full border border-neutral-soft bg-white text-text-muted font-semibold">Nhân
+                sự</button>
+            <button onclick="setFaqCat('leave')" id="fc-leave"
+                class="faq-cat text-xs px-4 py-2 rounded-full border border-neutral-soft bg-white text-text-muted font-semibold">Nghỉ
+                phép</button>
+            <button onclick="setFaqCat('it')" id="fc-it"
+                class="faq-cat text-xs px-4 py-2 rounded-full border border-neutral-soft bg-white text-text-muted font-semibold">IT
+                & Bảo mật</button>
+            <button onclick="setFaqCat('finance')" id="fc-finance"
+                class="faq-cat text-xs px-4 py-2 rounded-full border border-neutral-soft bg-white text-text-muted font-semibold">Tài
+                chính</button>
+        </div>
+
+        <div id="faq-list" class="space-y-3"></div>
+        <p id="faq-empty" class="hidden text-center py-10 text-text-muted text-sm">
+            <span class="material-symbols-outlined text-[40px] text-neutral-soft block mb-2">search_off</span>
+            Không tìm thấy câu hỏi phù hợp. Hãy thử từ khóa khác hoặc <button onclick="openModal()"
+                class="text-primary font-bold hover:underline">hỏi HR trực tiếp</button>.
+        </p>
+
+        <!-- CTA contact HR -->
+        <div class="mt-12 bg-primary rounded-2xl p-7 text-center">
+            <span class="material-symbols-outlined text-text-main text-[36px] mb-3 block">support_agent</span>
+            <h2 class="text-lg font-black text-text-main mb-2">Vẫn chưa tìm được câu trả lời?</h2>
+            <p class="text-text-main/70 text-sm mb-5">Đặt câu hỏi trực tiếp cho đội HR — phản hồi trong 24 giờ làm việc.
+            </p>
+            <button onclick="openModal()"
+                class="inline-flex items-center gap-2 bg-text-main text-white px-7 py-3 rounded-xl font-bold text-sm hover:opacity-90">
+                <span class="material-symbols-outlined text-[18px]">chat</span>Gửi câu hỏi cho HR
+            </button>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t border-neutral-soft py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-2">
+                <div class="bg-primary p-1.5 rounded-lg"><span
+                        class="material-symbols-outlined text-text-main text-[16px]">shield_person</span></div><span
+                    class="font-bold text-sm">NetSpace Policy Hub</span>
+            </div>
+            <p class="text-xs text-text-muted">© 2026 NetSpace Inc. Chỉ dành cho nội bộ.</p>
+            <a href="index.html" class="text-xs text-primary font-semibold hover:underline">← Về trang chủ</a>
+        </div>
+    </footer>
+
+    <!-- Modal -->
+    <div id="modal-overlay" class="fixed inset-0 z-[100] flex items-center justify-center p-4 hidden"
+        onclick="if(event.target===this||event.target.classList.contains('modal-bg'))closeModal()">
+        <div class="modal-bg absolute inset-0 bg-text-main/40 backdrop-blur-sm"></div>
+        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg" onclick="event.stopPropagation()">
+            <div class="bg-primary px-6 py-5 flex items-center justify-between rounded-t-2xl">
+                <div class="flex items-center gap-3"><span
+                        class="material-symbols-outlined text-text-main">support_agent</span>
+                    <h2 class="font-black text-lg text-text-main">Hỏi đội ngũ HR</h2>
+                </div>
+                <button onclick="closeModal()"
+                    class="w-8 h-8 rounded-lg hover:bg-primary-dark flex items-center justify-center"><span
+                        class="material-symbols-outlined text-text-main text-[20px]">close</span></button>
+            </div>
+            <div class="px-6 py-6 space-y-4">
+                <div><label class="block text-sm font-semibold mb-1">Họ tên *</label><input id="m-name" type="text"
+                        class="w-full text-sm rounded-lg border border-neutral-soft px-4 py-3 outline-none focus:border-primary" />
+                </div>
+                <div><label class="block text-sm font-semibold mb-1">Email công ty *</label><input id="m-email"
+                        type="email"
+                        class="w-full text-sm rounded-lg border border-neutral-soft px-4 py-3 outline-none focus:border-primary" />
+                </div>
+                <div><label class="block text-sm font-semibold mb-1">Câu hỏi *</label><textarea id="m-msg" rows="3"
+                        class="w-full text-sm rounded-lg border border-neutral-soft px-4 py-3 outline-none focus:border-primary resize-none"></textarea>
+                </div>
+                <div class="flex gap-3 pt-1">
+                    <button onclick="closeModal()"
+                        class="flex-1 py-3 border border-neutral-soft font-bold rounded-xl text-sm hover:bg-neutral-soft">Hủy</button>
+                    <button onclick="submitHR()"
+                        class="flex-1 py-3 bg-primary hover:bg-primary-dark text-text-main font-bold rounded-xl text-sm">Gửi</button>
+                </div>
+                <p id="hr-ok" class="hidden text-center text-sm text-primary font-bold pt-1">✓ Đã gửi! HR sẽ liên hệ
+                    trong 24h.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const FAQS = [
+            { cat: 'leave', q: 'Tôi có bao nhiêu ngày phép năm?', a: 'Nhân viên dưới 1 năm: 12 ngày. Từ 1–3 năm: 14 ngày. Từ 3–5 năm: 16 ngày. Trên 5 năm: 18 ngày. Số ngày được tính theo năm dương lịch và cộng dồn theo tháng làm việc thực tế.' },
+            { cat: 'leave', q: 'Phép năm chưa dùng hết có bị mất không?', a: 'Số ngày phép chưa dùng có thể chuyển tiếp tối đa 5 ngày sang năm tiếp theo. Phần còn lại sẽ bị hủy vào ngày 31/12 hàng năm. HR sẽ nhắc nhở bạn vào tháng 11.' },
+            { cat: 'leave', q: 'Cần báo trước bao lâu khi muốn nghỉ phép?', a: 'Nghỉ 1–2 ngày: báo trước 3 ngày làm việc. Nghỉ 3–5 ngày: báo trước 1 tuần. Nghỉ trên 5 ngày: báo trước 2 tuần và chuẩn bị kế hoạch bàn giao công việc.' },
+            { cat: 'hr', q: 'Chính sách làm việc từ xa (remote) của NetSpace là gì?', a: 'NetSpace áp dụng hybrid: nhân viên vào văn phòng ít nhất 3 ngày/tuần (thứ 3, 4, 5). Thứ 2 và thứ 6 có thể làm từ xa theo thỏa thuận với quản lý. Tuần có Town Hall bắt buộc tất cả vào văn phòng.' },
+            { cat: 'hr', q: 'Tôi nhận được phụ cấp gì khi làm việc từ xa?', a: 'NetSpace hỗ trợ một lần tối đa 5.000.000 VNĐ mua thiết bị làm việc tại nhà và phụ cấp internet 300.000 VNĐ/tháng thanh toán qua lương.' },
+            { cat: 'hr', q: 'Quy trình nâng lương và đánh giá hiệu suất diễn ra như thế nào?', a: 'NetSpace thực hiện review lương và đánh giá hiệu suất định kỳ mỗi năm một lần vào tháng 4. Nhân viên sẽ được thông báo trước ít nhất 1 tháng và có buổi 1-on-1 với quản lý.' },
+            { cat: 'it', q: 'Tôi có thể sử dụng phần mềm cá nhân trên máy tính công ty không?', a: 'Chỉ được cài đặt phần mềm trong danh sách được IT phê duyệt. Nếu cần phần mềm ngoài danh sách, gửi ticket IT Helpdesk. Không cài phần mềm crack hoặc từ nguồn không rõ xuất xứ.' },
+            { cat: 'it', q: 'Tôi phải làm gì nếu bị mất hoặc quên mật khẩu tài khoản công ty?', a: 'Truy cập trang reset mật khẩu nội bộ hoặc liên hệ IT Helpdesk qua email it@netspace.com.vn. Không chia sẻ mật khẩu với ai khác kể cả bộ phận IT — họ sẽ không bao giờ hỏi mật khẩu của bạn.' },
+            { cat: 'it', q: 'Có phải dùng VPN khi làm việc ở nhà không?', a: 'Bắt buộc! Khi truy cập hệ thống nội bộ từ bên ngoài văn phòng, bạn phải dùng Netspace VPN. Không bao giờ kết nối hệ thống nội bộ qua WiFi công cộng mà không có VPN.' },
+            { cat: 'finance', q: 'Làm sao để được hoàn tiền chi phí công tác?', a: 'Nộp Expense Report qua hệ thống Finance trong vòng 15 ngày sau khi chi tiêu, kèm hóa đơn gốc. Quản lý phê duyệt → Finance xử lý trong 5–7 ngày làm việc và thanh toán qua tài khoản ngân hàng đã đăng ký.' },
+            { cat: 'finance', q: 'Hạn mức chi phí khách sạn khi đi công tác là bao nhiêu?', a: 'Trong nước: tối đa 1.500.000 VNĐ/đêm. Nước ngoài: tối đa 100 USD/đêm. Chi vượt mức cần phê duyệt từ Giám đốc bộ phận trước khi đặt phòng.' },
+            { cat: 'hr', q: 'Chính sách về xung đột lợi ích là gì? Tôi cần khai báo gì?', a: 'Nếu bạn có đầu tư vào đơn vị đối thủ/đối tác, hoặc có người thân làm ở nhà cung cấp bạn đang quản lý, phải khai báo với HR và quản lý. Quà tặng từ đối tác trên 500.000 VNĐ cũng cần báo cáo.' },
+        ];
+
+        let curCat = 'all', curSearch = '';
+        function setFaqCat(c) {
+            curCat = c;
+            document.querySelectorAll('.faq-cat').forEach(b => { b.classList.remove('bg-primary', 'text-text-main', 'font-bold'); b.classList.add('bg-white', 'text-text-muted'); });
+            const active = document.getElementById('fc-' + c);
+            active.classList.add('bg-primary', 'text-text-main', 'font-bold');
+            active.classList.remove('bg-white', 'text-text-muted');
+            renderFAQ();
+        }
+        function filterFAQ() { curSearch = document.getElementById('faq-search').value.trim().toLowerCase(); renderFAQ(); }
+        function renderFAQ() {
+            const list = FAQS.filter(f => {
+                const catOk = curCat === 'all' || f.cat === curCat;
+                const qOk = !curSearch || f.q.toLowerCase().includes(curSearch) || f.a.toLowerCase().includes(curSearch);
+                return catOk && qOk;
+            });
+            document.getElementById('faq-empty').classList.toggle('hidden', list.length > 0);
+            document.getElementById('faq-list').innerHTML = list.map((f, i) => `
+    <div class="faq-item bg-white rounded-xl border border-neutral-soft overflow-hidden" id="faq-${i}">
+      <button onclick="toggleFAQ(${i})" class="w-full flex items-center justify-between text-left px-5 py-4 gap-4">
+        <span class="font-semibold text-sm text-text-main leading-snug">${f.q}</span>
+        <span class="material-symbols-outlined faq-icon flex-shrink-0 text-text-muted text-[22px]">expand_more</span>
+      </button>
+      <div class="faq-answer" id="ans-${i}">
+        <div class="px-5 pb-5 pt-0 text-sm text-text-muted leading-relaxed border-t border-neutral-soft pt-4">${f.a}</div>
+      </div>
+    </div>`).join('');
+        }
+        function toggleFAQ(i) {
+            const item = document.getElementById('faq-' + i);
+            const ans = document.getElementById('ans-' + i);
+            const isOpen = item.classList.contains('open');
+            document.querySelectorAll('.faq-item').forEach(el => { el.classList.remove('open'); document.getElementById(el.id.replace('faq-', 'ans-')).classList.remove('open'); });
+            if (!isOpen) { item.classList.add('open'); ans.classList.add('open'); }
+        }
+        window.addEventListener('DOMContentLoaded', renderFAQ);
+        function openModal() { document.getElementById('modal-overlay').classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
+        function closeModal() { document.getElementById('modal-overlay').classList.add('hidden'); document.body.style.overflow = ''; }
+        function submitHR() { if (!document.getElementById('m-name').value || !document.getElementById('m-email').value || !document.getElementById('m-msg').value) return; setTimeout(() => document.getElementById('hr-ok').classList.remove('hidden'), 800); }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chi tiết Chính sách — NetSpace Policy Hub</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script>tailwind.config = { darkMode: "class", theme: { extend: { colors: { "primary": "#84dcc6", "primary-dark": "#5ec9af", "bg-light": "#f6f8f7", "neutral-soft": "#e9f1ef", "text-main": "#101917", "text-muted": "#5a8c7f" }, fontFamily: { sans: ["Inter", "sans-serif"] } } } }</script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24
+        }
+
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24
+        }
+
+        .policy-content h2 {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #101917;
+            margin-top: 2rem;
+            margin-bottom: .75rem;
+            padding-bottom: .5rem;
+            border-bottom: 2px solid #e9f1ef
+        }
+
+        .policy-content p {
+            color: #5a8c7f;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+            font-size: .9rem
+        }
+
+        .policy-content ul {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: .5rem
+        }
+
+        .policy-content ul li {
+            display: flex;
+            align-items: flex-start;
+            gap: .5rem;
+            color: #5a8c7f;
+            font-size: .9rem;
+            line-height: 1.6
+        }
+
+        .policy-content ul li::before {
+            content: '';
+            flex-shrink: 0;
+            width: 6px;
+            height: 6px;
+            background: #84dcc6;
+            border-radius: 50%;
+            margin-top: .5rem
+        }
+
+        .policy-content .note {
+            background: #f6f8f7;
+            border-left: 4px solid #84dcc6;
+            padding: 1rem 1.25rem;
+            border-radius: 0 .5rem .5rem 0;
+            margin: 1.25rem 0
+        }
+
+        .policy-content .note p {
+            margin: 0;
+            color: #101917;
+            font-size: .85rem
+        }
+
+        #toc a {
+            transition: color .15s
+        }
+
+        #toc a:hover {
+            color: #84dcc6
+        }
+
+        #toc a.active {
+            color: #84dcc6;
+            font-weight: 700
+        }
+
+        @media print {
+
+            header,
+            footer,
+            #toc-sidebar,
+            #feedback-bar,
+            #back-btn {
+                display: none !important
+            }
+
+            .policy-content {
+                max-width: none !important
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-bg-light text-text-main antialiased">
+
+    <header class="sticky top-0 z-50 bg-white border-b border-neutral-soft">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-4 py-4">
+            <a href="index.html" class="flex items-center gap-3">
+                <div class="bg-primary p-2 rounded-lg"><span
+                        class="material-symbols-outlined text-text-main text-[20px]">shield_person</span></div>
+                <div>
+                    <div class="font-extrabold text-base text-text-main">NetSpace</div>
+                    <div class="text-xs text-text-muted -mt-0.5">Policy Hub</div>
+                </div>
+            </a>
+            <nav class="hidden md:flex items-center gap-8">
+                <a class="text-sm font-bold text-primary" href="policies.html">Chính sách</a>
+                <a class="text-sm font-semibold hover:text-primary" href="categories.html">Danh mục</a>
+                <a class="text-sm font-semibold hover:text-primary" href="updates.html">Cập nhật</a>
+                <a class="text-sm font-semibold hover:text-primary" href="faq.html">FAQ</a>
+            </nav>
+            <button onclick="openModal()"
+                class="hidden sm:flex items-center gap-2 bg-primary hover:bg-primary-dark text-text-main px-4 py-2.5 rounded-lg text-sm font-bold">
+                <span class="material-symbols-outlined text-[18px]">support_agent</span>Hỏi HR
+            </button>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <!-- Breadcrumb -->
+        <nav id="breadcrumb" class="flex items-center gap-2 text-xs text-text-muted mb-6">
+            <a href="index.html" class="hover:text-primary">Trang chủ</a>
+            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+            <a href="policies.html" class="hover:text-primary">Chính sách</a>
+            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+            <span id="breadcrumb-title" class="font-semibold text-text-main">Đang tải...</span>
+        </nav>
+
+        <div class="flex gap-10">
+            <!-- Main content -->
+            <div class="flex-1 min-w-0">
+                <!-- Meta header -->
+                <div id="policy-meta" class="bg-white rounded-2xl border border-neutral-soft p-6 sm:p-8 mb-6">
+                    <div class="flex items-center gap-2 mb-4">
+                        <span id="meta-cat"
+                            class="px-3 py-1 bg-primary/20 text-text-muted text-xs font-bold uppercase tracking-wider rounded-full"></span>
+                        <span id="meta-badge"
+                            class="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold uppercase tracking-wider rounded-full">Hiệu
+                            lực</span>
+                    </div>
+                    <h1 id="policy-title" class="text-2xl sm:text-3xl font-black text-text-main mb-3 leading-snug">Đang
+                        tải...</h1>
+                    <p id="policy-desc" class="text-text-muted leading-relaxed mb-6"></p>
+                    <div class="flex flex-wrap gap-4 text-xs text-text-muted border-t border-neutral-soft pt-4">
+                        <span class="flex items-center gap-1"><span
+                                class="material-symbols-outlined text-[14px]">person</span>Chịu trách nhiệm: <strong
+                                class="text-text-main">Phòng Nhân sự (HR)</strong></span>
+                        <span class="flex items-center gap-1"><span
+                                class="material-symbols-outlined text-[14px]">schedule</span>Cập nhật: <strong
+                                id="meta-updated" class="text-text-main"></strong></span>
+                        <span class="flex items-center gap-1"><span
+                                class="material-symbols-outlined text-[14px]">event</span>Hiệu lực từ: <strong
+                                id="meta-effective" class="text-text-main"></strong></span>
+                    </div>
+                    <div class="flex gap-3 mt-5">
+                        <button onclick="window.print()"
+                            class="flex items-center gap-2 text-sm font-semibold text-text-muted hover:text-primary transition-colors border border-neutral-soft px-4 py-2 rounded-lg">
+                            <span class="material-symbols-outlined text-[18px]">print</span>In
+                        </button>
+                        <button onclick="copyLink()"
+                            class="flex items-center gap-2 text-sm font-semibold text-text-muted hover:text-primary transition-colors border border-neutral-soft px-4 py-2 rounded-lg"
+                            id="copy-btn">
+                            <span class="material-symbols-outlined text-[18px]">link</span>Sao chép link
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Policy body -->
+                <div class="bg-white rounded-2xl border border-neutral-soft p-6 sm:p-8 mb-6 policy-content"
+                    id="policy-body">
+                    <p class="text-text-muted text-sm">Đang tải nội dung chính sách...</p>
+                </div>
+
+                <!-- Feedback -->
+                <div id="feedback-bar"
+                    class="bg-white rounded-2xl border border-neutral-soft p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <p class="text-sm font-semibold text-text-main">Tài liệu này có hữu ích không?</p>
+                    <div class="flex gap-3">
+                        <button onclick="giveFeedback(true)" id="btn-yes"
+                            class="flex items-center gap-2 px-5 py-2.5 border border-neutral-soft rounded-lg text-sm font-semibold hover:border-primary hover:text-primary transition-colors">
+                            <span class="material-symbols-outlined text-[18px]">thumb_up</span>Có
+                        </button>
+                        <button onclick="giveFeedback(false)" id="btn-no"
+                            class="flex items-center gap-2 px-5 py-2.5 border border-neutral-soft rounded-lg text-sm font-semibold hover:border-red-400 hover:text-red-500 transition-colors">
+                            <span class="material-symbols-outlined text-[18px]">thumb_down</span>Không
+                        </button>
+                    </div>
+                    <p id="feedback-thanks" class="hidden text-sm text-primary font-bold">✓ Cảm ơn phản hồi của bạn!</p>
+                </div>
+            </div>
+
+            <!-- TOC Sidebar -->
+            <div id="toc-sidebar" class="hidden lg:block w-64 flex-shrink-0">
+                <div class="sticky top-24">
+                    <div class="bg-white rounded-xl border border-neutral-soft p-5 mb-4">
+                        <h3 class="text-xs font-bold uppercase tracking-widest text-text-muted mb-3">Nội dung</h3>
+                        <nav id="toc" class="text-sm text-text-muted space-y-2"></nav>
+                    </div>
+                    <div class="bg-primary/10 border border-primary/20 rounded-xl p-5">
+                        <h3 class="text-xs font-bold uppercase tracking-widest text-text-muted mb-2">Câu hỏi?</h3>
+                        <p class="text-xs text-text-muted leading-relaxed mb-3">Liên hệ HR nếu bạn cần hỗ trợ thêm.</p>
+                        <button onclick="openModal()"
+                            class="w-full py-2.5 bg-primary hover:bg-primary-dark text-text-main font-bold rounded-lg text-xs transition-colors flex items-center justify-center gap-1">
+                            <span class="material-symbols-outlined text-[16px]">support_agent</span>Hỏi HR
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-white border-t border-neutral-soft py-8 mt-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-2">
+                <div class="bg-primary p-1.5 rounded-lg"><span
+                        class="material-symbols-outlined text-text-main text-[16px]">shield_person</span></div><span
+                    class="font-bold text-sm">NetSpace Policy Hub</span>
+            </div>
+            <p class="text-xs text-text-muted">© 2026 NetSpace Inc. Chỉ dành cho nội bộ.</p>
+            <a href="policies.html" class="text-xs text-primary font-semibold hover:underline">← Danh sách chính
+                sách</a>
+        </div>
+    </footer>
+
+    <!-- Modal -->
+    <div id="modal-overlay" class="fixed inset-0 z-[100] flex items-center justify-center p-4 hidden"
+        onclick="if(event.target===this||event.target.classList.contains('modal-bg'))closeModal()">
+        <div class="modal-bg absolute inset-0 bg-text-main/40 backdrop-blur-sm"></div>
+        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg" onclick="event.stopPropagation()">
+            <div class="bg-primary px-6 py-5 flex items-center justify-between rounded-t-2xl">
+                <div class="flex items-center gap-3"><span
+                        class="material-symbols-outlined text-text-main">support_agent</span>
+                    <h2 class="font-black text-lg text-text-main">Hỏi đội ngũ HR</h2>
+                </div>
+                <button onclick="closeModal()"
+                    class="w-8 h-8 rounded-lg hover:bg-primary-dark flex items-center justify-center"><span
+                        class="material-symbols-outlined text-text-main text-[20px]">close</span></button>
+            </div>
+            <div class="px-6 py-6 space-y-4">
+                <div><label class="block text-sm font-semibold mb-1" for="m-name">Họ tên *</label><input id="m-name"
+                        type="text"
+                        class="w-full text-sm rounded-lg border border-neutral-soft px-4 py-3 outline-none focus:border-primary" />
+                </div>
+                <div><label class="block text-sm font-semibold mb-1" for="m-email">Email công ty *</label><input
+                        id="m-email" type="email"
+                        class="w-full text-sm rounded-lg border border-neutral-soft px-4 py-3 outline-none focus:border-primary" />
+                </div>
+                <div><label class="block text-sm font-semibold mb-1" for="m-msg">Câu hỏi *</label><textarea id="m-msg"
+                        rows="3"
+                        class="w-full text-sm rounded-lg border border-neutral-soft px-4 py-3 outline-none focus:border-primary resize-none"></textarea>
+                </div>
+                <div class="flex gap-3 pt-1">
+                    <button onclick="closeModal()"
+                        class="flex-1 py-3 border border-neutral-soft font-bold rounded-xl text-sm hover:bg-neutral-soft">Hủy</button>
+                    <button onclick="submitHR()"
+                        class="flex-1 py-3 bg-primary hover:bg-primary-dark text-text-main font-bold rounded-xl text-sm">Gửi</button>
+                </div>
+                <p id="hr-ok" class="hidden text-center text-sm text-primary font-bold pt-1">✓ Đã gửi! HR sẽ liên hệ
+                    trong 24h.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const POLICIES = {
+            'remote-work': {
+                title: 'Chính sách Làm việc Từ xa', cat: 'Nhân sự', updated: '13/03/2026', effective: '01/01/2026', desc: 'Hướng dẫn làm việc hybrid, phụ cấp thiết bị và yêu cầu liên lạc khi làm việc tại nhà.', body: `
+    <h2>1. Mục đích & Phạm vi</h2>
+    <p>Chính sách này áp dụng cho tất cả nhân viên chính thức NetSpace đủ điều kiện làm việc từ xa theo thỏa thuận với quản lý trực tiếp. Mục tiêu là đảm bảo hiệu suất và văn hóa công ty được duy trì dù làm việc ở đâu.</p>
+    <h2>2. Điều kiện Áp dụng</h2>
+    <ul>
+      <li>Nhân viên đã qua thời gian thử việc (ít nhất 3 tháng) và được đánh giá đạt yêu cầu.</li>
+      <li>Vị trí công việc phù hợp với hình thức làm việc từ xa (không yêu cầu hiện diện vật lý bắt buộc).</li>
+      <li>Có môi trường làm việc đảm bảo: internet ổn định, không gian yên tĩnh, bảo mật thông tin.</li>
+    </ul>
+    <h2>3. Mô hình Làm việc Hybrid</h2>
+    <p>NetSpace áp dụng mô hình hybrid linh hoạt. Nhân viên cần có mặt tại văn phòng tối thiểu <strong>3 ngày/tuần</strong> (thứ 3, 4, 5) và có thể làm từ xa thứ 2 và thứ 6 theo thỏa thuận với quản lý.</p>
+    <div class="note"><p><strong>Lưu ý:</strong> Trong các tuần có họp toàn công ty (Town Hall), tất cả nhân viên phải có mặt tại văn phòng dù lịch của tuần đó.</p></div>
+    <h2>4. Phụ cấp Thiết bị & Internet</h2>
+    <ul>
+      <li>Hỗ trợ một lần: tối đa <strong>5.000.000 VNĐ</strong> để mua thiết bị làm việc tại nhà (ghế, bàn, màn hình phụ).</li>
+      <li>Phụ cấp internet hàng tháng: <strong>300.000 VNĐ</strong> thanh toán qua lương.</li>
+      <li>Laptop và phụ kiện do công ty cấp phải được ưu tiên sử dụng cho công việc.</li>
+    </ul>
+    <h2>5. Giờ Làm việc & Liên lạc</h2>
+    <p>Nhân viên duy trì giờ làm việc tiêu chuẩn 8:00–17:30. Khi làm từ xa, cần:</p>
+    <ul>
+      <li>Bật status "Online" trên Slack trong giờ làm việc.</li>
+      <li>Phản hồi tin nhắn trong vòng <strong>30 phút</strong> trong giờ hành chính.</li>
+      <li>Tham gia đầy đủ các cuộc họp định kỳ của team qua video call.</li>
+    </ul>
+    <h2>6. Bảo mật Thông tin</h2>
+    <ul>
+      <li>Sử dụng VPN công ty khi kết nối vào hệ thống nội bộ.</li>
+      <li>Không làm việc tại quán cà phê, khu vực công cộng với màn hình để lộ thông tin mật.</li>
+      <li>Khóa màn hình khi rời khỏi thiết bị dù chỉ một khoảnh khắc.</li>
+    </ul>
+    <h2>7. Vi phạm & Xử lý</h2>
+    <p>Vi phạm chính sách này sẽ được xem xét theo quy trình kỷ luật của NetSpace, có thể bao gồm thu hồi quyền làm việc từ xa.</p>`
+            },
+            'annual-leave': {
+                title: 'Chính sách Nghỉ phép Năm', cat: 'Nghỉ phép & Phúc lợi', updated: '10/02/2026', effective: '01/01/2026', desc: 'Quy định tích lũy ngày phép, chuyển tiếp sang năm sau và quy trình phê duyệt đơn nghỉ phép.', body: `
+    <h2>1. Mức Phép Năm</h2>
+    <p>NetSpace cung cấp số ngày phép năm theo thâm niên:</p>
+    <ul>
+      <li>Dưới 1 năm: <strong>12 ngày/năm</strong> (tính theo tháng thực làm)</li>
+      <li>Từ 1–3 năm: <strong>14 ngày/năm</strong></li>
+      <li>Từ 3–5 năm: <strong>16 ngày/năm</strong></li>
+      <li>Trên 5 năm: <strong>18 ngày/năm</strong></li>
+    </ul>
+    <h2>2. Quy định Chuyển tiếp Phép</h2>
+    <p>Ngày phép chưa dùng có thể chuyển tiếp sang năm kế tiếp tối đa <strong>5 ngày</strong>. Phần còn lại sẽ bị hủy vào ngày 31/12 hàng năm.</p>
+    <div class="note"><p><strong>Khuyến nghị:</strong> Hãy lên kế hoạch nghỉ phép sớm. HR sẽ gửi nhắc nhở vào tháng 11 mỗi năm về số ngày phép còn lại.</p></div>
+    <h2>3. Quy trình Xin Phép</h2>
+    <ul>
+      <li>Nghỉ từ 1–2 ngày: Nộp đơn trước ít nhất <strong>3 ngày làm việc</strong> qua hệ thống HR.</li>
+      <li>Nghỉ từ 3–5 ngày: Thông báo trước ít nhất <strong>1 tuần</strong> và xác nhận với quản lý.</li>
+      <li>Nghỉ trên 5 ngày: Thông báo trước ít nhất <strong>2 tuần</strong>, cần có kế hoạch bàn giao.</li>
+    </ul>
+    <h2>4. Nghỉ Phép Khẩn cấp</h2>
+    <p>Trong trường hợp khẩn cấp (bản thân hoặc gia đình đau ốm đột xuất), nhân viên cần thông báo với quản lý và HR trước 8:00 sáng hôm đó qua điện thoại, sau đó hoàn thiện thủ tục trong vòng 2 ngày làm việc tiếp theo.</p>
+    <h2>5. Ngày Lễ Tết</h2>
+    <p>Ngoài phép năm, nhân viên được nghỉ đầy đủ các ngày lễ theo quy định Nhà nước Việt Nam và các ngày off thêm do NetSpace quy định hàng năm.</p>`
+            },
+            'it-security': {
+                title: 'Hướng dẫn Bảo mật IT', cat: 'IT & Bảo mật', updated: '05/03/2026', effective: '15/02/2026', desc: 'Quản lý mật khẩu, sử dụng VPN và cách báo cáo nghi vấn an ninh mạng.', body: `
+    <h2>1. Quản lý Mật khẩu</h2>
+    <p>Mật khẩu yếu là nguyên nhân hàng đầu của các vụ rò rỉ dữ liệu. NetSpace yêu cầu:</p>
+    <ul>
+      <li>Độ dài tối thiểu <strong>12 ký tự</strong>, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.</li>
+      <li>Không sử dụng lại mật khẩu giữa các hệ thống khác nhau.</li>
+      <li>Đổi mật khẩu định kỳ mỗi <strong>90 ngày</strong> hoặc ngay khi nghi ngờ bị lộ.</li>
+      <li>Sử dụng công cụ quản lý mật khẩu được IT phê duyệt (Bitwarden Enterprise).</li>
+    </ul>
+    <h2>2. Xác thực Hai yếu tố (2FA)</h2>
+    <p>Bắt buộc kích hoạt 2FA trên tất cả tài khoản công ty, bao gồm: Google Workspace, Slack, GitHub, Jira và VPN. Sử dụng ứng dụng Authenticator (Google Auth hoặc Authy) — không dùng SMS làm phương thức 2FA.</p>
+    <h2>3. Sử dụng VPN</h2>
+    <ul>
+      <li>Bắt buộc kết nối VPN (Netspace VPN) khi truy cập hệ thống nội bộ từ bên ngoài văn phòng.</li>
+      <li>Không chia sẻ thông tin đăng nhập VPN với người khác, kể cả đồng nghiệp.</li>
+      <li>Báo cáo IT ngay khi phát hiện kết nối bất thường hoặc lỗi VPN.</li>
+    </ul>
+    <div class="note"><p><strong>Quan trọng:</strong> Không bao giờ truy cập hệ thống nội bộ qua mạng WiFi công cộng mà không dùng VPN.</p></div>
+    <h2>4. Phần mềm & Cài đặt</h2>
+    <ul>
+      <li>Chỉ cài đặt phần mềm đã được IT phê duyệt. Mọi yêu cầu phần mềm mới gửi ticket về IT.</li>
+      <li>Không cài ứng dụng crack, bẻ khóa hoặc từ nguồn không rõ xuất xứ.</li>
+      <li>Cập nhật hệ điều hành và phần mềm bảo mật ngay khi có bản vá mới.</li>
+    </ul>
+    <h2>5. Báo cáo Sự cố Bảo mật</h2>
+    <p>Nếu phát hiện bất kỳ dấu hiệu bất thường (email lạ, tài khoản bị đăng nhập lạ, thiết bị hành xử kỳ lạ), báo cáo ngay:</p>
+    <ul>
+      <li>Email: <strong>security@netspace.com.vn</strong></li>
+      <li>Hotline IT 24/7: <strong>1900-xxxx</strong></li>
+      <li>Ticket: hệ thống IT Help Desk nội bộ</li>
+    </ul>`
+            },
+            'expense': {
+                title: 'Hoàn trả Chi phí Công tác', cat: 'Tài chính', updated: '10/03/2026', effective: '01/01/2026', desc: 'Quy trình hoàn tiền cho công tác, tiếp khách và mua sắm thiết bị văn phòng.', body: `
+    <h2>1. Các Chi phí Được Hoàn trả</h2>
+    <ul>
+      <li>Vé máy bay, tàu hỏa, xe khách phục vụ công tác được phê duyệt.</li>
+      <li>Phòng khách sạn: tối đa <strong>1.500.000 VNĐ/đêm</strong> trong nước, <strong>100 USD/đêm</strong> nước ngoài.</li>
+      <li>Chi phí ăn uống khi công tác: tối đa <strong>300.000 VNĐ/bữa</strong>.</li>
+      <li>Chi phí tiếp khách hàng, đối tác: cần phê duyệt từ Giám đốc bộ phận.</li>
+    </ul>
+    <h2>2. Quy trình Hoàn Chi phí</h2>
+    <ul>
+      <li>Nộp phiếu chi phí (Expense Report) qua hệ thống Finance trong vòng <strong>15 ngày</strong> sau khi phát sinh.</li>
+      <li>Đính kèm toàn bộ hóa đơn, biên lai gốc. Không chấp nhận chi phí không có hóa đơn.</li>
+      <li>Quản lý trực tiếp phê duyệt, sau đó Finance xử lý trong <strong>5-7 ngày làm việc</strong>.</li>
+    </ul>
+    <div class="note"><p><strong>Lưu ý:</strong> Hóa đơn xuất theo tên công ty NetSpace (MST: xxxxxxx) mới được hoàn trả như một khoản khấu trừ thuế.</p></div>
+    <h2>3. Chi phí Không Được Hoàn</h2>
+    <ul>
+      <li>Chi phí cá nhân, giải trí không liên quan công việc.</li>
+      <li>Tiền phạt giao thông, phí phát sinh do cá nhân.</li>
+      <li>Vượt hạn mức quy định mà không được phê duyệt trước.</li>
+      <li>Nộp muộn hơn 30 ngày sau ngày phát sinh chi phí.</li>
+    </ul>`
+            },
+            'conduct': {
+                title: 'Quy tắc Ứng xử & Đạo đức Nghề nghiệp', cat: 'Nội quy', updated: '08/03/2026', effective: '01/01/2026', desc: 'Chuẩn mực hành vi, cam kết bảo mật thông tin và xung đột lợi ích.', body: `
+    <h2>1. Giá trị Cốt lõi NetSpace</h2>
+    <p>Mọi nhân viên NetSpace được kỳ vọng thể hiện các giá trị: <strong>Chính trực, Tôn trọng, Trách nhiệm, Sáng tạo</strong> trong mọi hoạt động hàng ngày.</p>
+    <h2>2. Ứng xử trong Công việc</h2>
+    <ul>
+      <li>Đối xử tôn trọng, bình đẳng với tất cả đồng nghiệp, không phân biệt giới tính, quốc tịch, tôn giáo.</li>
+      <li>Không có hành vi quấy rối, bắt nạt hoặc phân biệt đối xử dưới mọi hình thức.</li>
+      <li>Giải quyết mâu thuẫn thông qua đối thoại trực tiếp và tôn trọng lẫn nhau.</li>
+      <li>Giao tiếp chuyên nghiệp trên tất cả kênh: email, Slack, Zoom.</li>
+    </ul>
+    <h2>3. Bảo mật Thông tin</h2>
+    <ul>
+      <li>Không tiết lộ thông tin nội bộ (chiến lược, tài chính, nhân sự) cho bên ngoài.</li>
+      <li>Ký và tuân thủ thỏa thuận bảo mật thông tin (NDA) đã ký khi gia nhập công ty.</li>
+      <li>Thận trọng khi đăng nội dung liên quan đến NetSpace lên mạng xã hội.</li>
+    </ul>
+    <h2>4. Xung đột Lợi ích</h2>
+    <p>Nhân viên phải khai báo ngựa với HR và quản lý khi có xung đột lợi ích thực tế hoặc tiềm tàng, bao gồm:</p>
+    <ul>
+      <li>Đầu tư hoặc sở hữu cổ phần trong đơn vị đối thủ hoặc đối tác.</li>
+      <li>Có người thân làm việc tại đối tác/khách hàng mà bạn đang quản lý dự án.</li>
+      <li>Nhận quà, hoa hồng từ nhà cung cấp vượt giá trị 500.000 VNĐ.</li>
+    </ul>
+    <div class="note"><p><strong>Nguyên tắc:</strong> Khi không chắc điều gì đó có phù hợp hay không — hãy hỏi HR trước khi hành động.</p></div>`
+            },
+        };
+
+        function loadPolicy() {
+            const id = new URLSearchParams(location.search).get('id');
+            const p = POLICIES[id];
+            if (!p) {
+                document.getElementById('policy-title').textContent = 'Chính sách không tồn tại';
+                document.getElementById('policy-body').innerHTML = '<p class="text-text-muted">Vui lòng quay lại <a href="policies.html" class="text-primary hover:underline">danh sách chính sách</a> và thử lại.</p>';
+                return;
+            }
+            document.title = p.title + ' — NetSpace Policy Hub';
+            document.getElementById('breadcrumb-title').textContent = p.title;
+            document.getElementById('policy-title').textContent = p.title;
+            document.getElementById('policy-desc').textContent = p.desc;
+            document.getElementById('meta-cat').textContent = p.cat;
+            document.getElementById('meta-updated').textContent = p.updated;
+            document.getElementById('meta-effective').textContent = p.effective;
+            document.getElementById('policy-body').innerHTML = p.body;
+            buildTOC();
+        }
+
+        function buildTOC() {
+            const headers = document.querySelectorAll('#policy-body h2');
+            const toc = document.getElementById('toc');
+            toc.innerHTML = [...headers].map((h, i) => {
+                h.id = 'section-' + (i + 1);
+                return `<a href="#section-${i + 1}" class="block py-1 border-l-2 border-neutral-soft pl-3 hover:border-primary text-xs">${h.textContent}</a>`;
+            }).join('');
+        }
+
+        function copyLink() {
+            navigator.clipboard.writeText(location.href).then(() => {
+                const btn = document.getElementById('copy-btn');
+                btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">check</span>Đã sao chép';
+                btn.classList.add('text-primary');
+                setTimeout(() => { btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">link</span>Sao chép link'; btn.classList.remove('text-primary'); }, 2000);
+            });
+        }
+
+        function giveFeedback(yes) {
+            document.getElementById('btn-yes').classList.add('hidden');
+            document.getElementById('btn-no').classList.add('hidden');
+            document.getElementById('feedback-thanks').classList.remove('hidden');
+        }
+
+        window.addEventListener('DOMContentLoaded', loadPolicy);
+        function openModal() { document.getElementById('modal-overlay').classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
+        function closeModal() { document.getElementById('modal-overlay').classList.add('hidden'); document.body.style.overflow = ''; }
+        function submitHR() {
+            if (!document.getElementById('m-name').value || !document.getElementById('m-email').value || !document.getElementById('m-msg').value) return;
+            setTimeout(() => document.getElementById('hr-ok').classList.remove('hidden'), 800);
+        }
+    </script>
+</body>
+
+</html>

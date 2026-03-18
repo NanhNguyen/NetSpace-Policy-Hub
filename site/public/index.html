@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="NetSpace Policy Hub — Trung tâm tra cứu chính sách nội bộ dành cho nhân viên NetSpace. Tìm kiếm nhanh mọi quy định, hướng dẫn và phúc lợi."/>
+  <title>NetSpace Policy Hub — Tra cứu Chính sách Nội bộ</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#84dcc6",
+            "primary-dark": "#5ec9af",
+            "bg-light": "#f6f8f7",
+            "bg-dark": "#131f1c",
+            "neutral-soft": "#e9f1ef",
+            "text-main": "#101917",
+            "text-muted": "#5a8c7f"
+          },
+          fontFamily: { "sans": ["Inter", "sans-serif"] },
+          boxShadow: {
+            "card": "0 2px 12px 0 rgba(16,25,23,0.06)",
+            "card-hover": "0 8px 36px 0 rgba(132,220,198,0.18)"
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .material-symbols-outlined.filled { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    /* Mobile menu */
+    #mobile-menu { transition: transform 0.3s cubic-bezier(.4,0,.2,1), opacity 0.3s; }
+    #mobile-menu.hidden { transform: translateY(-8px); opacity: 0; pointer-events: none; }
+    /* Modal */
+    #modal-overlay { transition: opacity 0.25s; }
+    #modal-overlay.hidden { opacity: 0; pointer-events: none; }
+    /* Highlight search */
+    .highlight { background: #84dcc620; border-radius: 3px; padding: 0 2px; }
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #f6f8f7; }
+    ::-webkit-scrollbar-thumb { background: #84dcc6; border-radius: 99px; }
+    /* Skeleton */
+    @keyframes shimmer { 0%{background-position:-400px 0} 100%{background-position:400px 0} }
+    /* Smooth card transition */
+    .policy-card { transition: box-shadow 0.2s, transform 0.2s; }
+    .policy-card:hover { transform: translateY(-2px); box-shadow: 0 8px 36px 0 rgba(132,220,198,0.18); }
+    .category-card { transition: box-shadow 0.2s, transform 0.2s, background 0.2s; }
+    .category-card:hover { transform: translateY(-3px); }
+  </style>
+</head>
+<body class="bg-bg-light text-text-main antialiased">
+
+<!-- ============================================================ HEADER ============================================================ -->
+<header class="sticky top-0 z-50 w-full bg-white border-b border-neutral-soft shadow-[0_1px_10px_rgba(0,0,0,0.05)]" id="main-header">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-18 flex items-center justify-between gap-4 py-4">
+    <!-- Logo -->
+    <a href="index.html" class="flex items-center gap-3 flex-shrink-0" aria-label="NetSpace Policy Hub - Trang chủ">
+      <div class="bg-primary p-2 rounded-lg">
+        <span class="material-symbols-outlined text-text-main text-[22px]">shield_person</span>
+      </div>
+      <div class="leading-tight">
+        <span class="text-lg font-extrabold tracking-tight text-text-main block">NetSpace</span>
+        <span class="text-xs font-semibold text-text-muted block -mt-0.5">Policy Hub</span>
+      </div>
+    </a>
+
+    <!-- Desktop Nav -->
+    <nav class="hidden md:flex items-center gap-8" aria-label="Điều hướng chính">
+      <a class="text-sm font-semibold hover:text-primary transition-colors" href="policies.html">Chính sách</a>
+      <a class="text-sm font-semibold hover:text-primary transition-colors" href="categories.html">Danh mục</a>
+      <a class="text-sm font-semibold hover:text-primary transition-colors" href="updates.html">Cập nhật</a>
+      <a class="text-sm font-semibold hover:text-primary transition-colors" href="faq.html">FAQ</a>
+    </nav>
+
+    <!-- CTA + Avatar -->
+    <div class="flex items-center gap-3">
+      <button onclick="openModal()" id="btn-ask-hr"
+        class="hidden sm:flex items-center gap-2 bg-primary hover:bg-primary-dark text-text-main px-4 py-2.5 rounded-lg text-sm font-bold transition-all shadow-sm">
+        <span class="material-symbols-outlined text-[18px]">support_agent</span>
+        Hỏi HR
+      </button>
+      <button class="relative h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden border-2 border-primary/30 hover:border-primary transition-colors"
+        aria-label="Tài khoản của bạn" id="user-avatar-btn">
+        <span class="material-symbols-outlined text-text-muted text-[22px]">account_circle</span>
+      </button>
+      <!-- Hamburger -->
+      <button onclick="toggleMobileMenu()" class="md:hidden flex items-center justify-center w-10 h-10 rounded-lg hover:bg-neutral-soft transition-colors" aria-label="Mở menu">
+        <span class="material-symbols-outlined" id="hamburger-icon">menu</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-neutral-soft px-4 pb-4 pt-2 space-y-1">
+    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-neutral-soft text-sm font-semibold transition-colors" href="policies.html">
+      <span class="material-symbols-outlined text-[18px] text-primary">gavel</span>Chính sách
+    </a>
+    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-neutral-soft text-sm font-semibold transition-colors" href="categories.html">
+      <span class="material-symbols-outlined text-[18px] text-primary">category</span>Danh mục
+    </a>
+    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-neutral-soft text-sm font-semibold transition-colors" href="updates.html">
+      <span class="material-symbols-outlined text-[18px] text-primary">update</span>Cập nhật
+    </a>
+    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-neutral-soft text-sm font-semibold transition-colors" href="faq.html">
+      <span class="material-symbols-outlined text-[18px] text-primary">help</span>FAQ
+    </a>
+    <button onclick="openModal()" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary hover:bg-primary-dark text-text-main text-sm font-bold transition-colors mt-2">
+      <span class="material-symbols-outlined text-[18px]">support_agent</span>Hỏi HR
+    </button>
+  </div>
+</header>
+
+<!-- ============================================================ HERO ============================================================ -->
+<section class="relative py-24 overflow-hidden bg-white" aria-label="Tìm kiếm chính sách">
+  <!-- Background shapes -->
+  <div class="absolute inset-0 pointer-events-none overflow-hidden">
+    <div class="absolute -top-20 -right-20 w-96 h-96 bg-primary rounded-full opacity-[0.08] blur-3xl"></div>
+    <div class="absolute bottom-0 -left-16 w-80 h-80 bg-primary rounded-full opacity-[0.06] blur-3xl"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary rounded-full opacity-[0.03] blur-3xl"></div>
+  </div>
+  <div class="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
+    <div class="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-8">
+      <span class="material-symbols-outlined text-primary text-[16px]">verified</span>
+      <span class="text-xs font-semibold text-text-muted">Nội dung luôn được cập nhật bởi bộ phận HR</span>
+    </div>
+    <h1 class="text-5xl md:text-6xl font-black tracking-tight mb-5 leading-[1.1] text-text-main">
+      Tìm Chính sách Công ty<br/>
+      <span class="text-primary">Trong Vài Giây</span>
+    </h1>
+    <p class="text-lg text-text-muted mb-10 max-w-2xl mx-auto leading-relaxed">
+      Trung tâm tra cứu chính sách nội bộ NetSpace. Mọi quy định, hướng dẫn và phúc lợi — tất cả ở một nơi.
+    </p>
+    <!-- Search bar -->
+    <div class="relative max-w-2xl mx-auto group" role="search">
+      <div class="absolute -inset-1 bg-primary/20 rounded-xl blur transition duration-300 group-focus-within:bg-primary/40"></div>
+      <div class="relative flex bg-white rounded-xl border border-neutral-soft shadow-xl overflow-hidden">
+        <div class="flex items-center pl-5 text-text-muted">
+          <span class="material-symbols-outlined">search</span>
+        </div>
+        <input id="hero-search" type="text" placeholder="Tìm kiếm chính sách, quy định, từ khóa..."
+          class="w-full py-5 px-4 bg-transparent border-none focus:ring-0 text-base placeholder:text-text-muted/60"
+          aria-label="Tìm kiếm chính sách"
+          onkeydown="handleSearchEnter(event)"/>
+        <button onclick="goSearch()" id="search-btn"
+          class="bg-primary text-text-main px-6 sm:px-8 font-bold text-base hover:bg-primary-dark transition-all flex-shrink-0"
+          aria-label="Tìm kiếm">
+          Tìm
+        </button>
+      </div>
+    </div>
+    <!-- Quick suggestions -->
+    <div class="flex flex-wrap justify-center gap-2 mt-5" aria-label="Gợi ý tìm kiếm nhanh">
+      <span class="text-xs text-text-muted font-medium pt-1">Gợi ý:</span>
+      <button onclick="setSearch('Làm việc từ xa')" class="text-xs px-3 py-1.5 bg-neutral-soft hover:bg-primary/20 text-text-muted hover:text-text-main rounded-full font-medium transition-colors">Làm việc từ xa</button>
+      <button onclick="setSearch('Nghỉ phép')" class="text-xs px-3 py-1.5 bg-neutral-soft hover:bg-primary/20 text-text-muted hover:text-text-main rounded-full font-medium transition-colors">Nghỉ phép</button>
+      <button onclick="setSearch('Bảo mật IT')" class="text-xs px-3 py-1.5 bg-neutral-soft hover:bg-primary/20 text-text-muted hover:text-text-main rounded-full font-medium transition-colors">Bảo mật IT</button>
+      <button onclick="setSearch('Quy tắc ứng xử')" class="text-xs px-3 py-1.5 bg-neutral-soft hover:bg-primary/20 text-text-muted hover:text-text-main rounded-full font-medium transition-colors">Quy tắc ứng xử</button>
+      <button onclick="setSearch('Hoàn chi phí')" class="text-xs px-3 py-1.5 bg-neutral-soft hover:bg-primary/20 text-text-muted hover:text-text-main rounded-full font-medium transition-colors">Hoàn chi phí</button>
+    </div>
+  </div>
+</section>
+
+<!-- Stats bar -->
+<div class="bg-neutral-soft border-y border-neutral-soft/60">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-wrap justify-center gap-8 sm:gap-16">
+    <div class="flex items-center gap-2">
+      <span class="material-symbols-outlined text-primary text-[20px]">description</span>
+      <span class="text-sm font-bold text-text-main">48 <span class="font-medium text-text-muted">chính sách</span></span>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="material-symbols-outlined text-primary text-[20px]">category</span>
+      <span class="text-sm font-bold text-text-main">6 <span class="font-medium text-text-muted">danh mục</span></span>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="material-symbols-outlined text-primary text-[20px]">update</span>
+      <span class="text-sm font-bold text-text-main">Cập nhật <span class="font-medium text-text-muted">tháng 3/2026</span></span>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="material-symbols-outlined text-primary text-[20px]">support_agent</span>
+      <span class="text-sm font-bold text-text-main">HR <span class="font-medium text-text-muted">sẵn sàng hỗ trợ</span></span>
+    </div>
+  </div>
+</div>
+
+<main>
+<!-- ============================================================ CATEGORIES ============================================================ -->
+<section class="py-16 max-w-7xl mx-auto px-4 sm:px-6" aria-labelledby="categories-heading">
+  <div class="flex items-center justify-between mb-10">
+    <div>
+      <h2 id="categories-heading" class="text-2xl font-bold text-text-main">Danh mục Chính sách</h2>
+      <p class="text-sm text-text-muted mt-1">Duyệt theo lĩnh vực để tìm nhanh hơn</p>
+    </div>
+    <a class="hidden sm:flex items-center gap-1 text-primary font-semibold text-sm hover:underline" href="categories.html" aria-label="Xem tất cả danh mục">
+      Xem tất cả <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+    </a>
+  </div>
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
+    <a href="policies.html?cat=hr" class="category-card group bg-white p-5 sm:p-6 rounded-xl border border-neutral-soft hover:shadow-card-hover cursor-pointer text-left block">
+      <div class="w-11 h-11 bg-primary/10 rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary transition-colors">
+        <span class="material-symbols-outlined text-primary group-hover:text-text-main transition-colors">groups</span>
+      </div>
+      <h3 class="font-bold text-sm mb-1 text-text-main">Nhân sự</h3>
+      <p class="text-xs text-text-muted leading-relaxed">Điều khoản lao động, kỷ luật</p>
+    </a>
+    <a href="policies.html?cat=it" class="category-card group bg-white p-5 sm:p-6 rounded-xl border border-neutral-soft hover:shadow-card-hover cursor-pointer text-left block">
+      <div class="w-11 h-11 bg-primary/10 rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary transition-colors">
+        <span class="material-symbols-outlined text-primary group-hover:text-text-main transition-colors">security</span>
+      </div>
+      <h3 class="font-bold text-sm mb-1 text-text-main">IT & Bảo mật</h3>
+      <p class="text-xs text-text-muted leading-relaxed">An toàn kỹ thuật số, VPN</p>
+    </a>
+    <a href="policies.html?cat=leave" class="category-card group bg-white p-5 sm:p-6 rounded-xl border border-neutral-soft hover:shadow-card-hover cursor-pointer text-left block">
+      <div class="w-11 h-11 bg-primary/10 rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary transition-colors">
+        <span class="material-symbols-outlined text-primary group-hover:text-text-main transition-colors">calendar_month</span>
+      </div>
+      <h3 class="font-bold text-sm mb-1 text-text-main">Nghỉ phép & Phúc lợi</h3>
+      <p class="text-xs text-text-muted leading-relaxed">Phép năm, bảo hiểm sức khỏe</p>
+    </a>
+    <a href="policies.html?cat=workplace" class="category-card group bg-white p-5 sm:p-6 rounded-xl border border-neutral-soft hover:shadow-card-hover cursor-pointer text-left block">
+      <div class="w-11 h-11 bg-primary/10 rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary transition-colors">
+        <span class="material-symbols-outlined text-primary group-hover:text-text-main transition-colors">apartment</span>
+      </div>
+      <h3 class="font-bold text-sm mb-1 text-text-main">Nội quy Công sở</h3>
+      <p class="text-xs text-text-muted leading-relaxed">Văn hoá ứng xử, an toàn VP</p>
+    </a>
+    <a href="policies.html?cat=finance" class="category-card group bg-white p-5 sm:p-6 rounded-xl border border-neutral-soft hover:shadow-card-hover cursor-pointer text-left block">
+      <div class="w-11 h-11 bg-primary/10 rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary transition-colors">
+        <span class="material-symbols-outlined text-primary group-hover:text-text-main transition-colors">payments</span>
+      </div>
+      <h3 class="font-bold text-sm mb-1 text-text-main">Tài chính</h3>
+      <p class="text-xs text-text-muted leading-relaxed">Ngân sách, hoàn chi phí</p>
+    </a>
+    <a href="policies.html?cat=ops" class="category-card group bg-white p-5 sm:p-6 rounded-xl border border-neutral-soft hover:shadow-card-hover cursor-pointer text-left block">
+      <div class="w-11 h-11 bg-primary/10 rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary transition-colors">
+        <span class="material-symbols-outlined text-primary group-hover:text-text-main transition-colors">settings</span>
+      </div>
+      <h3 class="font-bold text-sm mb-1 text-text-main">Vận hành</h3>
+      <p class="text-xs text-text-muted leading-relaxed">Quy trình hằng ngày, logistics</p>
+    </a>
+  </div>
+  <a class="sm:hidden flex items-center justify-center gap-1 text-primary font-semibold text-sm mt-6 hover:underline" href="categories.html">
+    Xem tất cả danh mục <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+  </a>
+</section>
+
+<!-- ============================================================ POPULAR + UPDATES ============================================================ -->
+<section class="py-16 bg-bg-light" aria-label="Chính sách phổ biến và Cập nhật mới nhất">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-12">
+
+    <!-- Popular Policies -->
+    <div class="lg:col-span-2">
+      <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-bold text-text-main">Chính sách Phổ biến</h2>
+        <a class="hidden sm:flex items-center gap-1 text-primary font-semibold text-sm hover:underline" href="policies.html">
+          Tất cả <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+        </a>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <!-- Card 1 -->
+        <div class="policy-card bg-white p-6 rounded-xl border border-neutral-soft shadow-card flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-2 mb-3 flex-wrap">
+              <span class="px-2 py-1 bg-primary/20 text-text-muted text-[10px] font-bold uppercase tracking-wider rounded">Nhân sự</span>
+              <span class="text-[10px] text-text-muted flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">schedule</span>Cập nhật 2 ngày trước</span>
+            </div>
+            <h3 class="text-base font-bold mb-2 text-text-main">Chính sách Làm việc Từ xa</h3>
+            <p class="text-sm text-text-muted mb-5 leading-relaxed">Hướng dẫn làm việc hybrid, phụ cấp thiết bị và yêu cầu liên lạc khi làm việc tại nhà.</p>
+          </div>
+          <a href="policy-detail.html?id=remote-work" class="w-full py-2.5 border border-primary text-text-main font-bold rounded-lg hover:bg-primary transition-colors text-sm text-center block">Đọc Chính sách</a>
+        </div>
+        <!-- Card 2 -->
+        <div class="policy-card bg-white p-6 rounded-xl border border-neutral-soft shadow-card flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-2 mb-3 flex-wrap">
+              <span class="px-2 py-1 bg-primary/20 text-text-muted text-[10px] font-bold uppercase tracking-wider rounded">Nghỉ phép</span>
+              <span class="text-[10px] text-text-muted flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">schedule</span>Cập nhật 1 tháng trước</span>
+            </div>
+            <h3 class="text-base font-bold mb-2 text-text-main">Chính sách Nghỉ phép Năm</h3>
+            <p class="text-sm text-text-muted mb-5 leading-relaxed">Quy định tích lũy ngày phép, chuyển tiếp sang năm sau và quy trình phê duyệt đơn nghỉ phép.</p>
+          </div>
+          <a href="policy-detail.html?id=annual-leave" class="w-full py-2.5 border border-primary text-text-main font-bold rounded-lg hover:bg-primary transition-colors text-sm text-center block">Đọc Chính sách</a>
+        </div>
+        <!-- Card 3 -->
+        <div class="policy-card bg-white p-6 rounded-xl border border-neutral-soft shadow-card flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-2 mb-3 flex-wrap">
+              <span class="px-2 py-1 bg-primary/20 text-text-muted text-[10px] font-bold uppercase tracking-wider rounded">IT & Bảo mật</span>
+              <span class="text-[10px] text-text-muted flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">schedule</span>Cập nhật 2 tuần trước</span>
+            </div>
+            <h3 class="text-base font-bold mb-2 text-text-main">Hướng dẫn Bảo mật IT</h3>
+            <p class="text-sm text-text-muted mb-5 leading-relaxed">Quản lý mật khẩu, sử dụng VPN và cách báo cáo nghi vấn an ninh mạng.</p>
+          </div>
+          <a href="policy-detail.html?id=it-security" class="w-full py-2.5 border border-primary text-text-main font-bold rounded-lg hover:bg-primary transition-colors text-sm text-center block">Đọc Chính sách</a>
+        </div>
+        <!-- Card 4 -->
+        <div class="policy-card bg-white p-6 rounded-xl border border-neutral-soft shadow-card flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-2 mb-3 flex-wrap">
+              <span class="px-2 py-1 bg-primary/20 text-text-muted text-[10px] font-bold uppercase tracking-wider rounded">Tài chính</span>
+              <span class="text-[10px] text-text-muted flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">schedule</span>Cập nhật 3 ngày trước</span>
+            </div>
+            <h3 class="text-base font-bold mb-2 text-text-main">Hoàn trả Chi phí Công tác</h3>
+            <p class="text-sm text-text-muted mb-5 leading-relaxed">Quy trình hoàn tiền cho công tác, tiếp khách và mua sắm thiết bị văn phòng.</p>
+          </div>
+          <a href="policy-detail.html?id=expense" class="w-full py-2.5 border border-primary text-text-main font-bold rounded-lg hover:bg-primary transition-colors text-sm text-center block">Đọc Chính sách</a>
+        </div>
+        <!-- Card 5 - Code of Conduct -->
+        <div class="policy-card bg-white p-6 rounded-xl border border-neutral-soft shadow-card flex flex-col justify-between md:col-span-2">
+          <div>
+            <div class="flex items-center gap-2 mb-3 flex-wrap">
+              <span class="px-2 py-1 bg-primary/20 text-text-muted text-[10px] font-bold uppercase tracking-wider rounded">Nội quy</span>
+              <span class="text-[10px] text-text-muted flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">schedule</span>Cập nhật 1 tuần trước</span>
+            </div>
+            <h3 class="text-base font-bold mb-2 text-text-main">Quy tắc Ứng xử & Đạo đức Nghề nghiệp</h3>
+            <p class="text-sm text-text-muted mb-5 leading-relaxed">Chuẩn mực hành vi, thái độ trong môi trường làm việc, cam kết bảo mật thông tin và quy định về xung đột lợi ích.</p>
+          </div>
+          <a href="policy-detail.html?id=conduct" class="w-full py-2.5 border border-primary text-text-main font-bold rounded-lg hover:bg-primary transition-colors text-sm text-center block">Đọc Chính sách</a>
+        </div>
+      </div>
+      <a class="sm:hidden flex items-center justify-center gap-1 text-primary font-semibold text-sm mt-6 hover:underline" href="policies.html">
+        Xem tất cả chính sách <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+      </a>
+    </div>
+
+    <!-- Latest Updates Timeline -->
+    <div>
+      <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-bold text-text-main">Cập nhật Mới nhất</h2>
+        <a class="flex items-center gap-1 text-primary font-semibold text-sm hover:underline" href="updates.html">
+          Tất cả <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+        </a>
+      </div>
+      <div class="relative space-y-7">
+        <div class="absolute left-3 top-2 bottom-2 w-0.5 bg-neutral-soft"></div>
+
+        <div class="relative pl-10">
+          <div class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-primary border-4 border-bg-light"></div>
+          <span class="text-[11px] font-bold text-primary uppercase tracking-wider">13 tháng 3, 2026</span>
+          <h3 class="font-bold text-sm mt-0.5 text-text-main">[Cập nhật] Chính sách Làm việc Từ xa</h3>
+          <p class="text-xs text-text-muted mt-1 leading-relaxed">Bổ sung trợ cấp thiết bị và chính sách họp online thứ Sáu linh hoạt.</p>
+        </div>
+        <div class="relative pl-10">
+          <div class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-slate-200 border-4 border-bg-light"></div>
+          <span class="text-[11px] font-bold text-text-muted uppercase tracking-wider">10 tháng 3, 2026</span>
+          <h3 class="font-bold text-sm mt-0.5 text-text-main">[Mới] Chính sách Công tác & Du lịch</h3>
+          <p class="text-xs text-text-muted mt-1 leading-relaxed">Hướng dẫn mới về đặt vé máy bay và chi tiêu khi công tác nước ngoài.</p>
+        </div>
+        <div class="relative pl-10">
+          <div class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-slate-200 border-4 border-bg-light"></div>
+          <span class="text-[11px] font-bold text-text-muted uppercase tracking-wider">5 tháng 3, 2026</span>
+          <h3 class="font-bold text-sm mt-0.5 text-text-main">[Cập nhật] Tuân thủ An ninh Thông tin</h3>
+          <p class="text-xs text-text-muted mt-1 leading-relaxed">Bắt buộc xác thực hai yếu tố (2FA) cho tất cả tài khoản công ty.</p>
+        </div>
+        <div class="relative pl-10">
+          <div class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-slate-200 border-4 border-bg-light"></div>
+          <span class="text-[11px] font-bold text-text-muted uppercase tracking-wider">1 tháng 3, 2026</span>
+          <h3 class="font-bold text-sm mt-0.5 text-text-main">[Cập nhật] Quy tắc Ứng xử</h3>
+          <p class="text-xs text-text-muted mt-1 leading-relaxed">Cập nhật mục giao tiếp số và cam kết môi trường làm việc đa dạng, bao trùm.</p>
+        </div>
+        <div class="relative pl-10">
+          <div class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-slate-200 border-4 border-bg-light"></div>
+          <span class="text-[11px] font-bold text-text-muted uppercase tracking-wider">20 tháng 2, 2026</span>
+          <h3 class="font-bold text-sm mt-0.5 text-text-main">[Mới] Chính sách Thai sản & Thai phụ</h3>
+          <p class="text-xs text-text-muted mt-1 leading-relaxed">Bổ sung quyền lợi thai sản, phụ cấp và thời gian nghỉ linh hoạt cho phụ huynh mới.</p>
+        </div>
+      </div>
+      <a href="updates.html" class="mt-6 w-full py-3 bg-neutral-soft text-text-main text-sm font-bold rounded-lg hover:bg-primary/20 transition-all flex items-center justify-center gap-2 block text-center">
+        <span class="material-symbols-outlined text-[18px]">update</span>
+        Xem tất cả cập nhật
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ CTA BANNER ============================================================ -->
+<section class="py-16 px-4 sm:px-6" aria-label="Hỏi HR">
+  <div class="max-w-4xl mx-auto bg-primary rounded-2xl p-8 sm:p-12 flex flex-col md:flex-row items-center justify-between gap-6 shadow-card-hover">
+    <div>
+      <h2 class="text-2xl font-black text-text-main mb-2">Không tìm thấy chính sách bạn cần?</h2>
+      <p class="text-text-main/70 text-sm leading-relaxed">Đội ngũ HR luôn sẵn sàng trả lời mọi thắc mắc của bạn trong vòng 24 giờ làm việc.</p>
+    </div>
+    <button onclick="openModal()" id="cta-ask-hr"
+      class="flex-shrink-0 flex items-center gap-2 bg-text-main text-white px-7 py-3.5 rounded-xl font-bold text-sm hover:opacity-90 transition-opacity shadow-lg whitespace-nowrap">
+      <span class="material-symbols-outlined text-[20px]">support_agent</span>
+      Hỏi HR Ngay
+    </button>
+  </div>
+</section>
+</main>
+
+<!-- ============================================================ FOOTER ============================================================ -->
+<footer class="bg-white border-t border-neutral-soft py-14" aria-label="Footer">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-10 mb-10">
+      <div class="col-span-2 md:col-span-1">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="bg-primary p-2 rounded-lg"><span class="material-symbols-outlined text-text-main text-[18px]">shield_person</span></div>
+          <div><div class="font-extrabold text-base text-text-main">NetSpace</div><div class="text-xs text-text-muted -mt-0.5">Policy Hub</div></div>
+        </div>
+        <p class="text-sm text-text-muted leading-relaxed">Nguồn thông tin chính thức về mọi chính sách nội bộ tại NetSpace. Luôn cập nhật, luôn chính xác.</p>
+      </div>
+      <div>
+        <h3 class="font-bold text-xs mb-5 uppercase tracking-widest text-text-muted">Liên hệ HR</h3>
+        <ul class="space-y-3 text-sm font-medium">
+          <li><a class="hover:text-primary transition-colors" href="#">Trung tâm Hỗ trợ</a></li>
+          <li><a class="hover:text-primary transition-colors" href="#">Gửi Yêu cầu</a></li>
+          <li><a class="text-primary font-bold hover:underline" href="mailto:hr@netspace.com.vn">hr@netspace.com.vn</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-bold text-xs mb-5 uppercase tracking-widest text-text-muted">Tài liệu</h3>
+        <ul class="space-y-3 text-sm font-medium">
+          <li><a class="hover:text-primary transition-colors" href="#">Sổ tay Nhân viên</a></li>
+          <li><a class="hover:text-primary transition-colors" href="#">Bộ nhận diện Thương hiệu</a></li>
+          <li><a class="hover:text-primary transition-colors" href="#">Sơ đồ Tổ chức</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-bold text-xs mb-5 uppercase tracking-widest text-text-muted">Nhận thông báo</h3>
+        <p class="text-xs text-text-muted mb-3">Đăng ký để nhận cảnh báo khi có chính sách mới.</p>
+        <div class="flex gap-2">
+          <input type="email" placeholder="Email công ty" class="flex-1 text-xs rounded-lg border border-neutral-soft px-3 py-2 focus:ring-primary focus:border-primary" id="footer-email"/>
+          <button onclick="subscribeEmail()" class="bg-primary p-2 rounded-lg text-text-main flex items-center justify-center hover:bg-primary-dark transition-colors" aria-label="Đăng ký nhận thông báo">
+            <span class="material-symbols-outlined text-[18px]">send</span>
+          </button>
+        </div>
+        <p id="subscribe-msg" class="text-xs text-primary mt-2 hidden">✓ Đăng ký thành công!</p>
+      </div>
+    </div>
+    <div class="pt-8 border-t border-neutral-soft flex flex-col sm:flex-row justify-between items-center gap-4">
+      <p class="text-xs text-text-muted">© 2026 NetSpace Inc. Chỉ dành cho nội bộ — Mọi quyền được bảo lưu.</p>
+      <div class="flex gap-5 text-xs font-semibold text-text-muted">
+        <a class="hover:text-primary transition-colors" href="#">Chính sách Bảo mật</a>
+        <a class="hover:text-primary transition-colors" href="#">Điều khoản Sử dụng</a>
+        <a class="hover:text-primary transition-colors" href="#">Bảo mật Dữ liệu</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================ MODAL HỎI HR ============================================================ -->
+<div id="modal-overlay" class="fixed inset-0 z-[100] flex items-center justify-center p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title" onclick="handleOverlayClick(event)">
+  <div class="absolute inset-0 bg-text-main/40 backdrop-blur-sm"></div>
+  <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden" onclick="event.stopPropagation()">
+    <div class="bg-primary px-6 py-5 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="material-symbols-outlined text-text-main text-[24px]">support_agent</span>
+        <h2 id="modal-title" class="font-black text-lg text-text-main">Hỏi đội ngũ HR</h2>
+      </div>
+      <button onclick="closeModal()" class="w-8 h-8 rounded-lg hover:bg-primary-dark flex items-center justify-center transition-colors" aria-label="Đóng">
+        <span class="material-symbols-outlined text-text-main text-[20px]">close</span>
+      </button>
+    </div>
+    <div class="px-6 py-6">
+      <p class="text-sm text-text-muted mb-5 leading-relaxed">Điền thông tin bên dưới, HR sẽ phản hồi trong vòng <strong class="text-text-main">24 giờ làm việc</strong>.</p>
+      <form id="hr-form" onsubmit="submitHRForm(event)" novalidate>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold mb-1.5" for="modal-name">Họ và tên <span class="text-red-400">*</span></label>
+            <input id="modal-name" type="text" placeholder="Nguyễn Văn A" required
+              class="w-full text-sm rounded-lg border border-neutral-soft px-4 py-3 focus:ring-primary focus:border-primary outline-none transition"/>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold mb-1.5" for="modal-email">Email công ty <span class="text-red-400">*</span></label>
+            <input id="modal-email" type="email" placeholder="ten.ho@netspace.com.vn" required
+              class="w-full text-sm rounded-lg border border-neutral-soft px-4 py-3 focus:ring-primary focus:border-primary outline-none transition"/>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold mb-1.5" for="modal-topic">Chủ đề</label>
+            <select id="modal-topic" class="w-full text-sm rounded-lg border border-neutral-soft px-4 py-3 focus:ring-primary focus:border-primary outline-none transition bg-white">
+              <option value="">-- Chọn chủ đề --</option>
+              <option>Chính sách Nghỉ phép</option>
+              <option>Lương & Phúc lợi</option>
+              <option>Làm việc từ xa</option>
+              <option>Bảo mật & IT</option>
+              <option>Nội quy Công sở</option>
+              <option>Hoàn chi phí</option>
+              <option>Khác</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold mb-1.5" for="modal-message">Câu hỏi của bạn <span class="text-red-400">*</span></label>
+            <textarea id="modal-message" rows="4" placeholder="Mô tả chi tiết câu hỏi hoặc vấn đề của bạn..." required
+              class="w-full text-sm rounded-lg border border-neutral-soft px-4 py-3 focus:ring-primary focus:border-primary outline-none transition resize-none"></textarea>
+          </div>
+        </div>
+        <div id="form-error" class="hidden mt-2 text-xs text-red-500 font-medium"></div>
+        <div class="flex gap-3 mt-6">
+          <button type="button" onclick="closeModal()" class="flex-1 py-3 border border-neutral-soft text-text-main font-bold rounded-xl text-sm hover:bg-neutral-soft transition-colors">Hủy</button>
+          <button type="submit" id="submit-btn" class="flex-1 py-3 bg-primary hover:bg-primary-dark text-text-main font-bold rounded-xl text-sm transition-colors flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">send</span>
+            Gửi câu hỏi
+          </button>
+        </div>
+      </form>
+      <div id="form-success" class="hidden text-center py-6">
+        <div class="w-14 h-14 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+          <span class="material-symbols-outlined filled text-primary text-[32px]">check_circle</span>
+        </div>
+        <h3 class="font-black text-lg mb-2 text-text-main">Đã gửi thành công!</h3>
+        <p class="text-sm text-text-muted leading-relaxed">Đội ngũ HR sẽ liên hệ lại với bạn qua email trong vòng 24 giờ làm việc.</p>
+        <button onclick="closeModal()" class="mt-5 px-6 py-2.5 bg-primary hover:bg-primary-dark text-text-main font-bold rounded-lg text-sm transition-colors">Đóng</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Mobile menu
+  function toggleMobileMenu() {
+    const menu = document.getElementById('mobile-menu');
+    const icon = document.getElementById('hamburger-icon');
+    menu.classList.toggle('hidden');
+    icon.textContent = menu.classList.contains('hidden') ? 'menu' : 'close';
+  }
+
+  // Search
+  function setSearch(text) {
+    document.getElementById('hero-search').value = text;
+    document.getElementById('hero-search').focus();
+  }
+  function handleSearchEnter(e) {
+    if (e.key === 'Enter') goSearch();
+  }
+  function goSearch() {
+    const q = document.getElementById('hero-search').value.trim();
+    if (q) window.location.href = `policies.html?q=${encodeURIComponent(q)}`;
+  }
+
+  // Modal
+  function openModal() {
+    const overlay = document.getElementById('modal-overlay');
+    overlay.classList.remove('hidden');
+    overlay.style.opacity = '0';
+    requestAnimationFrame(() => { overlay.style.transition = 'opacity 0.25s'; overlay.style.opacity = '1'; });
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => document.getElementById('modal-name').focus(), 100);
+  }
+  function closeModal() {
+    const overlay = document.getElementById('modal-overlay');
+    overlay.style.opacity = '0';
+    setTimeout(() => {
+      overlay.classList.add('hidden');
+      document.body.style.overflow = '';
+      document.getElementById('hr-form').style.display = '';
+      document.getElementById('form-success').classList.add('hidden');
+      document.getElementById('hr-form').reset();
+      document.getElementById('form-error').classList.add('hidden');
+    }, 250);
+  }
+  function handleOverlayClick(e) {
+    if (e.target === e.currentTarget || e.target.classList.contains('absolute')) closeModal();
+  }
+
+  // Form submit
+  function submitHRForm(e) {
+    e.preventDefault();
+    const name = document.getElementById('modal-name').value.trim();
+    const email = document.getElementById('modal-email').value.trim();
+    const msg = document.getElementById('modal-message').value.trim();
+    const errEl = document.getElementById('form-error');
+    if (!name || !email || !msg) {
+      errEl.textContent = '⚠ Vui lòng điền đầy đủ các trường bắt buộc.';
+      errEl.classList.remove('hidden');
+      return;
+    }
+    errEl.classList.add('hidden');
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">refresh</span> Đang gửi...';
+    setTimeout(() => {
+      document.getElementById('hr-form').style.display = 'none';
+      document.getElementById('form-success').classList.remove('hidden');
+      btn.disabled = false;
+      btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">send</span>Gửi câu hỏi';
+    }, 1200);
+  }
+
+  // Footer subscribe
+  function subscribeEmail() {
+    const email = document.getElementById('footer-email').value.trim();
+    if (!email) return;
+    document.getElementById('subscribe-msg').classList.remove('hidden');
+    document.getElementById('footer-email').value = '';
+  }
+
+  // Scroll header shadow
+  window.addEventListener('scroll', () => {
+    const h = document.getElementById('main-header');
+    h.style.boxShadow = window.scrollY > 10 ? '0 2px 16px rgba(0,0,0,0.08)' : '0 1px 10px rgba(0,0,0,0.05)';
+  });
+</script>
+</body>
+</html>

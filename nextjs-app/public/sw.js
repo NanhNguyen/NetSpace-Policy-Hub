@@ -1,0 +1,24 @@
+self.addEventListener('push', function (event) {
+    if (event.data) {
+        const data = event.data.json();
+        const options = {
+            body: data.notification.body,
+            icon: data.notification.icon || '/icons/icon-192x192.png',
+            badge: '/icons/icon-192x192.png',
+            data: {
+                url: data.notification.data?.url || '/admin/tickets'
+            }
+        };
+
+        event.waitUntil(
+            self.registration.showNotification(data.notification.title, options)
+        );
+    }
+});
+
+self.addEventListener('notificationclick', function (event) {
+    event.notification.close();
+    event.waitUntil(
+        clients.openWindow(event.notification.data.url)
+    );
+});

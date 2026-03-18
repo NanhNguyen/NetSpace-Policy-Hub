@@ -1,0 +1,197 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-primary: #6366f1;
+  --color-primary-dark: #4f46e5;
+  --color-brand-blue: #0ea5e9;
+  --color-brand-purple: #8b5cf6;
+  --color-bg-light: #f8fafc;
+  --color-neutral-soft: #f1f5f9;
+  --color-text-main: #0f172a;
+  --color-text-muted: #64748b;
+  --font-sans: 'Inter', sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  ::selection {
+    background-color: #6366f1;
+    color: white;
+  }
+
+  ::-moz-selection {
+    background-color: #6366f1;
+    color: white;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.05), transparent),
+      radial-gradient(circle at bottom left, rgba(14, 165, 233, 0.05), transparent),
+      #f8fafc;
+    min-height: 100vh;
+    color: #0f172a;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #6366f1, #0ea5e9);
+    border-radius: 99px;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/70 backdrop-blur-lg border border-white/20 shadow-xl;
+  }
+
+  .text-contrast {
+    @apply text-slate-900 font-bold contrast-125;
+  }
+
+  .shadow-card {
+    box-shadow: 0 2px 12px 0 rgba(16, 25, 23, 0.06);
+  }
+
+  .shadow-card-hover {
+    box-shadow: 0 8px 36px 0 rgba(124, 58, 237, 0.18);
+  }
+}
+
+/* Policy content typography */
+.policy-content h2 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #101917;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e9f1ef;
+}
+
+.policy-content p {
+  color: #5a8c7f;
+  line-height: 1.8;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.policy-content ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.policy-content ul li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  color: #5a8c7f;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.policy-content ul li::before {
+  content: '';
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  background: #7c3aed;
+  border-radius: 50%;
+  margin-top: 0.5rem;
+}
+
+.policy-content .note {
+  background: #f6f8f7;
+  border-left: 4px solid #7c3aed;
+  padding: 1rem 1.25rem;
+  border-radius: 0 0.5rem 0.5rem 0;
+  margin: 1.25rem 0;
+}
+
+.policy-content .note p {
+  margin: 0;
+  color: #101917;
+  font-size: 0.85rem;
+}
+
+/* FAQ accordion */
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.faq-answer.open {
+  max-height: 400px;
+}
+
+.faq-icon {
+  transition: transform 0.3s;
+}
+
+.faq-open .faq-icon {
+  transform: rotate(180deg);
+}
+
+/* Policy/category card hover */
+.policy-card {
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.policy-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 36px 0 rgba(124, 58, 237, 0.18);
+}
+
+.category-card {
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.category-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 36px 0 rgba(124, 58, 237, 0.18);
+}
+
+/* Modal backdrop */
+.modal-backdrop {
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@media print {
+
+  header,
+  footer,
+  aside,
+  .no-print {
+    display: none !important;
+  }
+
+  .policy-content {
+    max-width: none !important;
+  }
+}

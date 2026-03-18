@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cập nhật — NetSpace Policy Hub</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script>tailwind.config = { darkMode: "class", theme: { extend: { colors: { "primary": "#84dcc6", "primary-dark": "#5ec9af", "bg-light": "#f6f8f7", "neutral-soft": "#e9f1ef", "text-main": "#101917", "text-muted": "#5a8c7f" }, fontFamily: { sans: ["Inter", "sans-serif"] } } } }</script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24
+        }
+    </style>
+</head>
+
+<body class="bg-bg-light text-text-main antialiased">
+    <header class="sticky top-0 z-50 bg-white border-b border-neutral-soft">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-4 py-4">
+            <a href="index.html" class="flex items-center gap-3">
+                <div class="bg-primary p-2 rounded-lg"><span
+                        class="material-symbols-outlined text-text-main text-[20px]">shield_person</span></div>
+                <div>
+                    <div class="font-extrabold text-base text-text-main">NetSpace</div>
+                    <div class="text-xs text-text-muted -mt-0.5">Policy Hub</div>
+                </div>
+            </a>
+            <nav class="hidden md:flex items-center gap-8">
+                <a class="text-sm font-semibold hover:text-primary" href="policies.html">Chính sách</a>
+                <a class="text-sm font-semibold hover:text-primary" href="categories.html">Danh mục</a>
+                <a class="text-sm font-bold text-primary border-b-2 border-primary pb-0.5" href="updates.html">Cập
+                    nhật</a>
+                <a class="text-sm font-semibold hover:text-primary" href="faq.html">FAQ</a>
+            </nav>
+            <button onclick="openModal()"
+                class="hidden sm:flex items-center gap-2 bg-primary hover:bg-primary-dark text-text-main px-4 py-2.5 rounded-lg text-sm font-bold">
+                <span class="material-symbols-outlined text-[18px]">support_agent</span>Hỏi HR
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 py-10">
+        <nav class="flex items-center gap-2 text-xs text-text-muted mb-6">
+            <a href="index.html" class="hover:text-primary">Trang chủ</a>
+            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+            <span class="font-semibold text-text-main">Cập nhật</span>
+        </nav>
+        <h1 class="text-3xl font-black text-text-main mb-2">Cập nhật Chính sách</h1>
+        <p class="text-text-muted text-sm mb-10">Lịch sử thay đổi và bổ sung các chính sách nội bộ — đảm bảo bạn không
+            bỏ lỡ thông tin quan trọng.</p>
+
+        <!-- Filter pills -->
+        <div class="flex gap-2 flex-wrap mb-8">
+            <button onclick="filterUpdates('all')" id="uf-all"
+                class="update-filter active text-xs px-4 py-2 rounded-full border border-neutral-soft bg-primary font-bold text-text-main">Tất
+                cả</button>
+            <button onclick="filterUpdates('new')" id="uf-new"
+                class="update-filter text-xs px-4 py-2 rounded-full border border-neutral-soft bg-white text-text-muted font-semibold">Chính
+                sách Mới</button>
+            <button onclick="filterUpdates('updated')" id="uf-updated"
+                class="update-filter text-xs px-4 py-2 rounded-full border border-neutral-soft bg-white text-text-muted font-semibold">Đã
+                Cập nhật</button>
+        </div>
+
+        <!-- Timeline -->
+        <div class="relative" id="timeline-container">
+            <div class="absolute left-4 top-2 bottom-4 w-0.5 bg-neutral-soft"></div>
+            <div class="space-y-8" id="timeline-list"></div>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t border-neutral-soft py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-2">
+                <div class="bg-primary p-1.5 rounded-lg"><span
+                        class="material-symbols-outlined text-text-main text-[16px]">shield_person</span></div><span
+                    class="font-bold text-sm">NetSpace Policy Hub</span>
+            </div>
+            <p class="text-xs text-text-muted">© 2026 NetSpace Inc. Chỉ dành cho nội bộ.</p>
+            <a href="index.html" class="text-xs text-primary font-semibold hover:underline">← Về trang chủ</a>
+        </div>
+    </footer>
+
+    <!-- Modal -->
+    <div id="modal-overlay" class="fixed inset-0 z-[100] flex items-center justify-center p-4 hidden"
+        onclick="if(event.target===this||event.target.classList.contains('modal-bg'))closeModal()">
+        <div class="modal-bg absolute inset-0 bg-text-main/40 backdrop-blur-sm"></div>
+        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg" onclick="event.stopPropagation()">
+            <div class="bg-primary px-6 py-5 flex items-center justify-between rounded-t-2xl">
+                <div class="flex items-center gap-3"><span
+                        class="material-symbols-outlined text-text-main">support_agent</span>
+                    <h2 class="font-black text-lg text-text-main">Hỏi đội ngũ HR</h2>
+                </div>
+                <button onclick="closeModal()"
+                    class="w-8 h-8 rounded-lg hover:bg-primary-dark flex items-center justify-center"><span
+                        class="material-symbols-outlined text-text-main text-[20px]">close</span></button>
+            </div>
+            <div class="px-6 py-6 space-y-4">
+                <div><label class="block text-sm font-semibold mb-1">Họ tên *</label><input id="m-name" type="text"
+                        class="w-full text-sm rounded-lg border border-neutral-soft px-4 py-3 outline-none focus:border-primary" />
+                </div>
+                <div><label class="block text-sm font-semibold mb-1">Email công ty *</label><input id="m-email"
+                        type="email"
+                        class="w-full text-sm rounded-lg border border-neutral-soft px-4 py-3 outline-none focus:border-primary" />
+                </div>
+                <div><label class="block text-sm font-semibold mb-1">Câu hỏi *</label><textarea id="m-msg" rows="3"
+                        class="w-full text-sm rounded-lg border border-neutral-soft px-4 py-3 outline-none focus:border-primary resize-none"></textarea>
+                </div>
+                <div class="flex gap-3 pt-1">
+                    <button onclick="closeModal()"
+                        class="flex-1 py-3 border border-neutral-soft font-bold rounded-xl text-sm hover:bg-neutral-soft">Hủy</button>
+                    <button onclick="submitHR()"
+                        class="flex-1 py-3 bg-primary hover:bg-primary-dark text-text-main font-bold rounded-xl text-sm">Gửi</button>
+                </div>
+                <p id="hr-ok" class="hidden text-center text-sm text-primary font-bold pt-1">✓ Đã gửi! HR sẽ liên hệ
+                    trong 24h.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const UPDATES = [
+            { type: 'updated', date: '13/03/2026', title: 'Cập nhật: Chính sách Làm việc Từ xa', desc: 'Bổ sung trợ cấp thiết bị làm việc tại nhà lên 5 triệu VNĐ/lần và chính sách họp video linh hoạt thứ Sáu.', link: 'policy-detail.html?id=remote-work', cat: 'Nhân sự' },
+            { type: 'new', date: '10/03/2026', title: 'Mới: Chính sách Công tác & Du lịch', desc: 'Ban hành chính sách mới hướng dẫn đặt vé máy bay hạng Economy, giới hạn khách sạn và quy trình thanh toán chi phí nước ngoài.', link: 'policy-detail.html?id=travel', cat: 'Tài chính' },
+            { type: 'updated', date: '05/03/2026', title: 'Cập nhật: Hướng dẫn Bảo mật IT', desc: 'Bắt buộc xác thực hai yếu tố (2FA) cho tất cả tài khoản công ty. Hạn chót kích hoạt: 31/03/2026.', link: 'policy-detail.html?id=it-security', cat: 'IT & Bảo mật' },
+            { type: 'updated', date: '08/03/2026', title: 'Cập nhật: Quy tắc Ứng xử', desc: 'Mở rộng mục về giao tiếp số và tăng cường cam kết môi trường làm việc đa dạng, không phân biệt đối xử.', link: 'policy-detail.html?id=conduct', cat: 'Nội quy' },
+            { type: 'new', date: '20/02/2026', title: 'Mới: Chính sách Thai sản & Thai phụ', desc: 'Bổ sung quyền lợi thai sản mở rộng, phụ cấp 3 triệu VNĐ và chế độ nghỉ phép linh hoạt trong 6 tháng sau sinh.', link: 'policy-detail.html?id=maternity', cat: 'Nghỉ phép' },
+            { type: 'updated', date: '10/03/2026', title: 'Cập nhật: Hoàn trả Chi phí Công tác', desc: 'Điều chỉnh hạn mức khách sạn (1.5 triệu/đêm trong nước, 100 USD/đêm nước ngoài). Bổ sung quy trình xuất hóa đơn VAT.', link: 'policy-detail.html?id=expense', cat: 'Tài chính' },
+            { type: 'updated', date: '01/03/2026', title: 'Cập nhật: Sử dụng Thiết bị Công ty', desc: 'Cập nhật danh sách phần mềm được phép cài đặt và quy trình yêu cầu phần mềm mới qua IT Helpdesk.', link: 'policy-detail.html?id=device-policy', cat: 'IT & Bảo mật' },
+            { type: 'updated', date: '10/02/2026', title: 'Cập nhật: Chính sách Nghỉ phép Năm', desc: 'Điều chỉnh quy định chuyển tiếp phép: tối đa 5 ngày sang năm sau thay vì 3 ngày như trước.', link: 'policy-detail.html?id=annual-leave', cat: 'Nghỉ phép' },
+            { type: 'new', date: '15/01/2026', title: 'Mới: Quy trình Onboarding Nhân viên Mới', desc: 'Tài liệu hướng dẫn hội nhập toàn diện cho nhân viên mới bao gồm lịch đào tạo 30-60-90 ngày.', link: 'policy-detail.html?id=onboarding', cat: 'Nhân sự' },
+            { type: 'updated', date: '01/01/2026', title: 'Cập nhật: Chính sách Lương & Thưởng', desc: 'Cập nhật chu kỳ review lương (tháng 4 hàng năm) và điều chỉnh KPI thưởng hiệu suất năm 2026.', link: 'policy-detail.html?id=payroll', cat: 'Nhân sự' },
+        ];
+
+        let curFilter = 'all';
+        function filterUpdates(f) {
+            curFilter = f;
+            document.querySelectorAll('.update-filter').forEach(b => { b.classList.remove('active', 'bg-primary', 'text-text-main', 'font-bold'); b.classList.add('bg-white', 'text-text-muted'); });
+            const active = document.getElementById('uf-' + f);
+            active.classList.add('active', 'bg-primary', 'text-text-main', 'font-bold');
+            active.classList.remove('bg-white', 'text-text-muted');
+            renderTimeline();
+        }
+        function renderTimeline() {
+            const filtered = curFilter === 'all' ? UPDATES : UPDATES.filter(u => u.type === curFilter);
+            document.getElementById('timeline-list').innerHTML = filtered.map((u, i) => {
+                const isNew = u.type === 'new';
+                const dotColor = i === 0 ? 'bg-primary' : 'bg-slate-200';
+                const badgeColor = isNew ? 'bg-green-100 text-green-700' : 'bg-primary/20 text-text-muted';
+                const badge = isNew ? 'Mới' : 'Cập nhật';
+                return `<div class="relative pl-12">
+      <div class="absolute left-0 top-1 w-8 h-8 rounded-full ${dotColor} border-4 border-bg-light flex items-center justify-center">
+        <span class="material-symbols-outlined text-[14px] ${i === 0 ? 'text-text-main' : 'text-slate-400'}">${isNew ? 'add' : 'edit'}</span>
+      </div>
+      <div class="bg-white rounded-xl border border-neutral-soft p-5 hover:shadow-md transition-shadow">
+        <div class="flex items-center gap-2 mb-2 flex-wrap">
+          <span class="px-2 py-0.5 ${badgeColor} text-[10px] font-bold uppercase tracking-wider rounded-full">${badge}</span>
+          <span class="px-2 py-0.5 bg-neutral-soft text-text-muted text-[10px] font-bold uppercase rounded-full">${u.cat}</span>
+          <span class="text-[11px] text-text-muted ml-auto">${u.date}</span>
+        </div>
+        <h2 class="font-bold text-sm text-text-main mb-1.5">${u.title}</h2>
+        <p class="text-xs text-text-muted leading-relaxed mb-3">${u.desc}</p>
+        <a href="${u.link}" class="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline">
+          Đọc chính sách <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+        </a>
+      </div>
+    </div>`;
+            }).join('');
+        }
+        window.addEventListener('DOMContentLoaded', renderTimeline);
+        function openModal() { document.getElementById('modal-overlay').classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
+        function closeModal() { document.getElementById('modal-overlay').classList.add('hidden'); document.body.style.overflow = ''; }
+        function submitHR() { if (!document.getElementById('m-name').value || !document.getElementById('m-email').value || !document.getElementById('m-msg').value) return; setTimeout(() => document.getElementById('hr-ok').classList.remove('hidden'), 800); }
+    </script>
+</body>
+
+</html>

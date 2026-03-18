@@ -1,0 +1,52 @@
+"use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.FaqsService = void 0;
+const common_1 = require("@nestjs/common");
+const typeorm_1 = require("@nestjs/typeorm");
+const typeorm_2 = require("typeorm");
+const faq_entity_1 = require("./entities/faq.entity");
+let FaqsService = class FaqsService {
+    faqsRepository;
+    constructor(faqsRepository) {
+        this.faqsRepository = faqsRepository;
+    }
+    findAll() {
+        return this.faqsRepository.find({ order: { order_index: 'ASC' } });
+    }
+    async findOne(id) {
+        const faq = await this.faqsRepository.findOne({ where: { id } });
+        if (!faq)
+            throw new common_1.NotFoundException('FAQ not found');
+        return faq;
+    }
+    create(faq) {
+        const newFaq = this.faqsRepository.create(faq);
+        return this.faqsRepository.save(newFaq);
+    }
+    async update(id, updates) {
+        await this.faqsRepository.update(id, updates);
+        return this.findOne(id);
+    }
+    async remove(id) {
+        await this.faqsRepository.delete(id);
+    }
+};
+exports.FaqsService = FaqsService;
+exports.FaqsService = FaqsService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, typeorm_1.InjectRepository)(faq_entity_1.Faq)),
+    __metadata("design:paramtypes", [typeorm_2.Repository])
+], FaqsService);
+//# sourceMappingURL=faqs.service.js.map

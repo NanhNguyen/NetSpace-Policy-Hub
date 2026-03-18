@@ -1,0 +1,26 @@
+# User requested ignores
+Chính sách và Quy chế/
+skills/
+.stitch/
+devdocs/
+
+# Core project ignores
+nextjs-app/node_modules/
+nextjs-app/.next/
+nextjs-app/.env*
+nextjs-app/build/
+
+backend/venv/
+backend/__pycache__/
+backend/*.pyc
+
+# OS-specific
+.DS_Store
+Thumbs.db
+.well-known/
+
+# IDE-specific
+.vscode/
+.idea/
+.gemini/
+

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Danh mục — NetSpace Policy Hub</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script>tailwind.config = { darkMode: "class", theme: { extend: { colors: { "primary": "#84dcc6", "primary-dark": "#5ec9af", "bg-light": "#f6f8f7", "neutral-soft": "#e9f1ef", "text-main": "#101917", "text-muted": "#5a8c7f" }, fontFamily: { sans: ["Inter", "sans-serif"] } } } }</script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24
+        }
+
+        .cat-card {
+            transition: box-shadow .2s, transform .2s
+        }
+
+        .cat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 36px rgba(132, 220, 198, .18)
+        }
+    </style>
+</head>
+
+<body class="bg-bg-light text-text-main antialiased">
+    <header class="sticky top-0 z-50 bg-white border-b border-neutral-soft">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-4 py-4">
+            <a href="index.html" class="flex items-center gap-3">
+                <div class="bg-primary p-2 rounded-lg"><span
+                        class="material-symbols-outlined text-text-main text-[20px]">shield_person</span></div>
+                <div>
+                    <div class="font-extrabold text-base text-text-main">NetSpace</div>
+                    <div class="text-xs text-text-muted -mt-0.5">Policy Hub</div>
+                </div>
+            </a>
+            <nav class="hidden md:flex items-center gap-8">
+                <a class="text-sm font-semibold hover:text-primary" href="policies.html">Chính sách</a>
+                <a class="text-sm font-bold text-primary border-b-2 border-primary pb-0.5" href="categories.html">Danh
+                    mục</a>
+                <a class="text-sm font-semibold hover:text-primary" href="updates.html">Cập nhật</a>
+                <a class="text-sm font-semibold hover:text-primary" href="faq.html">FAQ</a>
+            </nav>
+            <button onclick="openModal()"
+                class="hidden sm:flex items-center gap-2 bg-primary hover:bg-primary-dark text-text-main px-4 py-2.5 rounded-lg text-sm font-bold">
+                <span class="material-symbols-outlined text-[18px]">support_agent</span>Hỏi HR
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+        <nav class="flex items-center gap-2 text-xs text-text-muted mb-6">
+            <a href="index.html" class="hover:text-primary">Trang chủ</a>
+            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+            <span class="font-semibold text-text-main">Danh mục</span>
+        </nav>
+        <h1 class="text-3xl font-black text-text-main mb-2">Danh mục Chính sách</h1>
+        <p class="text-text-muted text-sm mb-10">Duyệt qua 6 lĩnh vực chính sách để tìm thông tin nhanh hơn.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+
+            <a href="policies.html?cat=hr"
+                class="cat-card bg-white rounded-2xl border border-neutral-soft p-7 block group">
+                <div
+                    class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-5 group-hover:bg-primary transition-colors">
+                    <span
+                        class="material-symbols-outlined text-primary group-hover:text-text-main text-[28px] transition-colors">groups</span>
+                </div>
+                <h2 class="text-lg font-black text-text-main mb-2">Nhân sự</h2>
+                <p class="text-sm text-text-muted leading-relaxed mb-4">Điều khoản lao động, hợp đồng, kỷ luật và quyền
+                    lợi cơ bản của người lao động.</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-text-muted bg-neutral-soft px-3 py-1 rounded-full">3 chính
+                        sách</span>
+                    <span class="material-symbols-outlined text-primary text-[20px]">arrow_forward</span>
+                </div>
+            </a>
+
+            <a href="policies.html?cat=it"
+                class="cat-card bg-white rounded-2xl border border-neutral-soft p-7 block group">
+                <div
+                    class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-5 group-hover:bg-primary transition-colors">
+                    <span
+                        class="material-symbols-outlined text-primary group-hover:text-text-main text-[28px] transition-colors">security</span>
+                </div>
+                <h2 class="text-lg font-black text-text-main mb-2">IT & Bảo mật</h2>
+                <p class="text-sm text-text-muted leading-relaxed mb-4">An toàn thông tin, quản lý thiết bị, VPN, bảo
+                    mật dữ liệu và ứng phó sự cố.</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-text-muted bg-neutral-soft px-3 py-1 rounded-full">2 chính
+                        sách</span>
+                    <span class="material-symbols-outlined text-primary text-[20px]">arrow_forward</span>
+                </div>
+            </a>
+
+            <a href="policies.html?cat=leave"
+                class="cat-card bg-white rounded-2xl border border-neutral-soft p-7 block group">
+                <div
+                    class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-5 group-hover:bg-primary transition-colors">
+                    <span
+                        class="material-symbols-outlined text-primary group-hover:text-text-main text-[28px] transition-colors">calendar_month</span>
+                </div>
+                <h2 class="text-lg font-black text-text-main mb-2">Nghỉ phép & Phúc lợi</h2>
+                <p class="text-sm text-text-muted leading-relaxed mb-4">Phép năm, nghỉ ốm, thai sản, bảo hiểm sức khỏe
+                    và các phúc lợi đặc biệt.</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-text-muted bg-neutral-soft px-3 py-1 rounded-full">2 chính
+                        sách</span>
+                    <span class="material-symbols-outlined text-primary text-[20px]">arrow_forward</span>
+                </div>
+            </a>
+
+            <a href="policies.html?cat=workplace"
+                class="cat-card bg-white rounded-2xl border border-neutral-soft p-7 block group">
+                <div
+                    class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-5 group-hover:bg-primary transition-colors">
+                    <span
+                        class="material-symbols-outlined text-primary group-hover:text-text-main text-[28px] transition-colors">apartment</span>
+                </div>
+                <h2 class="text-lg font-black text-text-main mb-2">Nội quy Công sở</h2>
+                <p class="text-sm text-text-muted leading-relaxed mb-4">Quy tắc ứng xử, văn hóa nơi làm việc, an toàn
+                    văn phòng và đạo đức nghề nghiệp.</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-text-muted bg-neutral-soft px-3 py-1 rounded-full">2 chính
+                        sách</span>
+                    <span class="material-symbols-outlined text-primary text-[20px]">arrow_forward</span>
+                </div>
+            </a>
+
+            <a href="policies.html?cat=finance"
+                class="cat-card bg-white rounded-2xl border border-neutral-soft p-7 block group">
+                <div
+                    class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-5 group-hover:bg-primary transition-colors">
+                    <span
+                        class="material-symbols-outlined text-primary group-hover:text-text-main text-[28px] transition-colors">payments</span>
+                </div>
+                <h2 class="text-lg font-black text-text-main mb-2">Tài chính</h2>
+                <p class="text-sm text-text-muted leading-relaxed mb-4">Quản lý ngân sách, hoàn chi phí công tác, tiếp
+                    khách và mua sắm thiết bị.</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-text-muted bg-neutral-soft px-3 py-1 rounded-full">2 chính
+                        sách</span>
+                    <span class="material-symbols-outlined text-primary text-[20px]">arrow_forward</span>
+                </div>
+            </a>
+
+            <a href="policies.html?cat=ops"
+                class="cat-card bg-white rounded-2xl border border-neutral-soft p-7 block group">
+                <div
+                    class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-5 group-hover:bg-primary transition-colors">
+                    <span
+                        class="material-symbols-outlined text-primary group-hover:text-text-main text-[28px] transition-colors">settings</span>
+                </div>
+                <h2 class="text-lg font-black text-text-main mb-2">Vận hành</h2>
+                <p class="text-sm text-text-muted leading-relaxed mb-4">Quy trình hằng ngày, báo cáo, họp định kỳ và
+                    phối hợp giữa các bộ phận.</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-text-muted bg-neutral-soft px-3 py-1 rounded-full">1 chính
+                        sách</span>
+                    <span class="material-symbols-outlined text-primary text-[20px]">arrow_forward</span>
+                </div>
+            </a>
+        </div>
+
+        <!-- CTA -->
+        <div class="bg-primary rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-5">
+            <div>
+                <h2 class="text-xl font-black text-text-main mb-1">Không tìm thấy thứ bạn cần?</h2>
+                <p class="text-text-main/70 text-sm">Đội HR luôn sẵn sàng hỗ trợ bạn trong vòng 24 giờ làm việc.</p>
+            </div>
+            <button onclick="openModal()"
+                class="flex items-center gap-2 bg-text-main text-white px-6 py-3 rounded-xl font-bold text-sm hover:opacity-90 whitespace-nowrap flex-shrink-0">
+                <span class="material-symbols-outlined text-[18px]">support_agent</span>Hỏi HR Ngay
+            </button>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t border-neutral-soft py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-2">
+                <div class="bg-primary p-1.5 rounded-lg"><span
+                        class="material-symbols-outlined text-text-main text-[16px]">shield_person</span></div><span
+                    class="font-bold text-sm">NetSpace Policy Hub</span>
+            </div>
+            <p class="text-xs text-text-muted">© 2026 NetSpace Inc. Chỉ dành cho nội bộ.</p>
+            <a href="index.html" class="text-xs text-primary font-semibold hover:underline">← Về trang chủ</a>
+        </div>
+    </footer>
+
+    <!-- Modal -->
+    <div id="modal-overlay" class="fixed inset-0 z-[100] flex items-center justify-center p-4 hidden"
+        onclick="if(event.target===this||event.target.classList.contains('modal-bg'))closeModal()">
+        <div class="modal-bg absolute inset-0 bg-text-main/40 backdrop-blur-sm"></div>
+        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg" onclick="event.stopPropagation()">
+            <div class="bg-primary px-6 py-5 flex items-center justify-between rounded-t-2xl">
+                <div class="flex items-center gap-3"><span
+                        class="material-symbols-outlined text-text-main">support_agent</span>
+                    <h2 class="font-black text-lg text-text-main">Hỏi đội ngũ HR</h2>
+                </div>
+                <button onclick="closeModal()"
+                    class="w-8 h-8 rounded-lg hover:bg-primary-dark flex items-center justify-center"><span
+                        class="material-symbols-outlined text-text-main text-[20px]">close</span></button>
+            </div>
+            <div class="px-6 py-6 space-y-4">
+                <div><label class="block text-sm font-semibold mb-1" for="m-name">Họ tên *</label><input id="m-name"
+                        type="text"
+                        class="w-full text-sm rounded-lg border border-neutral-soft px-4 py-3 outline-none focus:border-primary" />
+                </div>
+                <div><label class="block text-sm font-semibold mb-1" for="m-email">Email công ty *</label><input
+                        id="m-email" type="email"
+                        class="w-full text-sm rounded-lg border border-neutral-soft px-4 py-3 outline-none focus:border-primary" />
+                </div>
+                <div><label class="block text-sm font-semibold mb-1" for="m-msg">Câu hỏi *</label><textarea id="m-msg"
+                        rows="3"
+                        class="w-full text-sm rounded-lg border border-neutral-soft px-4 py-3 outline-none focus:border-primary resize-none"></textarea>
+                </div>
+                <div class="flex gap-3 pt-1">
+                    <button onclick="closeModal()"
+                        class="flex-1 py-3 border border-neutral-soft font-bold rounded-xl text-sm hover:bg-neutral-soft">Hủy</button>
+                    <button onclick="submitHR()"
+                        class="flex-1 py-3 bg-primary hover:bg-primary-dark text-text-main font-bold rounded-xl text-sm">Gửi</button>
+                </div>
+                <p id="hr-ok" class="hidden text-center text-sm text-primary font-bold pt-1">✓ Đã gửi! HR sẽ liên hệ
+                    trong 24h.</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        function openModal() { document.getElementById('modal-overlay').classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
+        function closeModal() { document.getElementById('modal-overlay').classList.add('hidden'); document.body.style.overflow = ''; }
+        function submitHR() { if (!document.getElementById('m-name').value || !document.getElementById('m-email').value || !document.getElementById('m-msg').value) return; setTimeout(() => document.getElementById('hr-ok').classList.remove('hidden'), 800); }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chính sách — NetSpace Policy Hub</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script>tailwind.config = { darkMode: "class", theme: { extend: { colors: { "primary": "#84dcc6", "primary-dark": "#5ec9af", "bg-light": "#f6f8f7", "neutral-soft": "#e9f1ef", "text-main": "#101917", "text-muted": "#5a8c7f" }, fontFamily: { sans: ["Inter", "sans-serif"] } } } }</script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24
+        }
+
+        .policy-card {
+            transition: box-shadow .2s, transform .2s
+        }
+
+        .policy-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 36px rgba(132, 220, 198, .18)
+        }
+
+        .filter-btn.active {
+            background: #84dcc6;
+            color: #101917;
+            font-weight: 700;
+            border-color: #84dcc6
+        }
+    </style>
+</head>
+
+<body class="bg-bg-light text-text-main antialiased">
+    <!-- HEADER -->
+    <header class="sticky top-0 z-50 bg-white border-b border-neutral-soft">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-4 py-4">
+            <a href="index.html" class="flex items-center gap-3">
+                <div class="bg-primary p-2 rounded-lg"><span
+                        class="material-symbols-outlined text-text-main text-[20px]">shield_person</span></div>
+                <div>
+                    <div class="font-extrabold text-base text-text-main">NetSpace</div>
+                    <div class="text-xs text-text-muted -mt-0.5">Policy Hub</div>
+                </div>
+            </a>
+            <nav class="hidden md:flex items-center gap-8">
+                <a class="text-sm font-bold text-primary border-b-2 border-primary pb-0.5" href="policies.html">Chính
+                    sách</a>
+                <a class="text-sm font-semibold hover:text-primary" href="categories.html">Danh mục</a>
+                <a class="text-sm font-semibold hover:text-primary" href="updates.html">Cập nhật</a>
+                <a class="text-sm font-semibold hover:text-primary" href="faq.html">FAQ</a>
+            </nav>
+            <button onclick="openModal()"
+                class="hidden sm:flex items-center gap-2 bg-primary hover:bg-primary-dark text-text-main px-4 py-2.5 rounded-lg text-sm font-bold">
+                <span class="material-symbols-outlined text-[18px]">support_agent</span>Hỏi HR
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+        <nav class="flex items-center gap-2 text-xs text-text-muted mb-6">
+            <a href="index.html" class="hover:text-primary">Trang chủ</a>
+            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+            <span class="font-semibold text-text-main">Chính sách</span>
+        </nav>
+        <h1 class="text-3xl font-black text-text-main mb-1">Tất cả Chính sách</h1>
+        <p class="text-text-muted text-sm mb-8">Tìm và đọc <span id="total-count"
+                class="font-bold text-text-main">12</span> chính sách nội bộ hiện hành.</p>
+
+        <div class="flex flex-col sm:flex-row gap-4 mb-6">
+            <div class="relative flex-1">
+                <span
+                    class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-[20px]">search</span>
+                <input id="policy-search" type="text" placeholder="Tìm theo tên, từ khóa..." oninput="filterPolicies()"
+                    class="w-full pl-10 pr-4 py-3 rounded-xl border border-neutral-soft bg-white text-sm focus:ring-primary focus:border-primary outline-none" />
+            </div>
+            <select id="sort-select" onchange="filterPolicies()"
+                class="text-sm rounded-xl border border-neutral-soft bg-white px-3 py-3 focus:ring-primary focus:border-primary outline-none">
+                <option value="default">Mặc định</option>
+                <option value="name">Tên A-Z</option>
+                <option value="updated">Mới nhất</option>
+            </select>
+        </div>
+
+        <div class="flex flex-wrap gap-2 mb-8">
+            <button onclick="setFilter('all')" id="filter-all"
+                class="filter-btn active text-sm px-4 py-2 rounded-full border border-neutral-soft bg-white font-semibold">Tất
+                cả</button>
+            <button onclick="setFilter('hr')" id="filter-hr"
+                class="filter-btn text-sm px-4 py-2 rounded-full border border-neutral-soft bg-white text-text-muted font-semibold">Nhân
+                sự</button>
+            <button onclick="setFilter('it')" id="filter-it"
+                class="filter-btn text-sm px-4 py-2 rounded-full border border-neutral-soft bg-white text-text-muted font-semibold">IT
+                & Bảo mật</button>
+            <button onclick="setFilter('leave')" id="filter-leave"
+                class="filter-btn text-sm px-4 py-2 rounded-full border border-neutral-soft bg-white text-text-muted font-semibold">Nghỉ
+                phép</button>
+            <button onclick="setFilter('workplace')" id="filter-workplace"
+                class="filter-btn text-sm px-4 py-2 rounded-full border border-neutral-soft bg-white text-text-muted font-semibold">Nội
+                quy</button>
+            <button onclick="setFilter('finance')" id="filter-finance"
+                class="filter-btn text-sm px-4 py-2 rounded-full border border-neutral-soft bg-white text-text-muted font-semibold">Tài
+                chính</button>
+            <button onclick="setFilter('ops')" id="filter-ops"
+                class="filter-btn text-sm px-4 py-2 rounded-full border border-neutral-soft bg-white text-text-muted font-semibold">Vận
+                hành</button>
+        </div>
+
+        <div id="policies-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+        <p id="no-results" class="hidden text-center py-16 text-text-muted text-sm">
+            <span class="material-symbols-outlined text-[48px] text-neutral-soft block mb-3">search_off</span>
+            Không tìm thấy chính sách phù hợp.
+        </p>
+    </main>
+
+    <footer class="bg-white border-t border-neutral-soft py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-2">
+                <div class="bg-primary p-1.5 rounded-lg"><span
+                        class="material-symbols-outlined text-text-main text-[16px]">shield_person</span></div><span
+                    class="font-bold text-sm">NetSpace Policy Hub</span>
+            </div>
+            <p class="text-xs text-text-muted">© 2026 NetSpace Inc. Chỉ dành cho nội bộ.</p>
+            <a href="index.html" class="text-xs text-primary font-semibold hover:underline">← Về trang chủ</a>
+        </div>
+    </footer>
+
+    <!-- Modal -->
+    <div id="modal-overlay" class="fixed inset-0 z-[100] flex items-center justify-center p-4 hidden"
+        onclick="if(event.target===this||event.target.classList.contains('modal-bg'))closeModal()">
+        <div class="modal-bg absolute inset-0 bg-text-main/40 backdrop-blur-sm"></div>
+        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg" onclick="event.stopPropagation()">
+            <div class="bg-primary px-6 py-5 flex items-center justify-between rounded-t-2xl">
+                <div class="flex items-center gap-3"><span
+                        class="material-symbols-outlined text-text-main">support_agent</span>
+                    <h2 class="font-black text-lg text-text-main">Hỏi đội ngũ HR</h2>
+                </div>
+                <button onclick="closeModal()"
+                    class="w-8 h-8 rounded-lg hover:bg-primary-dark flex items-center justify-center"><span
+                        class="material-symbols-outlined text-text-main text-[20px]">close</span></button>
+            </div>
+            <div class="px-6 py-6 space-y-4">
+                <div><label class="block text-sm font-semibold mb-1" for="m-name">Họ tên *</label><input id="m-name"
+                        type="text"
+                        class="w-full text-sm rounded-lg border border-neutral-soft px-4 py-3 outline-none focus:border-primary" />
+                </div>
+                <div><label class="block text-sm font-semibold mb-1" for="m-email">Email công ty *</label><input
+                        id="m-email" type="email"
+                        class="w-full text-sm rounded-lg border border-neutral-soft px-4 py-3 outline-none focus:border-primary" />
+                </div>
+                <div><label class="block text-sm font-semibold mb-1" for="m-msg">Câu hỏi *</label><textarea id="m-msg"
+                        rows="3"
+                        class="w-full text-sm rounded-lg border border-neutral-soft px-4 py-3 outline-none focus:border-primary resize-none"></textarea>
+                </div>
+                <div class="flex gap-3 pt-1">
+                    <button onclick="closeModal()"
+                        class="flex-1 py-3 border border-neutral-soft font-bold rounded-xl text-sm hover:bg-neutral-soft">Hủy</button>
+                    <button onclick="submitHR()"
+                        class="flex-1 py-3 bg-primary hover:bg-primary-dark text-text-main font-bold rounded-xl text-sm">Gửi</button>
+                </div>
+                <p id="hr-ok" class="hidden text-center text-sm text-primary font-bold pt-1">✓ Đã gửi! HR sẽ liên hệ
+                    trong 24h.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const DATA = [
+            { id: 'remote-work', title: 'Chính sách Làm việc Từ xa', cat: 'hr', catLabel: 'Nhân sự', updated: '13/03/2026', ts: 20260313, desc: 'Hướng dẫn làm việc hybrid, phụ cấp thiết bị và yêu cầu liên lạc khi làm việc tại nhà.', icon: 'home_work' },
+            { id: 'annual-leave', title: 'Chính sách Nghỉ phép Năm', cat: 'leave', catLabel: 'Nghỉ phép', updated: '10/02/2026', ts: 20260210, desc: 'Tích lũy ngày phép, chuyển tiếp sang năm sau và quy trình phê duyệt đơn nghỉ phép.', icon: 'calendar_month' },
+            { id: 'it-security', title: 'Hướng dẫn Bảo mật IT', cat: 'it', catLabel: 'IT & Bảo mật', updated: '05/03/2026', ts: 20260305, desc: 'Quản lý mật khẩu, sử dụng VPN và cách báo cáo nghi vấn an ninh mạng.', icon: 'security' },
+            { id: 'expense', title: 'Hoàn trả Chi phí Công tác', cat: 'finance', catLabel: 'Tài chính', updated: '10/03/2026', ts: 20260310, desc: 'Quy trình hoàn tiền cho công tác, tiếp khách và mua sắm thiết bị văn phòng.', icon: 'payments' },
+            { id: 'conduct', title: 'Quy tắc Ứng xử & Đạo đức', cat: 'workplace', catLabel: 'Nội quy', updated: '08/03/2026', ts: 20260308, desc: 'Chuẩn mực hành vi, cam kết bảo mật thông tin và xung đột lợi ích.', icon: 'gavel' },
+            { id: 'travel', title: 'Chính sách Công tác & Du lịch', cat: 'finance', catLabel: 'Tài chính', updated: '10/03/2026', ts: 20260310, desc: 'Đặt vé máy bay, chi tiêu khi công tác trong và ngoài nước.', icon: 'flight' },
+            { id: 'maternity', title: 'Chính sách Thai sản', cat: 'leave', catLabel: 'Nghỉ phép', updated: '20/02/2026', ts: 20260220, desc: 'Quyền lợi thai sản, phụ cấp và thời gian nghỉ linh hoạt cho phụ huynh mới.', icon: 'favorite' },
+            { id: 'onboarding', title: 'Quy trình Onboarding Nhân viên Mới', cat: 'hr', catLabel: 'Nhân sự', updated: '15/01/2026', ts: 20260115, desc: 'Các bước hội nhập, đào tạo định hướng và cấp phát công cụ làm việc.', icon: 'person_add' },
+            { id: 'device-policy', title: 'Sử dụng Thiết bị Công ty', cat: 'it', catLabel: 'IT & Bảo mật', updated: '01/03/2026', ts: 20260301, desc: 'Quy định sử dụng laptop, điện thoại và tài khoản phần mềm được cấp.', icon: 'devices' },
+            { id: 'office-rules', title: 'Nội quy Văn phòng', cat: 'workplace', catLabel: 'Nội quy', updated: '15/12/2025', ts: 20251215, desc: 'Giờ làm việc, khu vực chỗ ngồi, vệ sinh chung và an toàn phòng cháy.', icon: 'apartment' },
+            { id: 'payroll', title: 'Chính sách Lương & Thưởng', cat: 'hr', catLabel: 'Nhân sự', updated: '01/01/2026', ts: 20260101, desc: 'Chu kỳ trả lương, kết cấu lương, thưởng hiệu suất và chính sách tăng lương.', icon: 'account_balance_wallet' },
+            { id: 'ops-workflow', title: 'Quy trình Vận hành Hằng ngày', cat: 'ops', catLabel: 'Vận hành', updated: '10/02/2026', ts: 20260210, desc: 'Quy trình báo cáo, họp hằng tuần và quản lý tài nguyên.', icon: 'settings' },
+        ];
+        let curFilter = 'all';
+        function setFilter(c) { curFilter = c; document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); document.getElementById('filter-' + c).classList.add('active'); filterPolicies(); }
+        function filterPolicies() {
+            const q = document.getElementById('policy-search').value.trim().toLowerCase();
+            const s = document.getElementById('sort-select').value;
+            let d = DATA.filter(p => (curFilter === 'all' || p.cat === curFilter) && (!q || p.title.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q)));
+            if (s === 'name') d.sort((a, b) => a.title.localeCompare(b.title, 'vi'));
+            else if (s === 'updated') d.sort((a, b) => b.ts - a.ts);
+            document.getElementById('total-count').textContent = d.length;
+            document.getElementById('no-results').classList.toggle('hidden', d.length > 0);
+            document.getElementById('policies-grid').innerHTML = d.map(p => `
+    <div class="policy-card bg-white p-6 rounded-xl border border-neutral-soft flex flex-col justify-between">
+      <div>
+        <div class="flex items-start justify-between gap-3 mb-4">
+          <div class="w-11 h-11 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-primary text-[22px]">${p.icon}</span>
+          </div>
+          <span class="px-2 py-1 bg-primary/20 text-text-muted text-[10px] font-bold uppercase tracking-wider rounded mt-0.5">${p.catLabel}</span>
+        </div>
+        <h2 class="font-bold text-base mb-2 text-text-main leading-snug">${p.title}</h2>
+        <p class="text-sm text-text-muted leading-relaxed mb-3">${p.desc}</p>
+        <p class="text-[11px] text-text-muted flex items-center gap-1 mb-5"><span class="material-symbols-outlined text-[13px]">schedule</span>Cập nhật ${p.updated}</p>
+      </div>
+      <a href="policy-detail.html?id=${p.id}" class="w-full py-2.5 border border-primary text-text-main font-bold rounded-lg hover:bg-primary transition-colors text-sm text-center block">Đọc Chính sách</a>
+    </div>`).join('');
+        }
+        window.addEventListener('DOMContentLoaded', () => {
+            const p = new URLSearchParams(location.search);
+            const q = p.get('q') || '', c = p.get('cat') || 'all';
+            if (q) document.getElementById('policy-search').value = q;
+            if (c !== 'all') setFilter(c); else filterPolicies();
+        });
+        function openModal() { document.getElementById('modal-overlay').classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
+        function closeModal() { document.getElementById('modal-overlay').classList.add('hidden'); document.body.style.overflow = ''; }
+        function submitHR() {
+            if (!document.getElementById('m-name').value || !document.getElementById('m-email').value || !document.getElementById('m-msg').value) return;
+            setTimeout(() => document.getElementById('hr-ok').classList.remove('hidden'), 800);
+        }
+    </script>
+</body>
+
+</html>
