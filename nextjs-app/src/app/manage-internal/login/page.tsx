@@ -26,7 +26,7 @@ export default function AdminLoginPage() {
         <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
             <div className="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-neutral-soft">
                 <div className="bg-slate-900 p-8 text-white text-center">
-                    <div className="inline-flex p-3 bg-primary rounded-xl mb-4 text-text-main shadow-lg">
+                    <div className="inline-flex p-3 bg-primary rounded-xl mb-4 text-white shadow-lg shadow-primary/20">
                         <ShieldCheck size={32} />
                     </div>
                     <h1 className="text-2xl font-bold">HR Portal Login</h1>

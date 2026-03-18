@@ -126,8 +126,6 @@ export default function AdminFAQsPage() {
                             <tr>
                                 <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-text-muted">Thứ tự</th>
                                 <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-text-muted">Câu hỏi & Trả lời</th>
-                                <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-text-muted">Danh mục</th>
-                                <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-text-muted">Trạng thái</th>
                                 <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-text-muted text-right">Thao tác</th>
                             </tr>
                         </thead>
@@ -143,27 +141,9 @@ export default function AdminFAQsPage() {
                             ) : filtered.map((faq) => (
                                 <tr key={faq.id} className="hover:bg-slate-50/50 transition-colors group">
                                     <td className="px-6 py-4 font-bold text-slate-400">#{faq.order_index}</td>
-                                    <td className="px-6 py-4 max-w-md">
+                                    <td className="px-6 py-4 max-w-lg">
                                         <div className="font-bold text-slate-900 mb-1">{faq.question}</div>
-                                        <div className="text-xs text-text-muted line-clamp-2">{faq.answer}</div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg font-semibold text-xs border border-slate-200">
-                                            {faq.category}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        {faq.published ? (
-                                            <span className="inline-flex items-center gap-1.5 text-green-600 font-bold text-xs bg-green-50 px-2 py-1 rounded-full border border-green-100">
-                                                <span className="w-1.5 h-1.5 rounded-full bg-green-600" />
-                                                Công khai
-                                            </span>
-                                        ) : (
-                                            <span className="inline-flex items-center gap-1.5 text-slate-400 font-bold text-xs bg-slate-50 px-2 py-1 rounded-full border border-slate-200">
-                                                <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-                                                Nháp
-                                            </span>
-                                        )}
+                                        <div className="text-xs text-text-muted line-clamp-3 leading-relaxed">{faq.answer}</div>
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">

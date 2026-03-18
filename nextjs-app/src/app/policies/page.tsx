@@ -40,8 +40,8 @@ function PoliciesContent() {
             const catOk = filter === "all" || p.category === filter;
             const qOk =
                 !search ||
-                p.title.toLowerCase().includes(search.toLowerCase()) ||
-                p.excerpt.toLowerCase().includes(search.toLowerCase());
+                (p.title || "").toLowerCase().includes(search.toLowerCase()) ||
+                (p.excerpt || "").toLowerCase().includes(search.toLowerCase());
             return catOk && qOk;
         });
         if (sort === "name") data = [...data].sort((a, b) => a.title.localeCompare(b.title, "vi"));
@@ -102,12 +102,12 @@ function PoliciesContent() {
 
                         return (
                             <section key={key} id={key} className="scroll-mt-24">
-                                <div className="flex items-center gap-3 mb-8">
+                                <div className="flex items-center gap-3 mb-8 text-text-main">
                                     <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary border border-primary/20">
                                         <span className="material-symbols-outlined text-[24px]">{cat.icon}</span>
                                     </div>
                                     <div>
-                                        <h2 className="text-xl font-black text-text-main leading-tight">{cat.label}</h2>
+                                        <h2 className="text-xl font-black leading-tight">{cat.label}</h2>
                                         <p className="text-xs text-text-muted mt-0.5">{cat.desc.substring(0, 100)}</p>
                                     </div>
                                     <div className="ml-auto h-[1px] bg-neutral-soft flex-1 ml-6 hidden md:block" />
@@ -123,6 +123,36 @@ function PoliciesContent() {
                             </section>
                         );
                     })}
+
+                    {/* Handle policies with other categories */}
+                    {(() => {
+                        const knownCats = Object.keys(CATEGORIES);
+                        const otherPolicies = filtered.filter(p => !knownCats.includes(p.category));
+                        if (otherPolicies.length === 0) return null;
+
+                        return (
+                            <section id="other" className="scroll-mt-24">
+                                <div className="flex items-center gap-3 mb-8 text-text-main">
+                                    <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-500 border border-slate-200">
+                                        <span className="material-symbols-outlined text-[24px]">more_horiz</span>
+                                    </div>
+                                    <div>
+                                        <h2 className="text-xl font-black leading-tight">Chính sách khác</h2>
+                                        <p className="text-xs text-text-muted mt-0.5">Các quy định và hướng dẫn bổ sung khác.</p>
+                                    </div>
+                                    <div className="ml-auto h-[1px] bg-neutral-soft flex-1 ml-6 hidden md:block" />
+                                    <span className="ml-4 text-[10px] font-black uppercase tracking-widest text-text-muted/50 bg-neutral-soft/50 px-2 py-1 rounded">
+                                        {otherPolicies.length} POLICY
+                                    </span>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {otherPolicies.map((p) => (
+                                        <PolicyCard key={p.id} policy={p} />
+                                    ))}
+                                </div>
+                            </section>
+                        );
+                    })()}
                 </div>
             ) : (
                 <div className="text-center py-24 bg-white rounded-3xl border border-dashed border-neutral-soft">

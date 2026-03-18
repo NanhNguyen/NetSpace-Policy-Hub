@@ -1,15 +1,28 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { Mail, Clock, MessageSquare, Search, Filter } from 'lucide-react';
+import { Mail, Clock, MessageSquare, Search } from 'lucide-react';
 import { TicketService } from '@/lib/services/ticket.service';
 import { Ticket } from '@/types';
 import TicketReplyModal from '@/components/admin/TicketReplyModal';
+
+// Fixed company topic categories — must match the HRModal form options
+const COMPANY_TOPICS = [
+    { key: 'all', label: 'Tất cả', color: 'bg-slate-900 text-white' },
+    { key: 'Chính sách Nghỉ phép', label: 'Nghỉ phép', color: 'bg-blue-100 text-blue-700' },
+    { key: 'Lương & Phúc lợi', label: 'Lương & Phúc lợi', color: 'bg-green-100 text-green-700' },
+    { key: 'Làm việc từ xa', label: 'Làm việc từ xa', color: 'bg-indigo-100 text-indigo-700' },
+    { key: 'Bảo mật & IT', label: 'Bảo mật & IT', color: 'bg-orange-100 text-orange-700' },
+    { key: 'Nội quy Công sở', label: 'Nội quy', color: 'bg-purple-100 text-purple-700' },
+    { key: 'Hoàn chi phí', label: 'Hoàn chi phí', color: 'bg-yellow-100 text-yellow-700' },
+    { key: 'Khác', label: 'Khác', color: 'bg-slate-100 text-slate-500' },
+];
 
 export default function AdminTicketsPage() {
     const [tickets, setTickets] = useState<Ticket[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'all' | 'open' | 'answered'>('all');
+    const [activeTopic, setActiveTopic] = useState<string>('all');
     const [search, setSearch] = useState("");
     const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -42,11 +55,20 @@ export default function AdminTicketsPage() {
 
     const filtered = tickets.filter(t => {
         const matchesTab = activeTab === 'all' || t.status === activeTab;
+        const matchesTopic = activeTopic === 'all' || t.topic === activeTopic;
         const matchesSearch =
             t.employee_name.toLowerCase().includes(search.toLowerCase()) ||
             t.question.toLowerCase().includes(search.toLowerCase());
-        return matchesTab && matchesSearch;
+        return matchesTab && matchesTopic && matchesSearch;
     });
+
+    // Count tickets per topic for badge display
+    const topicCounts = COMPANY_TOPICS.reduce((acc, t) => {
+        acc[t.key] = t.key === 'all'
+            ? tickets.length
+            : tickets.filter(tk => tk.topic === t.key).length;
+        return acc;
+    }, {} as Record<string, number>);
 
     return (
         <div className="space-y-6">
@@ -61,27 +83,56 @@ export default function AdminTicketsPage() {
             </div>
 
             <div className="flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center bg-white p-5 rounded-2xl border border-neutral-soft shadow-sm">
-                <div className="flex gap-2 flex-wrap">
-                    {['all', 'open', 'answered'].map((tab) => (
-                        <button
-                            key={tab}
-                            onClick={() => setActiveTab(tab as any)}
-                            className={`px-5 py-2.5 rounded-xl text-xs font-black capitalize tracking-tight transition-all ${activeTab === tab
-                                ? 'bg-primary text-white shadow-lg shadow-primary/20'
-                                : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
-                                }`}
-                        >
-                            {tab === 'all' ? 'Tất cả' : tab === 'open' ? 'Chờ xử lý' : 'Đã trả lời'}
-                        </button>
-                    ))}
+                <div className="flex flex-col gap-4 w-full">
+                    <div className="flex gap-2 flex-wrap items-center">
+                        <span className="text-[10px] font-black uppercase text-slate-400 mr-2">Trạng thái:</span>
+                        {['all', 'open', 'answered'].map((tab) => (
+                            <button
+                                key={tab}
+                                onClick={() => setActiveTab(tab as any)}
+                                className={`px-4 py-2 rounded-lg text-xs font-bold capitalize transition-all ${activeTab === tab
+                                    ? 'bg-primary text-white shadow-lg shadow-primary/20'
+                                    : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                                    }`}
+                            >
+                                {tab === 'all' ? 'Tất cả' : tab === 'open' ? 'Chờ xử lý' : 'Đã trả lời'}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="flex gap-2 flex-wrap items-center">
+                        <span className="text-[10px] font-black uppercase text-slate-400 mr-2">Chủ đề:</span>
+                        {COMPANY_TOPICS.map((topic) => {
+                            const count = topicCounts[topic.key] ?? 0;
+                            const isActive = activeTopic === topic.key;
+                            return (
+                                <button
+                                    key={topic.key}
+                                    onClick={() => setActiveTopic(topic.key)}
+                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${isActive
+                                            ? topic.key === 'all' ? 'bg-slate-900 text-white shadow-lg' : topic.color + ' ring-2 ring-offset-1 ring-current shadow-md'
+                                            : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                                        }`}
+                                >
+                                    {topic.label}
+                                    {count > 0 && (
+                                        <span className={`text-[9px] font-black px-1 py-0.5 rounded ${isActive ? 'bg-white/30' : 'bg-slate-200 text-slate-600'
+                                            }`}>
+                                            {count}
+                                        </span>
+                                    )}
+                                </button>
+                            );
+                        })}
+                    </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
-                    <div className="relative flex-1 sm:w-64">
+                <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-64 mt-4 lg:mt-0">
+                    <div className="relative w-full">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={16} />
                         <input
                             type="text"
-                            placeholder="Tìm kiếm..."
+                            placeholder="Tìm nhanh..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             className="w-full bg-slate-50 border border-neutral-soft rounded-xl py-2.5 pl-10 pr-4 focus:ring-4 focus:ring-primary/10 outline-none text-xs font-bold transition-all"

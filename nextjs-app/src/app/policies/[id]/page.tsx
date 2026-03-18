@@ -151,12 +151,13 @@ export default function PolicyDetailPage({ params }: { params: Promise<{ id: str
                             <div className="bg-primary/10 border border-primary/20 rounded-xl p-5">
                                 <h3 className="text-xs font-bold uppercase tracking-widest text-text-muted mb-2">Câu hỏi?</h3>
                                 <p className="text-xs text-text-muted leading-relaxed mb-3">Liên hệ HR nếu bạn cần hỗ trợ thêm.</p>
-                                <button
-                                    onClick={() => setModalOpen(true)}
-                                    className="w-full py-2.5 bg-primary hover:bg-primary-dark text-text-main font-bold rounded-lg text-xs transition-colors flex items-center justify-center gap-1"
+                                <Link
+                                    href="/faq"
+                                    className="w-full py-3 bg-primary hover:bg-primary-dark text-white font-black rounded-xl text-xs transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20 active:scale-95"
                                 >
-                                    <span className="material-symbols-outlined text-[16px]">support_agent</span>Hỏi HR
-                                </button>
+                                    <span className="material-symbols-outlined text-[18px]">support_agent</span>
+                                    Hỏi HR ngay
+                                </Link>
                             </div>
                         </div>
                     </aside>

@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { FAQS } from "@/lib/data";
 import HRModal from "@/components/HRModal";
 import TicketStatusModal from "@/components/TicketStatusModal";
 import { Search, HelpCircle } from "lucide-react";
+import { supabase } from "@/lib/db/client";
 
 const FAQ_CATS = [
     { key: "all", label: "Tất cả" },
@@ -16,11 +18,25 @@ const FAQ_CATS = [
 ];
 
 export default function FAQPage() {
+    const router = useRouter();
     const [search, setSearch] = useState("");
     const [cat, setCat] = useState("all");
     const [openIdx, setOpenIdx] = useState<number | null>(null);
     const [modalOpen, setModalOpen] = useState(false);
     const [checkModalOpen, setCheckModalOpen] = useState(false);
+    const [user, setUser] = useState<any>(null);
+
+    useEffect(() => {
+        supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    }, []);
+
+    const handleAskHR = () => {
+        if (!user) {
+            router.push("/auth/login?redirect=faq");
+            return;
+        }
+        setModalOpen(true);
+    };
 
     const filtered = useMemo(
         () =>
@@ -117,24 +133,27 @@ export default function FAQPage() {
                     <div className="text-center py-10 text-text-muted text-sm">
                         <span className="material-symbols-outlined text-[40px] text-neutral-soft block mb-2">search_off</span>
                         Không tìm thấy câu hỏi phù hợp.{" "}
-                        <button onClick={() => setModalOpen(true)} className="text-primary font-bold hover:underline">
+                        <button onClick={handleAskHR} className="text-primary font-bold hover:underline">
                             Hỏi HR trực tiếp
                         </button>
                     </div>
                 )}
 
                 {/* CTA */}
-                <div className="mt-12 bg-primary rounded-2xl p-7 text-center">
-                    <span className="material-symbols-outlined text-text-main text-[36px] mb-3 block">support_agent</span>
-                    <h2 className="text-lg font-black text-text-main mb-2">Vẫn chưa tìm được câu trả lời?</h2>
-                    <p className="text-text-main/70 text-sm mb-5">Đặt câu hỏi trực tiếp cho đội HR — phản hồi trong 24 giờ.</p>
-                    <button
-                        onClick={() => setModalOpen(true)}
-                        className="inline-flex items-center gap-2 bg-text-main text-white px-7 py-3 rounded-xl font-bold text-sm hover:opacity-90"
-                    >
-                        <span className="material-symbols-outlined text-[18px]">chat</span>
-                        Gửi câu hỏi cho HR
-                    </button>
+                <div className="mt-12 bg-primary rounded-3xl p-10 text-center text-white shadow-2xl shadow-primary/20 relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-48 h-48 bg-white/10 blur-3xl -ml-24 -mt-24 rounded-full" />
+                    <div className="relative z-10">
+                        <span className="material-symbols-outlined text-white text-[48px] mb-4 block">support_agent</span>
+                        <h2 className="text-2xl font-black mb-2">Vẫn chưa tìm được câu trả lời?</h2>
+                        <p className="text-white/80 font-bold mb-8 max-w-sm mx-auto">Nếu danh sách FAQ không giải đáp được thắc mắc, hãy gửi câu hỏi trực tiếp cho đội ngũ HR.</p>
+                        <button
+                            onClick={handleAskHR}
+                            className="inline-flex items-center gap-2 bg-white text-primary px-10 py-4 rounded-2xl font-black text-sm hover:bg-slate-50 transition-all shadow-xl active:scale-95"
+                        >
+                            <span className="material-symbols-outlined text-[20px]">chat</span>
+                            Gửi câu hỏi cho HR ngay
+                        </button>
+                    </div>
                 </div>
             </main>
 

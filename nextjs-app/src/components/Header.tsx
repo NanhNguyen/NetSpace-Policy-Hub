@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Logo from "./Logo";
 import HRModal from "./HRModal";
+import { supabase } from "@/lib/db/client";
 
 const NAV_LINKS = [
-    { href: "/categories", label: "Danh mục Chính sách" },
+    { href: "/categories", label: "Chính Sách" },
     { href: "/updates", label: "Cập nhật" },
     { href: "/faq", label: "FAQ" },
 ];
@@ -17,6 +18,23 @@ export default function Header() {
     const router = useRouter();
     const [mobileOpen, setMobileOpen] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
+    const [user, setUser] = useState<any>(null);
+
+    useEffect(() => {
+        supabase.auth.getUser().then(({ data }) => setUser(data.user));
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setUser(session?.user ?? null);
+        });
+        return () => subscription.unsubscribe();
+    }, []);
+
+    const handleAskHR = () => {
+        if (!user) {
+            router.push("/auth/login?redirect=ask-hr");
+            return;
+        }
+        setModalOpen(true);
+    };
 
     // Secret access logic
     const clickCount = useRef(0);
@@ -78,8 +96,8 @@ export default function Header() {
                     {/* CTA */}
                     <div className="flex items-center gap-3">
                         <button
-                            onClick={() => setModalOpen(true)}
-                            className="hidden sm:flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-4 py-2.5 rounded-lg text-sm font-bold transition-all shadow-sm shadow-primary/20"
+                            onClick={handleAskHR}
+                            className="hidden sm:flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-4 py-2.5 rounded-lg text-sm font-bold transition-all shadow-sm shadow-primary/20 active:scale-95"
                         >
                             <span className="material-symbols-outlined text-[18px]">support_agent</span>
                             Hỏi HR
@@ -90,8 +108,14 @@ export default function Header() {
                                 <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
                             </button>
                         </div>
-                        <Link href="/auth/login" className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200 hover:border-primary transition-all">
-                            <span className="material-symbols-outlined text-text-muted text-[22px]">account_circle</span>
+                        <Link href="/auth/login" className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200 hover:border-primary transition-all overflow-hidden group">
+                            {user?.email ? (
+                                <div className="w-full h-full bg-primary/10 flex items-center justify-center text-primary font-black text-xs uppercase group-hover:bg-primary/20" title={user.email}>
+                                    {user.email.substring(0, 2)}
+                                </div>
+                            ) : (
+                                <span className="material-symbols-outlined text-text-muted text-[22px] group-hover:text-primary">account_circle</span>
+                            )}
                         </Link>
                         {/* Hamburger */}
                         <button
@@ -121,8 +145,8 @@ export default function Header() {
                             </Link>
                         ))}
                         <button
-                            onClick={() => { setMobileOpen(false); setModalOpen(true); }}
-                            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary hover:bg-primary-dark text-text-main text-sm font-bold transition-colors mt-2"
+                            onClick={() => { setMobileOpen(false); handleAskHR(); }}
+                            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary hover:bg-primary-dark text-white text-sm font-bold transition-colors mt-2"
                         >
                             <span className="material-symbols-outlined text-[18px]">support_agent</span>
                             Hỏi HR

@@ -1,18 +1,43 @@
+"use client";
+
+import { useEffect, useState } from 'react';
 import {
     FileText,
     MessageSquare,
     TrendingUp,
     AlertCircle
 } from 'lucide-react';
-
-const stats = [
-    { name: 'Tổng chính sách', value: '12', icon: FileText, color: 'blue' },
-    { name: 'Câu hỏi mới', value: '3', icon: MessageSquare, color: 'orange' },
-    { name: 'Tìm kiếm/Tháng', value: '1,240', icon: TrendingUp, color: 'green' },
-    { name: 'Queries 0 kết quả', value: '14', icon: AlertCircle, color: 'red' },
-];
+import { PolicyService } from '@/lib/services/policy.service';
+import { FAQService } from '@/lib/services/faq.service';
 
 export default function AdminDashboard() {
+    const [stats, setStats] = useState([
+        { name: 'Tổng chính sách', value: '...', icon: FileText, color: 'blue' },
+        { name: 'Tổng câu hỏi FAQ', value: '...', icon: MessageSquare, color: 'orange' },
+        { name: 'Tìm kiếm/Tháng', value: '1,240', icon: TrendingUp, color: 'green' },
+        { name: 'Queries 0 kết quả', value: '14', icon: AlertCircle, color: 'red' },
+    ]);
+
+    useEffect(() => {
+        const load = async () => {
+            try {
+                const [policies, faqs] = await Promise.all([
+                    PolicyService.getAllAdmin(),
+                    FAQService.getAll()
+                ]);
+
+                setStats(prev => prev.map(s => {
+                    if (s.name === 'Tổng chính sách') return { ...s, value: policies.length.toString() };
+                    if (s.name === 'Tổng câu hỏi FAQ') return { ...s, value: faqs.length.toString() };
+                    return s;
+                }));
+            } catch (err) {
+                console.error("Dashboard load failed", err);
+            }
+        };
+        load();
+    }, []);
+
     return (
         <div className="space-y-8">
             <div>

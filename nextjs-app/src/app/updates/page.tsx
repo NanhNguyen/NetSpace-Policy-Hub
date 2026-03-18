@@ -35,9 +35,9 @@ export default function UpdatesPage() {
                     <button
                         key={key}
                         onClick={() => setActiveFilter(key)}
-                        className={`text-xs px-4 py-2 rounded-full border font-semibold transition-all ${activeFilter === key
-                                ? "bg-primary border-primary text-text-main font-bold"
-                                : "border-neutral-soft bg-white text-text-muted hover:border-primary"
+                        className={`text-xs px-4 py-2 rounded-full border font-bold transition-all ${activeFilter === key
+                            ? "bg-primary border-primary text-white shadow-lg shadow-primary/20"
+                            : "border-neutral-soft bg-white text-text-muted hover:border-primary"
                             }`}
                     >
                         {label}
@@ -58,7 +58,7 @@ export default function UpdatesPage() {
                                         }`}
                                 >
                                     <span
-                                        className={`material-symbols-outlined text-[14px] ${i === 0 ? "text-text-main" : "text-slate-400"}`}
+                                        className={`material-symbols-outlined text-[14px] ${i === 0 ? "text-white" : "text-slate-400"}`}
                                     >
                                         {isNew ? "add" : "edit"}
                                     </span>

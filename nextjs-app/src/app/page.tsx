@@ -8,6 +8,7 @@ import HRModal from "@/components/HRModal";
 import PolicyCard from "@/components/PolicyCard";
 import { PolicyService } from "@/lib/services/policy.service";
 import { Policy } from "@/types";
+import { supabase } from "@/lib/db/client";
 
 const QUICK_SUGGESTIONS = ["Làm việc từ xa", "Nghỉ phép", "Bảo mật IT", "Quy tắc ứng xử", "Hoàn chi phí"];
 
@@ -16,7 +17,20 @@ export default function HomePage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [popularPolicies, setPopularPolicies] = useState<Policy[]>([]);
   const [recentUpdates, setRecentUpdates] = useState<any[]>(UPDATES.slice(0, 5));
+  const [user, setUser] = useState<any>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+  }, []);
+
+  const handleAskHR = () => {
+    if (!user) {
+      router.push("/auth/login?redirect=ask-hr");
+      return;
+    }
+    setModalOpen(true);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -128,7 +142,7 @@ export default function HomePage() {
         <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6" aria-labelledby="categories-heading">
           <div className="flex items-end justify-between mb-12 border-l-4 border-primary pl-6">
             <div>
-              <h2 id="categories-heading" className="text-3xl font-black text-slate-900 tracking-tight">Danh mục Chính sách</h2>
+              <h2 id="categories-heading" className="text-3xl font-black text-slate-900 tracking-tight">Chính Sách</h2>
               <p className="text-sm text-slate-500 mt-1 font-medium">Khám phá các quy định theo chủ đề</p>
             </div>
             <Link href="/categories" className="hidden sm:flex items-center gap-2 text-primary font-black text-xs uppercase tracking-widest hover:gap-3 transition-all">
@@ -203,20 +217,21 @@ export default function HomePage() {
         </section>
 
         {/* CTA Banner */}
-        <section className="py-16 px-4 sm:px-6">
-          <div className="max-w-4xl mx-auto bg-primary rounded-2xl p-8 sm:p-12 flex flex-col md:flex-row items-center justify-between gap-6">
-            <div>
-              <h2 className="text-2xl font-black text-text-main mb-2">Không tìm thấy chính sách bạn cần?</h2>
-              <p className="text-text-main/70 text-sm leading-relaxed">
-                Đội ngũ HR luôn sẵn sàng trả lời mọi thắc mắc trong vòng 24 giờ làm việc.
-              </p>
+        <section className="mt-20 px-4 sm:px-6">
+          <div className="max-w-4xl mx-auto bg-primary rounded-3xl p-8 sm:p-14 flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl shadow-primary/20 text-white relative overflow-hidden">
+            {/* Background blobs for depth */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-3xl -mr-32 -mt-32 rounded-full" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-400/20 blur-3xl -ml-32 -mb-32 rounded-full" />
+
+            <div className="relative z-10 text-center md:text-left">
+              <h2 className="text-3xl font-black mb-3">Bạn không tìm thấy câu trả lời?</h2>
+              <p className="text-white/80 font-bold max-w-md">Liên hệ trực tiếp với đội ngũ HR của NetSpace để được giải đáp thắc mắc chi tiết.</p>
             </div>
             <button
-              onClick={() => setModalOpen(true)}
-              className="flex-shrink-0 flex items-center gap-2 bg-text-main text-white px-7 py-3.5 rounded-xl font-bold text-sm hover:opacity-90 transition-opacity shadow-lg whitespace-nowrap"
+              onClick={handleAskHR}
+              className="relative z-10 whitespace-nowrap px-10 py-4 bg-white text-primary font-black rounded-2xl hover:bg-slate-50 transition-all shadow-xl active:scale-95"
             >
-              <span className="material-symbols-outlined text-[20px]">support_agent</span>
-              Hỏi HR Ngay
+              Gửi yêu cầu ngay
             </button>
           </div>
         </section>

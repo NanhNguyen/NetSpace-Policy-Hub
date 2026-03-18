@@ -28,13 +28,13 @@ export interface FAQ {
   a: string;
 }
 
-export const CATEGORIES: Record<PolicyCategory, { label: string; icon: string; desc: string; count: number }> = {
-  hr: { label: "Nhân sự", icon: "groups", desc: "Điều khoản lao động, hợp đồng, kỷ luật và quyền lợi cơ bản.", count: 5 },
-  it: { label: "IT & Bảo mật", icon: "security", desc: "An toàn thông tin, quản lý thiết bị, VPN, bảo mật dữ liệu.", count: 2 },
-  leave: { label: "Nghỉ phép & Phúc lợi", icon: "calendar_month", desc: "Phép năm, nghỉ ốm, thai sản, bảo hiểm sức khỏe.", count: 2 },
-  workplace: { label: "Nội quy Công sở", icon: "apartment", desc: "Quy tắc ứng xử, văn hóa nơi làm việc, an toàn văn phòng.", count: 3 },
-  finance: { label: "Tài chính", icon: "payments", desc: "Quản lý ngân sách, hoàn chi phí công tác, tiếp khách.", count: 2 },
-  ops: { label: "Vận hành", icon: "settings", desc: "Quy trình hằng ngày, báo cáo, họp định kỳ.", count: 1 },
+export const CATEGORIES: Record<PolicyCategory, { label: string; icon: string; desc: string }> = {
+  hr: { label: "Nhân sự", icon: "groups", desc: "Điều khoản lao động, hợp đồng, kỷ luật và quyền lợi cơ bản." },
+  it: { label: "IT & Bảo mật", icon: "security", desc: "An toàn thông tin, quản lý thiết bị, VPN, bảo mật dữ liệu." },
+  leave: { label: "Nghỉ phép & Phúc lợi", icon: "calendar_month", desc: "Phép năm, nghỉ ốm, thai sản, bảo hiểm sức khỏe." },
+  workplace: { label: "Nội quy Công sở", icon: "apartment", desc: "Quy tắc ứng xử, văn hóa nơi làm việc, an toàn văn phòng." },
+  finance: { label: "Tài chính", icon: "payments", desc: "Quản lý ngân sách, hoàn chi phí công tác, tiếp khách." },
+  ops: { label: "Vận hành", icon: "settings", desc: "Quy trình hằng ngày, báo cáo, họp định kỳ." },
 };
 
 export const POLICIES: Policy[] = [
@@ -422,31 +422,109 @@ export const POLICIES: Policy[] = [
     `,
   },
   {
-    id: "conduct",
-    title: "Quy tắc Ứng xử & Đạo đức Nghề nghiệp",
-    cat: "workplace",
-    catLabel: "Nội quy Công sở",
-    updated: "08/03/2026",
-    updatedTs: 20260308,
+    id: "travel",
+    title: "Chính sách Công tác & Du lịch",
+    cat: "finance",
+    catLabel: "Tài chính",
+    updated: "10/03/2026",
+    updatedTs: 20260310,
     effective: "01/01/2026",
-    desc: "Chuẩn mực hành vi, cam kết bảo mật thông tin và xung đột lợi ích.",
-    icon: "gavel",
+    desc: "Hướng dẫn mới về đặt vé máy bay, chỗ ở và chi tiêu khi công tác trong và ngoài nước.",
+    icon: "flight",
     body: `
-      <h2>1. Giá trị Cốt lõi NetSpace</h2>
-      <p>Mọi nhân viên được kỳ vọng thể hiện: <strong>Chính trực, Tôn trọng, Trách nhiệm, Sáng tạo</strong>.</p>
-      <h2>2. Ứng xử trong Công việc</h2>
+      <h2>1. Quy trình Đặt vé & Chỗ ở</h2>
+      <p>Mọi chuyến công tác phải được phê duyệt bởi Trưởng bộ phận ít nhất <strong>07 ngày</strong> trước khi khởi hành.</p>
       <ul>
-        <li>Đối xử tôn trọng, bình đẳng với tất cả đồng nghiệp.</li>
-        <li>Không có hành vi quấy rối, bắt nạt hoặc phân biệt đối xử.</li>
-        <li>Giao tiếp chuyên nghiệp trên tất cả kênh: email, LarkSuite, Zoom.</li>
+        <li>Vé máy bay: Ưu tiên hạng phổ thông (Economy). Với các chuyến bay trên 6 tiếng, có thể xem xét nâng hạng theo phê duyệt của Ban Giám đốc.</li>
+        <li>Khách sạn: Tiêu chuẩn 3-4 sao hoặc tương đương. Hạn mức <strong>1.500.000 VNĐ/đêm</strong>.</li>
       </ul>
-      <h2>3. Bảo mật Thông tin</h2>
+      <h2>2. Công tác phí (Per Diem)</h2>
+      <p>Hạn mức chi tiêu ăn uống và đi lại địa phương:</p>
       <ul>
-        <li>Không tiết lộ thông tin nội bộ cho bên ngoài.</li>
-        <li>Tuân thủ NDA đã ký khi gia nhập Công ty.</li>
-        <li>Thận trọng khi đăng nội dung liên quan NetSpace lên mạng xã hội.</li>
+        <li>Trong nước: <strong>500.000 VNĐ/ngày</strong>.</li>
+        <li>Nước ngoài: Tùy theo khu vực (Trung bình 50 - 80 USD/ngày).</li>
       </ul>
-      <div class="note"><p><strong>Nguyên tắc:</strong> Khi không chắc — hãy hỏi HR trước khi hành động.</p></div>
+      <div class="note"><p><strong>Lưu ý:</strong> Mọi chi phí phát sinh ngoàiPer Diem cần có hóa đơn tài chính hợp lệ và giải trình cụ thể.</p></div>
+    `,
+  },
+  {
+    id: "onboarding",
+    title: "Quy trình Onboarding Nhân viên Mới",
+    cat: "hr",
+    catLabel: "Nhân sự",
+    updated: "15/01/2026",
+    updatedTs: 20260115,
+    effective: "01/01/2026",
+    desc: "Các bước hội nhập, đào tạo định hướng và cấp phát công cụ làm việc cho thành viên mới.",
+    icon: "person_add",
+    body: `
+      <h2>1. Ngày đầu tiên (Day 1)</h2>
+      <p>Chào mừng bạn gia nhập NetSpace! Lịch trình ngày đầu tiên của bạn bao gồm:</p>
+      <ul>
+        <li>08:30: Đón tiếp tại sảnh bởi bộ phận HR.</li>
+        <li>09:00: Cấp phát trang thiết bị (Laptop, thẻ nhân viên, văn phòng phẩm).</li>
+        <li>10:00: Đào tạo định hướng (Văn hóa công ty, nội quy, giới thiệu các phòng ban).</li>
+        <li>12:00: Ăn trưa cùng Team.</li>
+      </ul>
+      <h2>2. Tuần đầu tiên (Week 1)</h2>
+      <ul>
+        <li>Hoàn thành các khóa đào tạo chuyên môn cơ bản.</li>
+        <li>Thiết lập tài khoản hệ thống (LarkSuite, Email, VPN).</li>
+        <li>Gặp gỡ "Buddy" — người đồng hành hỗ trợ bạn trong tháng đầu tiên.</li>
+      </ul>
+      <div class="note"><p><strong>HR Tips:</strong> Đừng ngần ngại đặt câu hỏi với Buddy hoặc bất kỳ ai trong phòng HR nếu bạn gặp khó khăn.</p></div>
+    `,
+  },
+  {
+    id: "device-policy",
+    title: "Sử dụng Thiết bị Công ty",
+    cat: "it",
+    catLabel: "IT & Bảo mật",
+    updated: "01/03/2026",
+    updatedTs: 20260301,
+    effective: "01/01/2026",
+    desc: "Quy định bảo quản, sử dụng và trách nhiệm đối với thiết bị công nghệ được cấp phát.",
+    icon: "devices",
+    body: `
+      <h2>1. Trách nhiệm Bảo quản</h2>
+      <p>Mỗi nhân viên chịu trách nhiệm bảo quản và giữ gìn thiết bị được cấp phát (Laptop, iPad, điện thoại công vụ).</p>
+      <ul>
+        <li>Không dán sticker, vẽ hoặc làm trầy xước vỏ thiết bị.</li>
+        <li>Không để thức ăn, đồ uống gần thiết bị.</li>
+        <li>Sử dụng túi chống sốc khi di chuyển.</li>
+      </ul>
+      <h2>2. Sử dụng Phần mềm</h2>
+      <ul>
+        <li>Tuyệt đối không cài đặt phần mềm không có bản quyền hoặc phần mềm độc hại.</li>
+        <li>Chỉ sử dụng thiết bị cho mục đích công việc của Công ty.</li>
+      </ul>
+      <h2>3. Mất mát & Hư hỏng</h2>
+      <p>Trường hợp mất hoặc hư hỏng do lỗi cá nhân, nhân viên có trách nhiệm bồi thường theo giá trị còn lại của thiết bị tại thời điểm đó.</p>
+    `,
+  },
+  {
+    id: "ops-workflow",
+    title: "Quy trình Vận hành Hằng ngày",
+    cat: "ops",
+    catLabel: "Vận hành",
+    updated: "10/02/2026",
+    updatedTs: 20260210,
+    effective: "01/01/2026",
+    desc: "Quy trình báo cáo, họp hằng tuần và phương thức quản lý tài nguyên nội bộ.",
+    icon: "settings",
+    body: `
+      <h2>1. Họp Định kỳ</h2>
+      <ul>
+        <li><strong>Meeting hằng ngày (Daily Stand-up):</strong> 15 phút đầu giờ để cập nhật tiến độ công việc.</li>
+        <li><strong>Họp tuần (Weekly Sync):</strong> Sáng thứ Hai từ 09:00 - 10:30.</li>
+      </ul>
+      <h2>2. Quản lý Tài liệu</h2>
+      <p>Toàn bộ tài liệu làm việc phải được lưu trữ tập trung trên <strong>LarkDrive</strong>. Phân quyền truy cập theo quy mô dự án và phòng ban.</p>
+      <h2>3. Kênh Liên lạc chính</h2>
+      <ul>
+        <li><strong>Thông báo gấp:</strong> Lark Messenger / Slack.</li>
+        <li><strong>Trao đổi công việc chi tiết:</strong> Comment trực tiếp trên Task hoặc qua Email.</li>
+      </ul>
     `,
   },
 ];
