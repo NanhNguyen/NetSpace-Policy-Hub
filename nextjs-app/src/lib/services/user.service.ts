@@ -15,6 +15,27 @@ const INITIAL_USERS: Profile[] = [
         full_name: "HR Manager",
         role_id: 2, // HR Role
         created_at: new Date().toISOString(),
+    },
+    {
+        id: "2",
+        email: "admin@gmail.com",
+        full_name: "System Admin",
+        role_id: 1, // ADMIN
+        created_at: new Date().toISOString(),
+    },
+    {
+        id: "3",
+        email: "staff@gmail.com",
+        full_name: "Nguyễn Văn A",
+        role_id: 4, // USER
+        created_at: new Date().toISOString(),
+    },
+    {
+        id: "4",
+        email: "manager@gmail.com",
+        full_name: "Trần Thị B",
+        role_id: 3, // TICKET_MANAGER
+        created_at: new Date().toISOString(),
     }
 ];
 
@@ -67,19 +88,51 @@ export const UserService = {
         return true;
     },
 
-    async login(email: string, pass: string): Promise<{ profile: Profile; token: string } | null> {
-        // Mock login - in a real app this uses JWT on server
-        if (email === "hr@gmail.com" && pass === "123456") {
-            const profile = await this.getProfile("1");
-            return profile ? { profile, token: "mock-jwt-token-hr" } : null;
+    async createProfile(data: { email: string; full_name: string; role_id: number; password?: string }): Promise<Profile> {
+        const users = getLocalUsers();
+        const maxId = users.length > 0 ? Math.max(...users.map(u => parseInt(u.id))) : 0;
+        const newId = (maxId + 1).toString();
+        
+        const newProfile: Profile = {
+            id: newId,
+            email: data.email,
+            full_name: data.full_name,
+            role_id: data.role_id,
+            created_at: new Date().toISOString(),
+        };
+
+        if (data.password) {
+            localStorage.setItem(`mock_pass_${data.email}`, data.password);
         }
 
-        // Handle other users if any
-        const users = getLocalUsers();
-        const user = users.find(u => u.email === email);
-        if (user && pass === "123456") { // Universal test pass for demo
-            const profile = await this.getProfile(user.id);
-            return profile ? { profile, token: `mock-jwt-token-${user.id}` } : null;
+        users.push(newProfile);
+        saveLocalUsers(users);
+        return {
+            ...newProfile,
+            role: ROLES.find(r => r.id === newProfile.role_id)
+        };
+    },
+
+    async login(email: string, pass: string): Promise<{ profile: Profile; token: string } | null> {
+        // Handle core test accounts
+        if (pass === "123456" && (email === "hr@gmail.com" || email === "admin@gmail.com" || email === "staff@gmail.com" || email === "manager@gmail.com")) {
+            const users = getLocalUsers();
+            const user = users.find(u => u.email === email);
+            if (user) {
+                const profile = await this.getProfile(user.id);
+                return profile ? { profile, token: `mock-jwt-token-${user.id}` } : null;
+            }
+        }
+
+        // Handle dynamically created users
+        const savedPass = localStorage.getItem(`mock_pass_${email}`);
+        if (savedPass && pass === savedPass) {
+            const users = getLocalUsers();
+            const user = users.find(u => u.email === email);
+            if (user) {
+                const profile = await this.getProfile(user.id);
+                return profile ? { profile, token: `mock-jwt-token-${user.id}` } : null;
+            }
         }
 
         return null;

@@ -74,6 +74,9 @@ export default function Header() {
         }
     };
 
+    const isAdmin = user?.email === 'admin@gmail.com' || user?.user_metadata?.role === 'ADMIN';
+    const showAskHR = !isAdmin;
+
     return (
         <>
             <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-neutral-soft shadow-sm">
@@ -112,13 +115,15 @@ export default function Header() {
 
                     {/* CTA */}
                     <div className="flex items-center gap-3">
-                        <button
-                            onClick={handleAskHR}
-                            className="hidden sm:flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-4 py-2.5 rounded-lg text-sm font-bold transition-all shadow-sm shadow-primary/20 active:scale-95"
-                        >
-                            <span className="material-symbols-outlined text-[18px]">support_agent</span>
-                            Hỏi HR
-                        </button>
+                        {showAskHR && (
+                            <button
+                                onClick={handleAskHR}
+                                className="hidden sm:flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-4 py-2.5 rounded-lg text-sm font-bold transition-all shadow-sm shadow-primary/20 active:scale-95"
+                            >
+                                <span className="material-symbols-outlined text-[18px]">support_agent</span>
+                                Hỏi HR
+                            </button>
+                        )}
                         <div className="flex items-center gap-2 mr-2">
                             <button className="relative w-10 h-10 rounded-full hover:bg-neutral-soft flex items-center justify-center transition-colors group">
                                 <span className="material-symbols-outlined text-text-muted text-[22px] group-hover:text-primary">notifications</span>
@@ -194,13 +199,15 @@ export default function Header() {
                                 {link.label}
                             </Link>
                         ))}
-                        <button
-                            onClick={() => { setMobileOpen(false); handleAskHR(); }}
-                            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary hover:bg-primary-dark text-white text-sm font-bold transition-colors mt-2"
-                        >
-                            <span className="material-symbols-outlined text-[18px]">support_agent</span>
-                            Hỏi HR
-                        </button>
+                        {showAskHR && (
+                            <button
+                                onClick={() => { setMobileOpen(false); handleAskHR(); }}
+                                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary hover:bg-primary-dark text-white text-sm font-bold transition-colors mt-2"
+                            >
+                                <span className="material-symbols-outlined text-[18px]">support_agent</span>
+                                Hỏi HR
+                            </button>
+                        )}
                     </div>
                 )}
             </header>

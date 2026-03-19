@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import PWARegistration from "@/components/PWARegistration";
 
 const inter = Inter({
@@ -36,9 +34,7 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} antialiased bg-bg-light text-text-main`}>
         <PWARegistration />
-        <Header />
-        <div className="min-h-[calc(100vh-80px)]">{children}</div>
-        <Footer />
+        {children}
       </body>
     </html>
   );

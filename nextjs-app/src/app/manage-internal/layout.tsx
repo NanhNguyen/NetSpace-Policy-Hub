@@ -82,7 +82,7 @@ export default function AdminLayout({
             return item.name === 'Duyệt yêu cầu';
         }
         if (role === 'HR') {
-            return ['Duyệt yêu cầu', 'Chính sách', 'FAQs'].includes(item.name);
+            return ['Duyệt yêu cầu', 'Chính sách', 'FAQs', 'Quản lý User'].includes(item.name);
         }
         if (role === 'ADMIN') {
             return true;

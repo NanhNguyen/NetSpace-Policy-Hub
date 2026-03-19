@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Users, Search, UserCheck, Shield, Award, User as UserIcon, MoreVertical, Check, RefreshCw } from "lucide-react";
+import { useEffect, useState, useMemo } from "react";
+import { Users, Search, UserCheck, Shield, Award, User as UserIcon, RefreshCw, UserPlus } from "lucide-react";
 import { UserService } from "@/lib/services/user.service";
 import { Profile, Role, UserRoleType } from "@/types";
+import UserModal from "@/components/admin/UserModal";
 
 export default function AdminUsersPage() {
     const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -11,6 +12,7 @@ export default function AdminUsersPage() {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
     const [updating, setUpdating] = useState<string | null>(null);
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
     const loadData = async () => {
         setLoading(true);
@@ -25,6 +27,15 @@ export default function AdminUsersPage() {
             console.error(error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleCreateUser = async (userData: { email: string; full_name: string; role_id: number; password?: string }) => {
+        try {
+            await UserService.createProfile(userData);
+            await loadData();
+        } catch (error: any) {
+            throw error;
         }
     };
 
@@ -48,10 +59,12 @@ export default function AdminUsersPage() {
         }
     };
 
-    const filtered = profiles.filter(p =>
-        p.email.toLowerCase().includes(search.toLowerCase()) ||
-        (p.full_name || "").toLowerCase().includes(search.toLowerCase())
-    );
+    const filtered = useMemo(() => {
+        return profiles.filter(p =>
+            p.email.toLowerCase().includes(search.toLowerCase()) ||
+            (p.full_name || "").toLowerCase().includes(search.toLowerCase())
+        );
+    }, [profiles, search]);
 
     const getRoleBadge = (roleCode: UserRoleType | undefined) => {
         switch (roleCode) {
@@ -76,14 +89,31 @@ export default function AdminUsersPage() {
                     </h1>
                     <p className="text-sm text-text-muted mt-1 font-medium italic">Phê duyệt và cấp quyền truy cập theo vai trò hệ thống.</p>
                 </div>
-                <button
-                    onClick={loadData}
-                    className="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-900 px-5 py-3 rounded-2xl font-bold text-sm transition-all border border-slate-200 shadow-sm"
-                >
-                    <RefreshCw size={18} className={loading ? "animate-spin" : ""} />
-                    Làm mới danh sách
-                </button>
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={loadData}
+                        className="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-900 px-5 py-3 rounded-2xl font-bold text-sm transition-all border border-slate-200 shadow-sm"
+                    >
+                        <RefreshCw size={18} className={loading ? "animate-spin" : ""} />
+                        Làm mới
+                    </button>
+                    <button
+                        onClick={() => setIsCreateModalOpen(true)}
+                        className="flex items-center gap-2 bg-slate-900 border border-slate-900 text-white px-6 py-3 rounded-2xl font-bold text-sm transition-all shadow-xl shadow-slate-900/20 active:scale-95 hover:bg-slate-800"
+                    >
+                        <UserPlus size={18} className="text-primary" />
+                        Thêm nhân viên
+                    </button>
+                </div>
             </div>
+
+            {isCreateModalOpen && (
+                <UserModal
+                    roles={roles}
+                    onClose={() => setIsCreateModalOpen(false)}
+                    onSave={handleCreateUser}
+                />
+            )}
 
             {/* Content Table */}
             <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-neutral-soft overflow-hidden">
@@ -110,7 +140,7 @@ export default function AdminUsersPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-neutral-soft text-sm">
-                            {loading ? (
+                            {loading && profiles.length === 0 ? (
                                 <tr>
                                     <td colSpan={3} className="px-8 py-20 text-center text-text-muted font-bold animate-pulse">Đang tải danh sách người dùng...</td>
                                 </tr>

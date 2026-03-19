@@ -20,6 +20,10 @@ if (!global.crypto) {
   global.crypto = require('crypto');
 }
 
+import { UsersModule } from './users/users.module';
+import { Profile } from './users/entities/profile.entity';
+import { Role } from './users/entities/role.entity';
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -29,7 +33,7 @@ if (!global.crypto) {
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: configService.get<string>('DATABASE_URL'),
-        entities: [Policy, Ticket, Faq, SearchLog, PushSubscriptionEntity],
+        entities: [Policy, Ticket, Faq, SearchLog, PushSubscriptionEntity, Profile, Role],
         synchronize: false,
       }),
     }),
@@ -39,6 +43,7 @@ if (!global.crypto) {
     FaqsModule,
     MailModule,
     NotificationsModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

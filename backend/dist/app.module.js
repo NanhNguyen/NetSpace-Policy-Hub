@@ -26,6 +26,9 @@ const push_subscription_entity_1 = require("./tickets/entities/push-subscription
 if (!global.crypto) {
     global.crypto = require('crypto');
 }
+const users_module_1 = require("./users/users.module");
+const profile_entity_1 = require("./users/entities/profile.entity");
+const role_entity_1 = require("./users/entities/role.entity");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -39,7 +42,7 @@ exports.AppModule = AppModule = __decorate([
                 useFactory: (configService) => ({
                     type: 'postgres',
                     url: configService.get('DATABASE_URL'),
-                    entities: [policy_entity_1.Policy, ticket_entity_1.Ticket, faq_entity_1.Faq, search_log_entity_1.SearchLog, push_subscription_entity_1.PushSubscriptionEntity],
+                    entities: [policy_entity_1.Policy, ticket_entity_1.Ticket, faq_entity_1.Faq, search_log_entity_1.SearchLog, push_subscription_entity_1.PushSubscriptionEntity, profile_entity_1.Profile, role_entity_1.Role],
                     synchronize: false,
                 }),
             }),
@@ -49,6 +52,7 @@ exports.AppModule = AppModule = __decorate([
             faqs_module_1.FaqsModule,
             mail_module_1.MailModule,
             notifications_module_1.NotificationsModule,
+            users_module_1.UsersModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
