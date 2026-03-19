@@ -28,6 +28,9 @@ const navItems = [
     { name: 'Quản lý User', href: '/manage-internal/users', icon: Users },
 ];
 
+import { supabase } from '@/lib/db/client';
+import toast from 'react-hot-toast';
+
 export default function AdminLayout({
     children,
 }: {
@@ -45,19 +48,17 @@ export default function AdminLayout({
                 return;
             }
 
-            const token = localStorage.getItem('mock_jwt_token');
-            const userId = localStorage.getItem('mock_user_id');
+            const { data: { user } } = await supabase.auth.getUser();
 
-            if (!token || !userId) {
+            if (!user) {
                 router.push('/manage-internal/login');
                 return;
             }
 
-            const profile = await UserService.getProfile(userId);
+            const profile = await UserService.getProfile(user.id);
             if (!profile || !profile.role || profile.role.code === 'USER') {
                 // Not an admin/hr/manager role
-                localStorage.removeItem('mock_jwt_token');
-                localStorage.removeItem('mock_user_id');
+                await supabase.auth.signOut();
                 router.push('/manage-internal/login?error=unauthorized');
                 return;
             }
@@ -70,8 +71,8 @@ export default function AdminLayout({
     }, [pathname, router]);
 
     const handleLogout = async () => {
-        localStorage.removeItem('mock_jwt_token');
-        localStorage.removeItem('mock_user_id');
+        await supabase.auth.signOut();
+        toast.success("Đăng xuất thành công!");
         setIsAuthenticated(false);
         router.push('/manage-internal/login');
     };

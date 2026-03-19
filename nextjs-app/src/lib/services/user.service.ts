@@ -20,7 +20,8 @@ export const UserService = {
         const res = await fetch(`${API_URL}/users/profiles/${userId}`);
         if (!res.ok) return null;
         return await res.json();
-    },
+    }
+,
 
     async updateRole(userId: string, roleId: number): Promise<boolean> {
         const res = await fetch(`${API_URL}/users/roles/${userId}`, {
@@ -47,7 +48,7 @@ export const UserService = {
     },
 
     async login(email: string, pass: string): Promise<{ profile: Profile; token: string } | null> {
-        // Authenticate with Supabase Auth (Real DB)
+        // --- Authenticate with Supabase Auth (Real DB) ---
         const { data, error } = await supabase.auth.signInWithPassword({
             email,
             password: pass,
@@ -63,7 +64,7 @@ export const UserService = {
 
         return {
             profile,
-            token: data.session?.access_token || "mock-token"
+            token: data.session?.access_token || "auth-token"
         };
     }
 };

@@ -17,6 +17,8 @@ export const metadata: Metadata = {
     "Trung tâm tra cứu chính sách nội bộ NetSpace. Mọi quy định, hướng dẫn và phúc lợi — tất cả ở một nơi.",
 };
 
+import { Toaster } from 'react-hot-toast';
+
 export default function RootLayout({
   children,
 }: {
@@ -33,6 +35,7 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} antialiased bg-bg-light text-text-main`}>
+        <Toaster position="top-center" reverseOrder={false} />
         <PWARegistration />
         {children}
       </body>

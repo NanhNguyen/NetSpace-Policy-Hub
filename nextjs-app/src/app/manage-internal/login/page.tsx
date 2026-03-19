@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Lock, Mail, ShieldCheck, AlertCircle, Loader2 } from "lucide-react";
 import { UserService } from "@/lib/services/user.service";
+import toast from "react-hot-toast";
 
 export default function AdminLoginPage() {
     const [email, setEmail] = useState("");
@@ -29,8 +30,7 @@ export default function AdminLoginPage() {
             const res = await UserService.login(email, password);
 
             if (res) {
-                localStorage.setItem("mock_jwt_token", res.token);
-                localStorage.setItem("mock_user_id", res.profile.id);
+                toast.success(`Xin chào Admin! Chào mừng quay trở lại hệ thống quản trị.`);
                 router.push("/manage-internal/dashboard");
             } else {
                 throw new Error("Email hoặc mật khẩu không đúng.");

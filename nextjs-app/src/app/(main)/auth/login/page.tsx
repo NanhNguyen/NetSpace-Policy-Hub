@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/db/client";
 import { UserService } from "@/lib/services/user.service";
+import toast from "react-hot-toast";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
@@ -19,17 +20,6 @@ export default function LoginPage() {
         setError("");
 
         try {
-            // First, check if it exists in Mock system (newly created accounts or admins)
-            const mockResult = await UserService.login(email, password);
-            if (mockResult) {
-                localStorage.setItem("mock_jwt_token", mockResult.token);
-                localStorage.setItem("mock_user_id", mockResult.profile.id);
-                router.push("/");
-                router.refresh();
-                return;
-            }
-
-            // Fallback to Supabase Auth
             const { error: authError } = await supabase.auth.signInWithPassword({
                 email,
                 password,
@@ -37,6 +27,7 @@ export default function LoginPage() {
 
             if (authError) throw authError;
 
+            toast.success("Đăng nhập thành công!");
             router.push("/");
             router.refresh();
         } catch (err: any) {

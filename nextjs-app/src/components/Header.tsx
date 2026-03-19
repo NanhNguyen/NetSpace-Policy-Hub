@@ -6,6 +6,7 @@ import { useState, useRef, useEffect } from "react";
 import Logo from "./Logo";
 import HRModal from "./HRModal";
 import { supabase } from "@/lib/db/client";
+import toast from "react-hot-toast";
 
 const NAV_LINKS = [
     { href: "/categories", label: "Chính Sách" },
@@ -22,9 +23,38 @@ export default function Header() {
     const menuRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        supabase.auth.getUser().then(({ data }) => setUser(data.user));
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            setUser(session?.user ?? null);
+        const fetchProfile = async (id: string, email: string) => {
+            try {
+                const { UserService } = await import("@/lib/services/user.service");
+                const profile = await UserService.getProfile(id);
+                if (profile) {
+                    setUser({
+                        id: profile.id,
+                        email: profile.email,
+                        user_metadata: { full_name: profile.full_name, role: profile.role?.code }
+                    });
+                } else {
+                    setUser({ id, email });
+                }
+            } catch (e) {
+                setUser({ id, email });
+            }
+        };
+
+        // Initial check
+        supabase.auth.getUser().then(({ data }) => {
+            if (data.user) {
+                fetchProfile(data.user.id, data.user.email || "");
+            }
+        });
+
+        // Listen for changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+            if (session?.user) {
+                fetchProfile(session.user.id, session.user.email || "");
+            } else {
+                setUser(null);
+            }
         });
 
         // Close menu on outside click
@@ -43,7 +73,11 @@ export default function Header() {
 
     const handleLogout = async () => {
         await supabase.auth.signOut();
+        localStorage.removeItem('mock_jwt_token');
+        localStorage.removeItem('mock_user_id');
         setMenuOpen(false);
+        setUser(null);
+        toast.success("Đăng xuất thành công. Hẹn gặp lại!");
         router.push("/");
     };
 
@@ -150,8 +184,9 @@ export default function Header() {
                             {menuOpen && user && (
                                 <div className="absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-xl border border-neutral-soft py-2 flex flex-col z-[60] animate-in fade-in slide-in-from-top-2 duration-200">
                                     <div className="px-4 py-3 border-b border-neutral-soft mb-2">
-                                        <p className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-0.5">Tài khoản</p>
-                                        <p className="text-sm font-black text-text-main truncate">{user.email}</p>
+                                        <p className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-0.5">Xin chào,</p>
+                                        <p className="text-sm font-black text-text-main truncate">{user.user_metadata?.full_name || user.email}</p>
+                                        <p className="text-[10px] text-text-muted truncate mt-0.5">{user.email}</p>
                                     </div>
                                     <Link
                                         href="/tickets"

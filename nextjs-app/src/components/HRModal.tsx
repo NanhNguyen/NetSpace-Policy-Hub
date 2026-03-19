@@ -24,15 +24,18 @@ export default function HRModal({ open, onClose, defaultTopic = "" }: HRModalPro
             setSubmitted(false);
             setError("");
 
-            // Get user info to autofill
-            supabase.auth.getUser().then(({ data }) => {
-                if (data.user) {
-                    setUser(data.user);
-                    setEmail(data.user.email || "");
-                    // Try to get name from metadata if exists
-                    setName(data.user.user_metadata?.full_name || "");
+            const fetchUser = async () => {
+                const { data: { user: authUser } } = await supabase.auth.getUser();
+                if (authUser) {
+                    const { UserService } = await import("@/lib/services/user.service");
+                    const profile = await UserService.getProfile(authUser.id);
+                    setUser(authUser);
+                    setEmail(authUser.email || "");
+                    setName(profile?.full_name || authUser.user_metadata?.full_name || "");
                 }
-            });
+            };
+
+            fetchUser();
 
             setTimeout(() => nameRef.current?.focus(), 100);
             document.body.style.overflow = "hidden";
@@ -126,38 +129,39 @@ export default function HRModal({ open, onClose, defaultTopic = "" }: HRModalPro
                             </div>
 
                             <form onSubmit={handleSubmit} noValidate className="space-y-5">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                    <div className="space-y-1.5">
-                                        <label className="block text-xs font-black text-slate-700 uppercase tracking-wider ml-1" htmlFor="hr-name">
-                                            Họ và tên
-                                        </label>
-                                        <input
-                                            id="hr-name"
-                                            ref={nameRef}
-                                            type="text"
-                                            required
-                                            value={name}
-                                            onChange={(e) => setName(e.target.value)}
-                                            placeholder="Nguyễn Văn A"
-                                            className="w-full text-sm rounded-xl border border-slate-200 px-4 py-3.5 focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all shadow-sm font-semibold placeholder:text-slate-300"
-                                        />
+                                {!user && (
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                        <div className="space-y-1.5">
+                                            <label className="block text-xs font-black text-slate-700 uppercase tracking-wider ml-1" htmlFor="hr-name">
+                                                Họ và tên
+                                            </label>
+                                            <input
+                                                id="hr-name"
+                                                ref={nameRef}
+                                                type="text"
+                                                required
+                                                value={name}
+                                                onChange={(e) => setName(e.target.value)}
+                                                placeholder="Nguyễn Văn A"
+                                                className="w-full text-sm rounded-xl border border-slate-200 px-4 py-3.5 focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all shadow-sm font-semibold placeholder:text-slate-300"
+                                            />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className="block text-xs font-black text-slate-700 uppercase tracking-wider ml-1" htmlFor="hr-email">
+                                                Email liên hệ
+                                            </label>
+                                            <input
+                                                id="hr-email"
+                                                type="email"
+                                                required
+                                                value={email}
+                                                onChange={(e) => setEmail(e.target.value)}
+                                                placeholder="ten.ho@netspace.com.vn"
+                                                className="w-full text-sm rounded-xl border border-slate-200 px-4 py-3.5 focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all shadow-sm font-semibold placeholder:text-slate-300"
+                                            />
+                                        </div>
                                     </div>
-                                    <div className="space-y-1.5">
-                                        <label className="block text-xs font-black text-slate-700 uppercase tracking-wider ml-1" htmlFor="hr-email">
-                                            Email liên hệ
-                                        </label>
-                                        <input
-                                            id="hr-email"
-                                            type="email"
-                                            required
-                                            readOnly={!!user}
-                                            value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
-                                            placeholder="ten.ho@netspace.com.vn"
-                                            className={`w-full text-sm rounded-xl border border-slate-200 px-4 py-3.5 focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all shadow-sm font-semibold placeholder:text-slate-300 ${user ? 'bg-slate-50 text-slate-400' : ''}`}
-                                        />
-                                    </div>
-                                </div>
+                                )}
 
                                 <div className="space-y-1.5">
                                     <label className="block text-xs font-black text-slate-700 uppercase tracking-wider ml-1" htmlFor="hr-topic">
