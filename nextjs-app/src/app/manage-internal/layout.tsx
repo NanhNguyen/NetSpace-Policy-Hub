@@ -11,17 +11,21 @@ import {
     BarChart2,
     Settings,
     LogOut,
-    Home
+    Home,
+    Users
 } from 'lucide-react';
 import Logo from '@/components/Logo';
 import PushNotificationToggle from '@/components/admin/PushNotificationToggle';
+import { UserService } from '@/lib/services/user.service';
+import { UserRoleType } from '@/types';
 
 const navItems = [
     { name: 'Dashboard', href: '/manage-internal/dashboard', icon: LayoutDashboard },
-    { name: 'Policies', href: '/manage-internal/policies', icon: FileText },
-    { name: 'Tickets', href: '/manage-internal/tickets', icon: MessageSquare },
+    { name: 'Duyệt yêu cầu', href: '/manage-internal/tickets', icon: MessageSquare },
+    { name: 'Chính sách', href: '/manage-internal/policies', icon: FileText },
     { name: 'FAQs', href: '/manage-internal/faqs', icon: HelpCircle },
-    { name: 'Analytics', href: '/manage-internal/analytics', icon: BarChart2 },
+    { name: 'Thống kê', href: '/manage-internal/analytics', icon: BarChart2 },
+    { name: 'Quản lý User', href: '/manage-internal/users', icon: Users },
 ];
 
 export default function AdminLayout({
@@ -35,38 +39,55 @@ export default function AdminLayout({
     const [role, setRole] = useState<'ADMIN' | 'HR' | 'TICKET_MANAGER' | null>(null);
 
     useEffect(() => {
-        if (pathname === '/manage-internal/login') {
-            setIsAuthenticated(true);
-            setRole('ADMIN');
-            return;
-        }
+        const checkAuth = async () => {
+            if (pathname === '/manage-internal/login') {
+                setIsAuthenticated(true);
+                return;
+            }
 
-        const auth = localStorage.getItem('admin_auth');
-        const userRole = localStorage.getItem('admin_role') as any;
+            const token = localStorage.getItem('mock_jwt_token');
+            const userId = localStorage.getItem('mock_user_id');
 
-        if (auth !== 'true') {
-            router.push('/manage-internal/login');
-        } else {
+            if (!token || !userId) {
+                router.push('/manage-internal/login');
+                return;
+            }
+
+            const profile = await UserService.getProfile(userId);
+            if (!profile || !profile.role || profile.role.code === 'USER') {
+                // Not an admin/hr/manager role
+                localStorage.removeItem('mock_jwt_token');
+                localStorage.removeItem('mock_user_id');
+                router.push('/manage-internal/login?error=unauthorized');
+                return;
+            }
+
             setIsAuthenticated(true);
-            setRole(userRole || 'ADMIN');
-        }
+            setRole(profile.role.code as any);
+        };
+
+        checkAuth();
     }, [pathname, router]);
 
-    const handleLogout = () => {
-        localStorage.removeItem('admin_auth');
-        localStorage.removeItem('admin_role');
+    const handleLogout = async () => {
+        localStorage.removeItem('mock_jwt_token');
+        localStorage.removeItem('mock_user_id');
+        setIsAuthenticated(false);
         router.push('/manage-internal/login');
     };
 
     const filteredNavItems = navItems.filter(item => {
         if (!role) return false;
         if (role === 'TICKET_MANAGER') {
-            return item.name === 'Tickets';
+            return item.name === 'Duyệt yêu cầu';
         }
         if (role === 'HR') {
-            return ['Tickets', 'Policies', 'FAQs'].includes(item.name);
+            return ['Duyệt yêu cầu', 'Chính sách', 'FAQs'].includes(item.name);
         }
-        return true;
+        if (role === 'ADMIN') {
+            return true;
+        }
+        return false;
     });
 
     if (isAuthenticated === null) {

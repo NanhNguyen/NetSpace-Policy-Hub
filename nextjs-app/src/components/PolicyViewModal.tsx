@@ -1,15 +1,47 @@
 "use client";
 
-import { X, Calendar, User } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { X, Calendar, User, Loader2 } from 'lucide-react';
 import { Policy } from '@/types';
 import { CATEGORIES } from '@/lib/data';
+import { PolicyService } from '@/lib/services/policy.service';
 
 interface PolicyViewModalProps {
     policy: Policy | null;
     onClose: () => void;
 }
 
-export default function PolicyViewModal({ policy, onClose }: PolicyViewModalProps) {
+export default function PolicyViewModal({ policy: initialPolicy, onClose }: PolicyViewModalProps) {
+    const [policy, setPolicy] = useState<Policy | null>(initialPolicy);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (!initialPolicy?.id) return;
+        
+        const fetchFullPolicy = async () => {
+            setLoading(true);
+            try {
+                // Determine if we should fetch by ID or slug
+                // For local ones, ID and slug are usually the same (e.g., 'remote-work')
+                // But preferred is always to fetch from API if available
+                const fullData = await PolicyService.getById(initialPolicy.id);
+                if (fullData) {
+                    setPolicy(fullData);
+                }
+            } catch (err) {
+                console.warn('Failed to fetch full policy, using initial data:', err);
+                // We keep the initialPolicy if fetch fails
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        // Only fetch if content is suspiciously short or if we want to ensure sync with DB
+        // Based on user request, they want it linked to DB, so we fetch always to be sure.
+        fetchFullPolicy();
+    }, [initialPolicy?.id]);
+
     if (!policy) return null;
 
     const catInfo = CATEGORIES[policy.category as keyof typeof CATEGORIES] || { label: policy.category, icon: 'description' };
@@ -69,19 +101,42 @@ export default function PolicyViewModal({ policy, onClose }: PolicyViewModalProp
                 </div>
 
                 {/* Scrollable Body */}
-                <div className="flex-1 overflow-y-auto">
-                    {/* Excerpt */}
-                    {policy.excerpt && (
-                        <div className="mx-4 sm:mx-8 mt-5 p-4 bg-slate-50 rounded-xl border border-slate-100 text-slate-600 leading-relaxed text-sm font-medium italic border-l-4 border-l-primary">
-                            "{policy.excerpt}"
-                        </div>
-                    )}
+                <div className="flex-1 overflow-y-auto bg-white">
+                    <div className="max-w-3xl mx-auto space-y-10 pb-12">
+                        {/* Excerpt Section */}
+                        {policy.excerpt && (
+                            <div className="mx-5 sm:mx-8 mt-8">
+                                <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-1 flex items-center gap-2">
+                                    <span className="w-1.5 h-1.5 bg-primary rounded-full" />
+                                    Tóm tắt quy định
+                                </div>
+                                <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100 text-slate-600 leading-relaxed text-sm font-bold italic shadow-sm border-l-4 border-l-primary/30">
+                                    "{policy.excerpt}"
+                                </div>
+                            </div>
+                        )}
 
-                    {/* Policy HTML Content */}
-                    <div
-                        className="px-5 sm:px-8 py-6 policy-body"
-                        dangerouslySetInnerHTML={{ __html: policy.content || '<p class="text-slate-400">Nội dung đang được cập nhật.</p>' }}
-                    />
+                        {/* Policy HTML Content Section */}
+                        <div className="px-5 sm:px-8 relative min-h-[300px]">
+                            <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6 ml-1 flex items-center gap-2">
+                                <span className="w-1.5 h-1.5 bg-green-500 rounded-full" />
+                                Nội dung chi tiết văn bản
+                            </div>
+                            
+                            {loading && (
+                                <div className="absolute inset-x-0 top-16 bottom-0 bg-white/60 backdrop-blur-[2px] flex items-center justify-center z-10 transition-all rounded-3xl">
+                                    <div className="flex flex-col items-center gap-3">
+                                        <div className="w-12 h-12 border-4 border-primary/10 border-t-primary rounded-full animate-spin" />
+                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Đang đồng bộ từ Database...</span>
+                                    </div>
+                                </div>
+                            )}
+                        
+                        <div
+                            dangerouslySetInnerHTML={{ __html: policy.content || '<p class="text-slate-400 italic">Nội dung đang được cập nhật từ hệ thống...</p>' }}
+                        />
+                        </div>
+                    </div>
                 </div>
 
                 {/* Footer */}
@@ -97,3 +152,4 @@ export default function PolicyViewModal({ policy, onClose }: PolicyViewModalProp
         </div>
     );
 }
+

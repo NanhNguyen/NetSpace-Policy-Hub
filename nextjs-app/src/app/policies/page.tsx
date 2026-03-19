@@ -8,11 +8,6 @@ import PolicyCard from "@/components/PolicyCard";
 import { PolicyService } from "@/lib/services/policy.service";
 import { Policy } from "@/types";
 
-const ALL_CATS = [
-    { key: "all", label: "Tất cả" },
-    ...Object.entries(CATEGORIES).map(([k, v]) => ({ key: k, label: v.label })),
-];
-
 function PoliciesContent() {
     const searchParams = useSearchParams();
     const [search, setSearch] = useState(searchParams.get("q") || "");
@@ -20,6 +15,20 @@ function PoliciesContent() {
     const [filter, setFilter] = useState(searchParams.get("cat") || "all");
     const [policies, setPolicies] = useState<Policy[]>([]);
     const [loading, setLoading] = useState(true);
+
+    const categoriesList = useMemo(() => {
+        const uniqueKeys = Array.from(new Set(policies.map(p => p.category)));
+        const list = [{ key: "all", label: "Tất cả" }];
+        
+        uniqueKeys.forEach(key => {
+            const label = CATEGORIES[key as keyof typeof CATEGORIES]?.label || (key.charAt(0).toUpperCase() + key.slice(1));
+            if (!list.find(item => item.key === key)) {
+                list.push({ key, label });
+            }
+        });
+        
+        return list;
+    }, [policies]);
 
     useEffect(() => {
         const load = async () => {
@@ -67,108 +76,107 @@ function PoliciesContent() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 mb-10 items-center justify-between border-b pb-8 border-neutral-soft">
-                <div className="relative flex-1 max-w-lg">
-                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-muted text-[20px]">
-                        search
-                    </span>
+                {/* Search */}
+                <div className="relative w-full sm:w-[400px]">
+                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-muted text-[18px]">search</span>
                     <input
-                        type="text"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         placeholder="Tìm kiếm chính sách, quy định..."
-                        className="w-full pl-12 pr-4 py-4 rounded-2xl border border-neutral-soft bg-white text-sm focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all shadow-sm"
+                        className="w-full pl-11 pr-4 py-3.5 bg-neutral-soft/30 border border-neutral-soft rounded-2xl text-sm focus:ring-4 focus:ring-primary/10 transition-all outline-none"
                     />
                 </div>
+
                 <div className="flex items-center gap-3 w-full sm:w-auto">
-                    <span className="text-xs font-bold text-text-muted whitespace-nowrap hidden sm:block">Sắp xếp:</span>
-                    <select
-                        value={sort}
-                        onChange={(e) => setSort(e.target.value)}
-                        className="text-sm rounded-xl border border-neutral-soft bg-white px-4 py-3.5 focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all text-text-main font-bold shadow-sm"
-                    >
-                        <option value="default">Mặc định</option>
-                        <option value="name">Tên A-Z</option>
-                        <option value="updated">Mới nhất</option>
-                    </select>
+                    {/* Filter */}
+                    <div className="flex items-center bg-neutral-soft/30 p-1.5 rounded-2xl border border-neutral-soft flex-1 sm:flex-initial overflow-x-auto no-scrollbar">
+                        {categoriesList.map((cat) => (
+                            <button
+                                key={cat.key}
+                                onClick={() => setFilter(cat.key)}
+                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${filter === cat.key
+                                    ? "bg-white text-primary shadow-sm ring-1 ring-black/5"
+                                    : "text-text-muted hover:text-text-main"
+                                    }`}
+                            >
+                                {cat.label}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Sort Select */}
+                    <div className="relative min-w-[140px]">
+                        <select
+                            value={sort}
+                            onChange={(e) => setSort(e.target.value)}
+                            className="w-full appearance-none pl-4 pr-10 py-3.5 bg-neutral-soft/30 border border-neutral-soft rounded-2xl text-[10px] font-black uppercase tracking-widest outline-none focus:ring-4 focus:ring-primary/10 transition-all cursor-pointer"
+                        >
+                            <option value="default">Sắp xếp</option>
+                            <option value="name">Tên A-Z</option>
+                            <option value="updated">Mới nhất</option>
+                        </select>
+                        <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-text-muted text-[16px] pointer-events-none">expand_more</span>
+                    </div>
                 </div>
             </div>
 
             {/* Grouped by Category */}
             {filtered.length > 0 ? (
                 <div className="space-y-16">
-                    {Object.entries(CATEGORIES).map(([key, cat]) => {
-                        const catPolicies = filtered.filter(p => p.category === key);
-                        if (catPolicies.length === 0) return null;
-
-                        return (
-                            <section key={key} id={key} className="scroll-mt-24">
-                                <div className="flex items-center gap-3 mb-8 text-text-main">
-                                    <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary border border-primary/20">
-                                        <span className="material-symbols-outlined text-[24px]">{cat.icon}</span>
-                                    </div>
-                                    <div>
-                                        <h2 className="text-xl font-black leading-tight">{cat.label}</h2>
-                                        <p className="text-xs text-text-muted mt-0.5">{cat.desc.substring(0, 100)}</p>
-                                    </div>
-                                    <div className="ml-auto h-[1px] bg-neutral-soft flex-1 ml-6 hidden md:block" />
-                                    <span className="ml-4 text-[10px] font-black uppercase tracking-widest text-text-muted/50 bg-neutral-soft/50 px-2 py-1 rounded">
-                                        {catPolicies.length} POLICY
-                                    </span>
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {catPolicies.map((p) => (
-                                        <PolicyCard key={p.id} policy={p} />
-                                    ))}
-                                </div>
-                            </section>
-                        );
-                    })}
-
-                    {/* Handle policies with other categories */}
                     {(() => {
+                        const categoriesPresent = Array.from(new Set(filtered.map(p => p.category)));
+                        
+                        // Sort so that known categories come first, then others alphabetically
                         const knownCats = Object.keys(CATEGORIES);
-                        const otherPolicies = filtered.filter(p => !knownCats.includes(p.category));
-                        if (otherPolicies.length === 0) return null;
+                        const sortedCats = categoriesPresent.sort((a, b) => {
+                            const aIdx = knownCats.indexOf(a);
+                            const bIdx = knownCats.indexOf(b);
+                            if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
+                            if (aIdx !== -1) return -1;
+                            if (bIdx !== -1) return 1;
+                            return a.localeCompare(b, "vi");
+                        });
 
-                        return (
-                            <section id="other" className="scroll-mt-24">
-                                <div className="flex items-center gap-3 mb-8 text-text-main">
-                                    <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-500 border border-slate-200">
-                                        <span className="material-symbols-outlined text-[24px]">more_horiz</span>
+                        return sortedCats.map((catKey) => {
+                            const catPolicies = filtered.filter(p => p.category === catKey);
+                            const meta = CATEGORIES[catKey as keyof typeof CATEGORIES] || { 
+                                label: catKey.charAt(0).toUpperCase() + catKey.slice(1), 
+                                icon: catPolicies[0]?.icon || "description", 
+                                desc: "Tập hợp các quy định và chính sách thuộc danh mục này." 
+                            };
+
+                            return (
+                                <section key={catKey} id={catKey} className="scroll-mt-24">
+                                    <div className="flex items-center gap-3 mb-8 text-text-main">
+                                        <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary border border-primary/20">
+                                            <span className="material-symbols-outlined text-[24px]">{meta.icon}</span>
+                                        </div>
+                                        <div>
+                                            <h2 className="text-xl font-black leading-tight">{meta.label}</h2>
+                                            <p className="text-xs text-text-muted mt-0.5">{meta.desc.substring(0, 100)}</p>
+                                        </div>
+                                        <div className="ml-auto h-[1px] bg-neutral-soft flex-1 ml-6 hidden md:block" />
+                                        <span className="ml-4 text-[10px] font-black uppercase tracking-widest text-text-muted/50 bg-neutral-soft/50 px-2 py-1 rounded">
+                                            {catPolicies.length} POLICY
+                                        </span>
                                     </div>
-                                    <div>
-                                        <h2 className="text-xl font-black leading-tight">Chính sách khác</h2>
-                                        <p className="text-xs text-text-muted mt-0.5">Các quy định và hướng dẫn bổ sung khác.</p>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {catPolicies.map((p) => (
+                                            <PolicyCard key={p.id} policy={p} />
+                                        ))}
                                     </div>
-                                    <div className="ml-auto h-[1px] bg-neutral-soft flex-1 ml-6 hidden md:block" />
-                                    <span className="ml-4 text-[10px] font-black uppercase tracking-widest text-text-muted/50 bg-neutral-soft/50 px-2 py-1 rounded">
-                                        {otherPolicies.length} POLICY
-                                    </span>
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {otherPolicies.map((p) => (
-                                        <PolicyCard key={p.id} policy={p} />
-                                    ))}
-                                </div>
-                            </section>
-                        );
+                                </section>
+                            );
+                        });
                     })()}
                 </div>
             ) : (
-                <div className="text-center py-24 bg-white rounded-3xl border border-dashed border-neutral-soft">
-                    <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <span className="material-symbols-outlined text-[48px] text-slate-300">search_off</span>
+                <div className="py-20 text-center bg-slate-50 rounded-[3rem] border-2 border-dashed border-slate-200">
+                    <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-300">
+                        <span className="material-symbols-outlined text-[40px]">policy_search</span>
                     </div>
-                    <h3 className="text-xl font-bold text-slate-800 mb-2">Không tìm thấy chính sách nào</h3>
-                    <p className="text-sm text-slate-500 max-w-xs mx-auto mb-8">
-                        Hãy thử lại với từ khóa khác hoặc liên hệ bộ phận HR để được hỗ trợ.
-                    </p>
-                    <button
-                        onClick={() => setSearch("")}
-                        className="bg-primary text-white px-8 py-3 rounded-xl font-bold text-sm shadow-lg shadow-primary/20 hover:opacity-90 transition-all"
-                    >
-                        Xóa tìm kiếm
-                    </button>
+                    <h3 className="text-xl font-black text-slate-900 mb-2">Không tìm thấy kết quả</h3>
+                    <p className="text-slate-400 max-w-xs mx-auto text-sm">Thử thay đổi từ khóa hoặc bộ lọc để tìm kiếm lại.</p>
                 </div>
             )}
         </main>
@@ -177,7 +185,7 @@ function PoliciesContent() {
 
 export default function PoliciesPage() {
     return (
-        <Suspense fallback={<div className="py-20 text-center text-text-muted">Đang tải...</div>}>
+        <Suspense fallback={<div className="py-20 text-center text-text-muted italic">Đang tải nội dung...</div>}>
             <PoliciesContent />
         </Suspense>
     );

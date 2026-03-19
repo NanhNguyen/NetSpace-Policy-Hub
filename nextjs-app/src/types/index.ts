@@ -1,5 +1,22 @@
-export type PolicyCategory =
-    | 'leave' | 'it' | 'finance' | 'conduct' | 'hr' | 'benefits';
+export type PolicyCategory = string;
+
+export type UserRoleType = 'ADMIN' | 'HR' | 'TICKET_MANAGER' | 'USER';
+
+export interface Role {
+    id: number;
+    name: string;
+    code: UserRoleType;
+}
+
+export interface Profile {
+    id: string;
+    email: string;
+    full_name?: string;
+    avatar_url?: string;
+    role_id: number; // Foreign key to Role
+    role?: Role; // Joined role data
+    created_at: string;
+}
 
 export type TicketStatus = 'open' | 'answered' | 'closed';
 
