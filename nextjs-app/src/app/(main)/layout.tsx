@@ -2,6 +2,7 @@
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import BackToTop from "@/components/BackToTop";
 
 export default function MainLayout({
   children,
@@ -13,6 +14,7 @@ export default function MainLayout({
       <Header />
       <main className="min-h-[calc(100vh-80px)]">{children}</main>
       <Footer />
+      <BackToTop />
     </>
   );
 }
