@@ -67,6 +67,14 @@
   .shadow-card-hover {
     box-shadow: 0 8px 36px 0 rgba(124, 58, 237, 0.18);
   }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
 
 /* Policy content typography (legacy site page) */

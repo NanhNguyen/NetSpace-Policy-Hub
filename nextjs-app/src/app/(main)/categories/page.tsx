@@ -23,20 +23,20 @@ export default function CategoriesPage() {
                     <Link
                         key={key}
                         href={`/policies?cat=${key}`}
-                        className="category-card bg-white rounded-2xl border border-neutral-soft p-7 group block hover:border-primary/20 transition-all hover:shadow-xl hover:shadow-primary/5"
+                        className="category-card bg-white rounded-3xl sm:rounded-2xl border border-neutral-soft p-10 sm:p-7 group block hover:border-primary/20 transition-all hover:shadow-xl hover:shadow-primary/5 active:scale-[0.98]"
                     >
-                        <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-5 group-hover:bg-primary transition-colors">
-                            <span className="material-symbols-outlined text-primary group-hover:text-white text-[28px] transition-colors">
+                        <div className="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary transition-colors">
+                            <span className="material-symbols-outlined text-primary group-hover:text-white text-[40px] transition-colors">
                                 {cat.icon}
                             </span>
                         </div>
-                        <h2 className="text-lg font-black text-text-main mb-2">{cat.label}</h2>
-                        <p className="text-sm text-text-muted leading-relaxed mb-4">{cat.desc}</p>
+                        <h2 className="text-xl sm:text-lg font-black text-text-main mb-3 sm:mb-2">{cat.label}</h2>
+                        <p className="text-base sm:text-sm text-text-muted leading-relaxed mb-6 sm:mb-4">{cat.desc}</p>
                         <div className="flex items-center justify-between">
-                            <span className="text-xs font-bold text-text-muted bg-neutral-soft px-3 py-1 rounded-full">
-                                {cat.count} chính sách
+                            <span className="text-xs font-bold text-text-muted bg-neutral-soft px-3 py-1.5 rounded-full">
+                                Xem chi tiết
                             </span>
-                            <span className="material-symbols-outlined text-primary text-[20px]">arrow_forward</span>
+                            <span className="material-symbols-outlined text-primary text-[24px] sm:text-[20px]">arrow_forward</span>
                         </div>
                     </Link>
                 ))}

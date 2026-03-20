@@ -149,18 +149,22 @@ export default function HomePage() {
               Xem tất cả <span className="material-symbols-outlined text-[18px]">east</span>
             </Link>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5 sm:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {Object.entries(CATEGORIES).map(([key, cat]) => (
               <Link
                 key={key}
                 href={`/policies?cat=${key}`}
-                className="category-card group bg-white p-6 rounded-2xl border border-slate-100 cursor-pointer text-left block hover:border-primary/30 transition-all hover:shadow-xl hover:shadow-primary/5"
+                className="category-card group bg-white p-8 rounded-3xl border border-slate-100 cursor-pointer text-left block hover:border-primary/30 transition-all hover:shadow-2xl hover:shadow-primary/10 active:scale-[0.98]"
               >
-                <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center mb-5 group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
-                  <span className="material-symbols-outlined text-primary group-hover:text-white transition-colors">{cat.icon}</span>
+                <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
+                  <span className="material-symbols-outlined text-primary group-hover:text-white text-[32px] transition-colors">{cat.icon}</span>
                 </div>
-                <h3 className="font-black text-sm mb-1 text-slate-900 leading-tight">{cat.label}</h3>
-                <p className="text-[10px] text-slate-400 font-bold leading-relaxed">{cat.desc.substring(0, 35)}...</p>
+                <h3 className="font-black text-xl sm:text-lg mb-2 text-slate-900 leading-tight">{cat.label}</h3>
+                <p className="text-sm sm:text-xs text-slate-400 font-bold leading-relaxed">{cat.desc}</p>
+                <div className="mt-6 flex items-center justify-between">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-primary/40 group-hover:text-primary transition-colors">Xem chi tiết</span>
+                  <span className="material-symbols-outlined text-[20px] text-slate-300 group-hover:text-primary group-hover:translate-x-1 transition-all">east</span>
+                </div>
               </Link>
             ))}
           </div>
