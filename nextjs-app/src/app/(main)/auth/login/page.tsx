@@ -20,13 +20,7 @@ export default function LoginPage() {
         setError("");
 
         try {
-            const { error: authError } = await supabase.auth.signInWithPassword({
-                email,
-                password,
-            });
-
-            if (authError) throw authError;
-
+            await UserService.login(email, password);
             toast.success("Đăng nhập thành công!");
             router.push("/");
             router.refresh();

@@ -112,9 +112,10 @@ export default function HRModal({ open, onClose, defaultTopic = "" }: HRModalPro
                         </div>
                         <button
                             onClick={handleClose}
-                            className="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-all text-white/70 hover:text-white group border border-transparent hover:border-white/10"
+                            className="w-12 h-12 rounded-full hover:bg-white/10 flex items-center justify-center transition-all text-white/70 hover:text-white group border border-transparent hover:border-white/10"
+                            aria-label="Đóng"
                         >
-                            <span className="material-symbols-outlined text-[20px] group-active:scale-90">close</span>
+                            <span className="material-symbols-outlined text-[24px] group-active:scale-90">close</span>
                         </button>
                     </div>
                 </div>

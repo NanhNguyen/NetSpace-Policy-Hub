@@ -15,9 +15,9 @@ import {
     Users
 } from 'lucide-react';
 import Logo from '@/components/Logo';
-import PushNotificationToggle from '@/components/admin/PushNotificationToggle';
 import { UserService } from '@/lib/services/user.service';
 import { UserRoleType } from '@/types';
+import NotificationBell from '@/components/NotificationBell';
 
 const navItems = [
     { name: 'Dashboard', href: '/manage-internal/dashboard', icon: LayoutDashboard },
@@ -134,7 +134,6 @@ export default function AdminLayout({
                 </nav>
 
                 <div className="p-4 border-t border-white/10 space-y-2">
-                    {role === 'ADMIN' && <PushNotificationToggle />}
                     <Link
                         href="/"
                         className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-colors text-sm font-semibold text-slate-400 group"
@@ -153,8 +152,11 @@ export default function AdminLayout({
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 ml-64 p-8 min-h-screen bg-slate-50/50 backdrop-blur-sm">
-                <div className="max-w-7xl mx-auto">
+            <main className="flex-1 ml-68 p-8 min-h-screen bg-slate-50/50 backdrop-blur-sm relative">
+                <div className="absolute top-6 right-8 z-50">
+                    {(role === 'HR' || role === 'ADMIN') && <NotificationBell role="HR" />}
+                </div>
+                <div className="max-w-7xl mx-auto pt-6">
                     {children}
                 </div>
             </main>

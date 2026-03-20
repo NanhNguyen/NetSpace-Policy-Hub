@@ -94,9 +94,9 @@ export default function PolicyViewModal({ policy: initialPolicy, onClose }: Poli
                     <button
                         onClick={onClose}
                         aria-label="Đóng"
-                        className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full transition-all text-white border border-white/10 active:scale-90"
+                        className="absolute top-4 right-4 w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition-all text-white border border-white/10 active:scale-90"
                     >
-                        <X size={18} />
+                        <span className="material-symbols-outlined text-[24px]">close</span>
                     </button>
                 </div>
 

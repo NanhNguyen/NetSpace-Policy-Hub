@@ -52,12 +52,15 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const webpush = __importStar(require("web-push"));
 const push_subscription_entity_1 = require("../tickets/entities/push-subscription.entity");
+const notification_entity_1 = require("./entities/notification.entity");
 let PushService = class PushService {
     configService;
     subscriptionRepo;
-    constructor(configService, subscriptionRepo) {
+    notificationRepo;
+    constructor(configService, subscriptionRepo, notificationRepo) {
         this.configService = configService;
         this.subscriptionRepo = subscriptionRepo;
+        this.notificationRepo = notificationRepo;
     }
     onModuleInit() {
         const publicKey = this.configService.get('VAPID_PUBLIC_KEY');
@@ -99,12 +102,29 @@ let PushService = class PushService {
         }));
         await Promise.all(promises);
     }
+    async createNotification(data) {
+        const notif = this.notificationRepo.create(data);
+        return await this.notificationRepo.save(notif);
+    }
+    async getNotifications(userId, role) {
+        const query = this.notificationRepo.createQueryBuilder('notif')
+            .where('notif.user_id = :userId', { userId })
+            .orWhere('notif.role = :role', { role })
+            .orderBy('notif.created_at', 'DESC')
+            .take(50);
+        return await query.getMany();
+    }
+    async markAsRead(id) {
+        await this.notificationRepo.update(id, { is_read: true });
+    }
 };
 exports.PushService = PushService;
 exports.PushService = PushService = __decorate([
     (0, common_1.Injectable)(),
     __param(1, (0, typeorm_1.InjectRepository)(push_subscription_entity_1.PushSubscriptionEntity)),
+    __param(2, (0, typeorm_1.InjectRepository)(notification_entity_1.NotificationEntity)),
     __metadata("design:paramtypes", [config_1.ConfigService,
+        typeorm_2.Repository,
         typeorm_2.Repository])
 ], PushService);
 //# sourceMappingURL=push.service.js.map

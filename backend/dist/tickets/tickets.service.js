@@ -19,12 +19,15 @@ const typeorm_2 = require("typeorm");
 const ticket_entity_1 = require("./entities/ticket.entity");
 const mail_service_1 = require("../mail/mail.service");
 const push_service_1 = require("../notifications/push.service");
+const profile_entity_1 = require("../users/entities/profile.entity");
 let TicketsService = class TicketsService {
     ticketsRepository;
+    profileRepository;
     mailService;
     pushService;
-    constructor(ticketsRepository, mailService, pushService) {
+    constructor(ticketsRepository, profileRepository, mailService, pushService) {
         this.ticketsRepository = ticketsRepository;
+        this.profileRepository = profileRepository;
         this.mailService = mailService;
         this.pushService = pushService;
     }
@@ -32,6 +35,12 @@ let TicketsService = class TicketsService {
         const newTicket = this.ticketsRepository.create(ticket);
         const saved = await this.ticketsRepository.save(newTicket);
         this.pushService.notifyHR('Thắc mắc mới từ nhân viên', `${saved.employee_name} vừa đặt một câu hỏi mới: "${saved.question}"`).catch(err => console.error('Push error:', err));
+        this.pushService.createNotification({
+            title: 'Thắc mắc mới từ nhân viên',
+            message: `${saved.employee_name} vừa đặt một câu hỏi mới: "${saved.question}"`,
+            role: 'HR',
+            link: '/manage-internal/tickets'
+        }).catch(err => console.error('DB Notif error:', err));
         return saved;
     }
     async findAll() {
@@ -52,6 +61,15 @@ let TicketsService = class TicketsService {
         ticket.answered_at = new Date();
         const updated = await this.ticketsRepository.save(ticket);
         await this.mailService.sendTicketAnswer(updated.employee_email, updated.employee_name, updated.question, updated.answer);
+        const profile = await this.profileRepository.findOne({ where: { email: updated.employee_email } });
+        if (profile) {
+            this.pushService.createNotification({
+                title: 'Câu hỏi của bạn đã được trả lời',
+                message: `Phòng Nhân sự đã trả lời thắc mắc của bạn về: "${updated.question}"`,
+                user_id: profile.id,
+                link: '/tickets'
+            }).catch(err => console.error('DB Notif error:', err));
+        }
         return updated;
     }
 };
@@ -59,7 +77,9 @@ exports.TicketsService = TicketsService;
 exports.TicketsService = TicketsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(ticket_entity_1.Ticket)),
+    __param(1, (0, typeorm_1.InjectRepository)(profile_entity_1.Profile)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         mail_service_1.MailService,
         push_service_1.PushService])
 ], TicketsService);

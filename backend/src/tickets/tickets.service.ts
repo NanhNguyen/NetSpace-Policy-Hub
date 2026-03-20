@@ -4,12 +4,15 @@ import { Repository } from 'typeorm';
 import { Ticket } from './entities/ticket.entity';
 import { MailService } from '../mail/mail.service';
 import { PushService } from '../notifications/push.service';
+import { Profile } from '../users/entities/profile.entity';
 
 @Injectable()
 export class TicketsService {
     constructor(
         @InjectRepository(Ticket)
         private ticketsRepository: Repository<Ticket>,
+        @InjectRepository(Profile)
+        private profileRepository: Repository<Profile>,
         private mailService: MailService,
         private pushService: PushService,
     ) { }
@@ -18,11 +21,19 @@ export class TicketsService {
         const newTicket = this.ticketsRepository.create(ticket);
         const saved = await this.ticketsRepository.save(newTicket);
 
-        // Notify HR about new ticket
+        // Notify HR via WebPush (if still requested)
         this.pushService.notifyHR(
             'Thắc mắc mới từ nhân viên',
             `${saved.employee_name} vừa đặt một câu hỏi mới: "${saved.question}"`
         ).catch(err => console.error('Push error:', err));
+
+        // Create In-App Notification for HR
+        this.pushService.createNotification({
+            title: 'Thắc mắc mới từ nhân viên',
+            message: `${saved.employee_name} vừa đặt một câu hỏi mới: "${saved.question}"`,
+            role: 'HR',
+            link: '/manage-internal/tickets'
+        }).catch(err => console.error('DB Notif error:', err));
 
         return saved;
     }
@@ -55,6 +66,17 @@ export class TicketsService {
             updated.question,
             updated.answer
         );
+
+        // Find user by email and send in-app notification
+        const profile = await this.profileRepository.findOne({ where: { email: updated.employee_email } });
+        if (profile) {
+            this.pushService.createNotification({
+                title: 'Câu hỏi của bạn đã được trả lời',
+                message: `Phòng Nhân sự đã trả lời thắc mắc của bạn về: "${updated.question}"`,
+                user_id: profile.id,
+                link: '/tickets'
+            }).catch(err => console.error('DB Notif error:', err));
+        }
 
         return updated;
     }

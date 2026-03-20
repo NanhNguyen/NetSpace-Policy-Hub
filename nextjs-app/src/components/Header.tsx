@@ -7,6 +7,7 @@ import Logo from "./Logo";
 import HRModal from "./HRModal";
 import { supabase } from "@/lib/db/client";
 import toast from "react-hot-toast";
+import NotificationBell from "./NotificationBell";
 
 const NAV_LINKS = [
     { href: "/categories", label: "Chính Sách" },
@@ -18,6 +19,7 @@ export default function Header() {
     const router = useRouter();
     const [mobileOpen, setMobileOpen] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
+    const [loginPromptOpen, setLoginPromptOpen] = useState(false);
     const [user, setUser] = useState<any>(null);
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
@@ -83,7 +85,7 @@ export default function Header() {
 
     const handleAskHR = () => {
         if (!user) {
-            router.push("/auth/login?redirect=ask-hr");
+            setLoginPromptOpen(true);
             return;
         }
         setModalOpen(true);
@@ -159,16 +161,13 @@ export default function Header() {
                             </button>
                         )}
                         <div className="flex items-center gap-2 mr-2">
-                            <button className="relative w-10 h-10 rounded-full hover:bg-neutral-soft flex items-center justify-center transition-colors group">
-                                <span className="material-symbols-outlined text-text-muted text-[22px] group-hover:text-primary">notifications</span>
-                                <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-                            </button>
+                            {user && <NotificationBell role="USER" />}
                         </div>
 
                         {/* User Menu Dropdown */}
                         <div className="relative" ref={menuRef}>
                             <button
-                                onClick={() => user ? setMenuOpen(!menuOpen) : router.push("/auth/login")}
+                                onClick={() => setMenuOpen(!menuOpen)}
                                 className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200 hover:border-primary transition-all overflow-hidden group"
                             >
                                 {user?.email ? (
@@ -181,28 +180,47 @@ export default function Header() {
                             </button>
 
                             {/* Dropdown Menu */}
-                            {menuOpen && user && (
+                            {menuOpen && (
                                 <div className="absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-xl border border-neutral-soft py-2 flex flex-col z-[60] animate-in fade-in slide-in-from-top-2 duration-200">
-                                    <div className="px-4 py-3 border-b border-neutral-soft mb-2">
-                                        <p className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-0.5">Xin chào,</p>
-                                        <p className="text-sm font-black text-text-main truncate">{user.user_metadata?.full_name || user.email}</p>
-                                        <p className="text-[10px] text-text-muted truncate mt-0.5">{user.email}</p>
-                                    </div>
-                                    <Link
-                                        href="/tickets"
-                                        onClick={() => setMenuOpen(false)}
-                                        className="flex items-center gap-3 px-4 py-3 text-sm font-bold text-text-main hover:bg-slate-50 transition-colors"
-                                    >
-                                        <span className="material-symbols-outlined text-[20px] text-text-muted">history</span>
-                                        Yêu cầu của tôi
-                                    </Link>
-                                    <button
-                                        onClick={handleLogout}
-                                        className="flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 transition-colors border-t border-neutral-soft mt-2"
-                                    >
-                                        <span className="material-symbols-outlined text-[20px]">logout</span>
-                                        Đăng xuất
-                                    </button>
+                                    {user ? (
+                                        <>
+                                            <div className="px-4 py-3 border-b border-neutral-soft mb-2">
+                                                <p className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-0.5">Xin chào,</p>
+                                                <p className="text-sm font-black text-text-main truncate">{user.user_metadata?.full_name || user.email}</p>
+                                                <p className="text-[10px] text-text-muted truncate mt-0.5">{user.email}</p>
+                                            </div>
+                                            <Link
+                                                href="/tickets"
+                                                onClick={() => setMenuOpen(false)}
+                                                className="flex items-center gap-3 px-4 py-3 text-sm font-bold text-text-main hover:bg-slate-50 transition-colors"
+                                            >
+                                                <span className="material-symbols-outlined text-[20px] text-text-muted">history</span>
+                                                Yêu cầu của tôi
+                                            </Link>
+                                            <button
+                                                onClick={handleLogout}
+                                                className="flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 transition-colors border-t border-neutral-soft mt-2"
+                                            >
+                                                <span className="material-symbols-outlined text-[20px]">logout</span>
+                                                Đăng xuất
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <div className="px-4 py-3 border-b border-neutral-soft mb-2">
+                                                <p className="text-xs font-bold text-text-main">Bạn chưa đăng nhập</p>
+                                                <p className="text-[10px] text-text-muted mt-0.5">Đăng nhập để xem thông tin</p>
+                                            </div>
+                                            <Link
+                                                href="/auth/login"
+                                                onClick={() => setMenuOpen(false)}
+                                                className="flex items-center gap-3 px-4 py-3 text-sm font-bold text-primary hover:bg-primary/5 transition-colors"
+                                            >
+                                                <span className="material-symbols-outlined text-[20px]">login</span>
+                                                Đăng nhập ngay
+                                            </Link>
+                                        </>
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -248,6 +266,47 @@ export default function Header() {
             </header>
 
             <HRModal open={modalOpen} onClose={() => setModalOpen(false)} />
+
+            {/* Login Prompt Modal */}
+            {loginPromptOpen && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setLoginPromptOpen(false)}>
+                    <div className="bg-white rounded-3xl p-8 max-w-sm w-full mx-4 shadow-2xl scale-in-center animate-in zoom-in-95 duration-200 relative" onClick={e => e.stopPropagation()}>
+                        {/* Close button */}
+                        <button 
+                            onClick={() => setLoginPromptOpen(false)}
+                            className="absolute top-4 right-4 w-12 h-12 flex items-center justify-center rounded-full hover:bg-slate-100 transition-all text-slate-400 hover:text-slate-600 active:scale-90"
+                            aria-label="Đóng"
+                        >
+                            <span className="material-symbols-outlined text-[24px]">close</span>
+                        </button>
+
+                        <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 mx-auto">
+                            <span className="material-symbols-outlined text-primary text-3xl">lock</span>
+                        </div>
+                        <h3 className="text-xl font-black text-text-main text-center mb-2">Yêu cầu đăng nhập</h3>
+                        <p className="text-sm text-text-muted text-center mb-8 leading-relaxed">
+                            Để sử dụng tính năng <span className="font-bold text-text-main">Hỏi HR</span>, bạn vui lòng đăng nhập vào hệ thống nhé!
+                        </p>
+                        <div className="flex flex-col gap-3">
+                            <button
+                                onClick={() => {
+                                    setLoginPromptOpen(false);
+                                    router.push("/auth/login?redirect=ask-hr");
+                                }}
+                                className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-primary/20 active:scale-[0.98]"
+                            >
+                                Đăng nhập ngay
+                            </button>
+                            <button
+                                onClick={() => setLoginPromptOpen(false)}
+                                className="w-full bg-slate-100 hover:bg-slate-200 text-text-muted font-bold py-3.5 rounded-xl transition-all active:scale-[0.98]"
+                            >
+                                Để sau
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     );
 }

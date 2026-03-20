@@ -21,7 +21,8 @@ function PoliciesContent() {
         const list = [{ key: "all", label: "Tất cả" }];
         
         uniqueKeys.forEach(key => {
-            const label = CATEGORIES[key as keyof typeof CATEGORIES]?.label || (key.charAt(0).toUpperCase() + key.slice(1));
+            const lowKey = key.toLowerCase().trim();
+            const label = CATEGORIES[lowKey as keyof typeof CATEGORIES]?.label || (key.charAt(0).toUpperCase() + key.slice(1));
             if (!list.find(item => item.key === key)) {
                 list.push({ key, label });
             }
@@ -138,9 +139,12 @@ function PoliciesContent() {
                         });
 
                         return sortedCats.map((catKey) => {
-                            const catPolicies = filtered.filter(p => p.category === catKey);
-                            const meta = CATEGORIES[catKey as keyof typeof CATEGORIES] || { 
-                                label: catKey.charAt(0).toUpperCase() + catKey.slice(1), 
+                             const catPolicies = filtered.filter(p => p.category === catKey);
+                            const lowKey = catKey.toLowerCase().trim();
+                            const meta = CATEGORIES[lowKey as keyof typeof CATEGORIES] || { 
+                                label: lowKey === "conduct" ? "Nội quy" : 
+                                       lowKey === "benefits" ? "Phúc lợi" :
+                                       (catKey.charAt(0).toUpperCase() + catKey.slice(1)), 
                                 icon: catPolicies[0]?.icon || "description", 
                                 desc: "Tập hợp các quy định và chính sách thuộc danh mục này." 
                             };
@@ -157,7 +161,7 @@ function PoliciesContent() {
                                         </div>
                                         <div className="ml-auto h-[1px] bg-neutral-soft flex-1 ml-6 hidden md:block" />
                                         <span className="ml-4 text-[10px] font-black uppercase tracking-widest text-text-muted/50 bg-neutral-soft/50 px-2 py-1 rounded">
-                                            {catPolicies.length} POLICY
+                                            {catPolicies.length} CHÍNH SÁCH
                                         </span>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

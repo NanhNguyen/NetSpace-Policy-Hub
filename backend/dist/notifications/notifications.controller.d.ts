@@ -8,4 +8,6 @@ export declare class NotificationsController {
     }): Promise<import("../tickets/entities/push-subscription.entity").PushSubscriptionEntity | {
         message: string;
     }>;
+    getNotifications(userId: string, role: string): Promise<import("./entities/notification.entity").NotificationEntity[]>;
+    markAsRead(id: string): Promise<void>;
 }

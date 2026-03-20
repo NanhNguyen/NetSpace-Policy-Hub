@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Lock, Mail, ShieldCheck, AlertCircle, Loader2 } from "lucide-react";
 import { UserService } from "@/lib/services/user.service";
+import { supabase } from "@/lib/db/client";
 import toast from "react-hot-toast";
 
 export default function AdminLoginPage() {
@@ -30,10 +31,14 @@ export default function AdminLoginPage() {
             const res = await UserService.login(email, password);
 
             if (res) {
-                toast.success(`Xin chào Admin! Chào mừng quay trở lại hệ thống quản trị.`);
+                // Double check if role is correct for Admin portal
+                if (res.profile.role?.code === 'USER') {
+                    await supabase.auth.signOut();
+                    throw new Error("Tài khoản của bạn là Nhân viên thường, không có quyền truy cập trang Quản trị.");
+                }
+                
+                toast.success(`Xin chào ${res.profile.full_name}! Chào mừng quay trở lại hệ thống quản trị.`);
                 router.push("/manage-internal/dashboard");
-            } else {
-                throw new Error("Email hoặc mật khẩu không đúng.");
             }
         } catch (err: any) {
             setError(err.message || "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");

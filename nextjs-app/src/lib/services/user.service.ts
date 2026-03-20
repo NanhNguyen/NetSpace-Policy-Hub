@@ -54,13 +54,22 @@ export const UserService = {
             password: pass,
         });
 
-        if (error || !data.user) {
-            return null;
+        if (error) {
+            throw new Error("Email hoặc mật khẩu không chính xác.");
+        }
+
+        if (!data.user) {
+            throw new Error("Không thể xác thực người dùng.");
         }
 
         // Get profile and role from our DB via Backend API
         const profile = await this.getProfile(data.user.id);
-        if (!profile) return null;
+        
+        if (!profile) {
+            // Log out if profile is missing to keep UI consistent
+            await supabase.auth.signOut();
+            throw new Error(`Đăng nhập thành công nhưng tài khoản của bạn chưa được cấp quyền truy cập (Thiếu Profile cho ID: ${data.user.id}). Vui lòng tạo bản ghi trong bảng 'profiles' trước.`);
+        }
 
         return {
             profile,

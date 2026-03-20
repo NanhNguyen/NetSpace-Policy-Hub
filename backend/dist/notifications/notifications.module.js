@@ -11,6 +11,7 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const push_service_1 = require("./push.service");
 const push_subscription_entity_1 = require("../tickets/entities/push-subscription.entity");
+const notification_entity_1 = require("./entities/notification.entity");
 const notifications_controller_1 = require("./notifications.controller");
 let NotificationsModule = class NotificationsModule {
 };
@@ -18,7 +19,7 @@ exports.NotificationsModule = NotificationsModule;
 exports.NotificationsModule = NotificationsModule = __decorate([
     (0, common_1.Global)(),
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([push_subscription_entity_1.PushSubscriptionEntity])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([push_subscription_entity_1.PushSubscriptionEntity, notification_entity_1.NotificationEntity])],
         providers: [push_service_1.PushService],
         controllers: [notifications_controller_1.NotificationsController],
         exports: [push_service_1.PushService],

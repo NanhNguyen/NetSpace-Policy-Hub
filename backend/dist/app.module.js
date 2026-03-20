@@ -23,6 +23,7 @@ const ticket_entity_1 = require("./tickets/entities/ticket.entity");
 const faq_entity_1 = require("./faqs/entities/faq.entity");
 const search_log_entity_1 = require("./search-logs/entities/search-log.entity");
 const push_subscription_entity_1 = require("./tickets/entities/push-subscription.entity");
+const notification_entity_1 = require("./notifications/entities/notification.entity");
 if (!global.crypto) {
     global.crypto = require('crypto');
 }
@@ -42,7 +43,7 @@ exports.AppModule = AppModule = __decorate([
                 useFactory: (configService) => ({
                     type: 'postgres',
                     url: configService.get('DATABASE_URL'),
-                    entities: [policy_entity_1.Policy, ticket_entity_1.Ticket, faq_entity_1.Faq, search_log_entity_1.SearchLog, push_subscription_entity_1.PushSubscriptionEntity, profile_entity_1.Profile, role_entity_1.Role],
+                    entities: [policy_entity_1.Policy, ticket_entity_1.Ticket, faq_entity_1.Faq, search_log_entity_1.SearchLog, push_subscription_entity_1.PushSubscriptionEntity, profile_entity_1.Profile, role_entity_1.Role, notification_entity_1.NotificationEntity],
                     synchronize: false,
                 }),
             }),

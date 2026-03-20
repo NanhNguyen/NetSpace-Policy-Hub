@@ -36,17 +36,6 @@ export default function PushNotificationToggle() {
         }
     };
 
-    return (
-        <button
-            onClick={handleToggle}
-            disabled={loading}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-semibold group ${isSubscribed
-                    ? 'bg-green-500/10 text-green-400 hover:bg-green-500/20'
-                    : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'
-                }`}
-        >
-            {isSubscribed ? <Bell className="w-5 h-5" /> : <BellOff className="w-5 h-5" />}
-            {isSubscribed ? 'Thông báo: Bật' : 'Bật thông báo'}
-        </button>
-    );
+    // Hidden functionality per user request
+    return null;
 }

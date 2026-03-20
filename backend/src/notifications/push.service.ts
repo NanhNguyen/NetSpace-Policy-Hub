@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as webpush from 'web-push';
 import { PushSubscriptionEntity } from '../tickets/entities/push-subscription.entity';
+import { NotificationEntity } from './entities/notification.entity';
 
 @Injectable()
 export class PushService implements OnModuleInit {
@@ -11,6 +12,8 @@ export class PushService implements OnModuleInit {
         private configService: ConfigService,
         @InjectRepository(PushSubscriptionEntity)
         private subscriptionRepo: Repository<PushSubscriptionEntity>,
+        @InjectRepository(NotificationEntity)
+        private notificationRepo: Repository<NotificationEntity>,
     ) { }
 
     onModuleInit() {
@@ -62,5 +65,25 @@ export class PushService implements OnModuleInit {
         );
 
         await Promise.all(promises);
+    }
+
+    async createNotification(data: { title: string; message: string; role?: string; user_id?: string; link?: string }) {
+        const notif = this.notificationRepo.create(data);
+        return await this.notificationRepo.save(notif);
+    }
+
+    async getNotifications(userId: string, role: string) {
+        // Fetch notifications specific to user, OR broad role notifications
+        const query = this.notificationRepo.createQueryBuilder('notif')
+            .where('notif.user_id = :userId', { userId })
+            .orWhere('notif.role = :role', { role })
+            .orderBy('notif.created_at', 'DESC')
+            .take(50); // Get latest 50
+        
+        return await query.getMany();
+    }
+
+    async markAsRead(id: string) {
+        await this.notificationRepo.update(id, { is_read: true });
     }
 }

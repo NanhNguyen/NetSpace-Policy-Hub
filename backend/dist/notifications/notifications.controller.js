@@ -23,6 +23,12 @@ let NotificationsController = class NotificationsController {
     subscribe(body) {
         return this.pushService.subscribe(body.subscription, body.role);
     }
+    getNotifications(userId, role) {
+        return this.pushService.getNotifications(userId, role);
+    }
+    markAsRead(id) {
+        return this.pushService.markAsRead(id);
+    }
 };
 exports.NotificationsController = NotificationsController;
 __decorate([
@@ -32,6 +38,21 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], NotificationsController.prototype, "subscribe", null);
+__decorate([
+    (0, common_1.Get)(':userId/:role'),
+    __param(0, (0, common_1.Param)('userId')),
+    __param(1, (0, common_1.Param)('role')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], NotificationsController.prototype, "getNotifications", null);
+__decorate([
+    (0, common_1.Patch)(':id/read'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], NotificationsController.prototype, "markAsRead", null);
 exports.NotificationsController = NotificationsController = __decorate([
     (0, common_1.Controller)('notifications'),
     __metadata("design:paramtypes", [push_service_1.PushService])

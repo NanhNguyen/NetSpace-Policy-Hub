@@ -41,8 +41,8 @@ export default function TicketStatusModal({ open, onClose }: Props) {
                         <Search className="text-primary" />
                         Tra cứu thắc mắc
                     </h2>
-                    <button onClick={onClose} className="p-2 hover:bg-slate-200 rounded-full transition-colors">
-                        <X size={20} />
+                    <button onClick={onClose} className="w-12 h-12 flex items-center justify-center hover:bg-slate-200 rounded-full transition-colors" aria-label="Đóng">
+                        <span className="material-symbols-outlined text-[24px]">close</span>
                     </button>
                 </div>
 

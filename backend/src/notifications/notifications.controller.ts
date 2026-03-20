@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Patch } from '@nestjs/common';
 import { PushService } from './push.service';
 
 @Controller('notifications')
@@ -8,5 +8,15 @@ export class NotificationsController {
     @Post('subscribe')
     subscribe(@Body() body: { subscription: any, role?: string }) {
         return this.pushService.subscribe(body.subscription, body.role);
+    }
+
+    @Get(':userId/:role')
+    getNotifications(@Param('userId') userId: string, @Param('role') role: string) {
+        return this.pushService.getNotifications(userId, role);
+    }
+
+    @Patch(':id/read')
+    markAsRead(@Param('id') id: string) {
+        return this.pushService.markAsRead(id);
     }
 }
