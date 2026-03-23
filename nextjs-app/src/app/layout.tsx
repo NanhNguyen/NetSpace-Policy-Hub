@@ -16,6 +16,10 @@ export const metadata: Metadata = {
   },
   description:
     "Trung tâm tra cứu chính sách nội bộ NetSpace. Mọi quy định, hướng dẫn và phúc lợi — tất cả ở một nơi.",
+  icons: {
+    icon: "/favicon.svg",
+    apple: "/favicon.svg",
+  },
 };
 
 import { Toaster } from 'react-hot-toast';
