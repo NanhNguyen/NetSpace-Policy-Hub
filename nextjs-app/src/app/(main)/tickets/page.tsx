@@ -48,7 +48,13 @@ export default function MyTicketsPage() {
 
     useEffect(() => {
         if (chatEndRef.current) {
-            chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+            const container = chatEndRef.current.closest('.overflow-y-auto');
+            if (container) {
+                container.scrollTo({
+                    top: (container as HTMLElement).scrollHeight,
+                    behavior: 'smooth'
+                });
+            }
         }
     }, [selectedTicketId, tickets]);
 

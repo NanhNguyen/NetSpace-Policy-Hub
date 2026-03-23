@@ -12,7 +12,8 @@ import {
     Settings,
     LogOut,
     Home,
-    Users
+    Users,
+    Hash
 } from 'lucide-react';
 import Logo from '@/components/Logo';
 import { UserService } from '@/lib/services/user.service';
@@ -26,6 +27,7 @@ const navItems = [
     { name: 'FAQs', href: '/manage-internal/faqs', icon: HelpCircle },
     { name: 'Thống kê', href: '/manage-internal/analytics', icon: BarChart2 },
     { name: 'Quản lý User', href: '/manage-internal/users', icon: Users },
+    { name: 'Từ khóa', href: '/manage-internal/keywords', icon: Hash },
 ];
 
 import { supabase } from '@/lib/db/client';
@@ -136,7 +138,7 @@ export default function AdminLayout({
             return item.name === 'Duyệt yêu cầu';
         }
         if (role === 'HR') {
-            return ['Duyệt yêu cầu', 'Chính sách', 'FAQs', 'Quản lý User'].includes(item.name);
+            return ['Duyệt yêu cầu', 'Chính sách', 'FAQs', 'Quản lý User', 'Từ khóa'].includes(item.name);
         }
         if (role === 'ADMIN') {
             return true;

@@ -25,6 +25,8 @@ if (!global.crypto) {
 import { UsersModule } from './users/users.module';
 import { Profile } from './users/entities/profile.entity';
 import { Role } from './users/entities/role.entity';
+import { KeywordsModule } from './keywords/keywords.module';
+import { Keyword } from './keywords/entities/keyword.entity';
 
 @Module({
   imports: [
@@ -35,7 +37,7 @@ import { Role } from './users/entities/role.entity';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: configService.get<string>('DATABASE_URL'),
-        entities: [Policy, Ticket, Faq, SearchLog, PushSubscriptionEntity, Profile, Role, NotificationEntity, TicketMessage],
+        entities: [Policy, Ticket, Faq, SearchLog, PushSubscriptionEntity, Profile, Role, NotificationEntity, TicketMessage, Keyword],
         synchronize: false,
       }),
     }),
@@ -46,6 +48,7 @@ import { Role } from './users/entities/role.entity';
     MailModule,
     NotificationsModule,
     UsersModule,
+    KeywordsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

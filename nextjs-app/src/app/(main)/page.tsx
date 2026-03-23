@@ -7,14 +7,16 @@ import { UPDATES, CATEGORIES } from "@/lib/data";
 import HRModal from "@/components/HRModal";
 import PolicyCard from "@/components/PolicyCard";
 import { PolicyService } from "@/lib/services/policy.service";
+import { KeywordService } from "@/lib/services/keyword.service";
 import { Policy } from "@/types";
 import { supabase } from "@/lib/db/client";
 
-const QUICK_SUGGESTIONS = ["Làm việc từ xa", "Nghỉ phép", "Bảo mật IT", "Quy tắc ứng xử", "Hoàn chi phí"];
+
 
 export default function HomePage() {
   const [query, setQuery] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
+  const [suggestedKeywords, setSuggestedKeywords] = useState<string[]>([]);
   const [popularPolicies, setPopularPolicies] = useState<Policy[]>([]);
   const [recentUpdates, setRecentUpdates] = useState<any[]>(UPDATES.slice(0, 5));
   const [user, setUser] = useState<any>(null);
@@ -35,8 +37,14 @@ export default function HomePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const policies = await PolicyService.getAllPublished();
+        const [policies, keywordsData] = await Promise.all([
+          PolicyService.getAllPublished(),
+          KeywordService.getActive().catch(() => [])
+        ]);
         setPopularPolicies(policies.slice(0, 5));
+        if (keywordsData) {
+            setSuggestedKeywords(keywordsData.map((k: any) => k.word));
+        }
         // We can also fetch real updates if we had an updates table
       } catch (error) {
         console.error('Error fetching dynamic data:', error);
@@ -105,7 +113,7 @@ export default function HomePage() {
           {/* Suggestions */}
           <div className="flex flex-wrap justify-center gap-2 mt-8">
             <span className="text-[10px] text-slate-400 font-black uppercase tracking-widest pt-1 mr-2">Gợi ý:</span>
-            {QUICK_SUGGESTIONS.map((s) => (
+            {suggestedKeywords.map((s) => (
               <button
                 key={s}
                 onClick={() => setQuery(s)}
