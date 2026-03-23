@@ -8,6 +8,7 @@ import HRModal from "./HRModal";
 import { supabase } from "@/lib/db/client";
 import toast from "react-hot-toast";
 import NotificationBell from "./NotificationBell";
+import ChangePasswordModal from "./ChangePasswordModal";
 
 const NAV_LINKS = [
     { href: "/categories", label: "Danh mục" },
@@ -23,6 +24,7 @@ export default function Header() {
     const [user, setUser] = useState<any>(null);
     const [isLoadingUser, setIsLoadingUser] = useState(true);
     const [menuOpen, setMenuOpen] = useState(false);
+    const [pwdModalOpen, setPwdModalOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -222,6 +224,13 @@ export default function Header() {
                                             Yêu cầu của tôi
                                         </Link>
                                         <button
+                                            onClick={() => { setMenuOpen(false); setPwdModalOpen(true); }}
+                                            className="flex items-center gap-3 px-4 py-3 text-sm font-bold text-text-main hover:bg-slate-50 transition-colors"
+                                        >
+                                            <span className="material-symbols-outlined text-[20px] text-text-muted">key</span>
+                                            Đổi mật khẩu
+                                        </button>
+                                        <button
                                             onClick={handleLogout}
                                             className="flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 transition-colors border-t border-neutral-soft mt-2"
                                         >
@@ -283,6 +292,7 @@ export default function Header() {
             </header>
 
             <HRModal open={modalOpen} onClose={() => setModalOpen(false)} />
+            <ChangePasswordModal open={pwdModalOpen} onClose={() => setPwdModalOpen(false)} />
 
             {/* Login Prompt Modal */}
             {loginPromptOpen && (

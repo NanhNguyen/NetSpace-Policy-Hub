@@ -23,4 +23,7 @@ export declare class UsersService {
         full_name: string;
         role_id: number;
     }): Promise<Profile>;
+    updateAdminPassword(userId: string, newPassword: string): Promise<{
+        message: string;
+    }>;
 }

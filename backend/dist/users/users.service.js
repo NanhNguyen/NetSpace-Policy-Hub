@@ -126,6 +126,18 @@ let UsersService = class UsersService {
         }
         return await this.profilesRepository.save(profile);
     }
+    async updateAdminPassword(userId, newPassword) {
+        if (!this.supabaseAdmin) {
+            throw new common_1.InternalServerErrorException('Supabase Admin client not configured. Check SUPABASE_SERVICE_ROLE_KEY.');
+        }
+        const { data, error } = await this.supabaseAdmin.auth.admin.updateUserById(userId, {
+            password: newPassword,
+        });
+        if (error) {
+            throw new common_1.InternalServerErrorException(error.message);
+        }
+        return { message: 'Password updated successfully' };
+    }
 };
 exports.UsersService = UsersService;
 exports.UsersService = UsersService = __decorate([

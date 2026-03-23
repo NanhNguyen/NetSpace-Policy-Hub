@@ -17,4 +17,7 @@ export declare class UsersController {
         full_name: string;
         role_id: number;
     }): Promise<import("./entities/profile.entity").Profile>;
+    updatePassword(id: string, password?: string): Promise<{
+        message: string;
+    }>;
 }

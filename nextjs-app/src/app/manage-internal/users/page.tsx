@@ -5,6 +5,7 @@ import { Users, Search, UserCheck, Shield, Award, User as UserIcon, RefreshCw, U
 import { UserService } from "@/lib/services/user.service";
 import { Profile, Role, UserRoleType } from "@/types";
 import UserModal from "@/components/admin/UserModal";
+import AdminResetPasswordModal from "@/components/admin/AdminResetPasswordModal";
 
 export default function AdminUsersPage() {
     const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -14,6 +15,7 @@ export default function AdminUsersPage() {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [editingProfile, setEditingProfile] = useState<Profile | null>(null);
     const [updating, setUpdating] = useState<string | null>(null);
+    const [resetPwdUser, setResetPwdUser] = useState<{ id: string; email: string; full_name: string } | null>(null);
 
     const loadData = async () => {
         setLoading(true);
@@ -34,7 +36,14 @@ export default function AdminUsersPage() {
     const handleSaveUser = async (userData: { email: string; full_name: string; role_id: number; password?: string }) => {
         try {
             if (editingProfile) {
-                await UserService.updateProfile(editingProfile.id, userData);
+                await UserService.updateProfile(editingProfile.id, {
+                    email: userData.email,
+                    full_name: userData.full_name,
+                    role_id: userData.role_id
+                });
+                if (userData.password) {
+                    await UserService.updatePassword(editingProfile.id, userData.password);
+                }
             } else {
                 await UserService.createProfile(userData);
             }
@@ -43,6 +52,14 @@ export default function AdminUsersPage() {
         } catch (error: any) {
             throw error;
         }
+    };
+
+    const handleResetPassword = (profile: Profile) => {
+        setResetPwdUser({
+            id: profile.id,
+            email: profile.email,
+            full_name: profile.full_name || ''
+        });
     };
 
     const handleQuickRoleChange = async (userId: string, newRoleId: string) => {
@@ -111,6 +128,12 @@ export default function AdminUsersPage() {
                     onSave={handleSaveUser}
                 />
             )}
+
+            <AdminResetPasswordModal
+                open={!!resetPwdUser}
+                onClose={() => setResetPwdUser(null)}
+                user={resetPwdUser}
+            />
 
             {/* Content Table */}
             <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-neutral-soft overflow-hidden">
@@ -190,13 +213,23 @@ export default function AdminUsersPage() {
                                         </div>
                                     </td>
                                     <td className="px-8 py-6 text-right">
-                                        <button
-                                            onClick={() => setEditingProfile(profile)}
-                                            className="bg-white border border-neutral-soft rounded-xl px-4 py-2 text-xs font-black shadow-sm outline-none hover:bg-slate-50 hover:border-slate-300 transition-all flex items-center gap-2 ml-auto"
-                                        >
-                                            <span className="material-symbols-outlined text-[18px] text-primary">edit</span>
-                                            Sửa chi tiết
-                                        </button>
+                                        <div className="flex items-center justify-end gap-2">
+                                            <button
+                                                onClick={() => handleResetPassword(profile)}
+                                                className="bg-white border border-neutral-soft rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-wider shadow-sm outline-none hover:bg-slate-50 hover:border-slate-300 transition-all flex items-center gap-2 text-text-muted hover:text-primary"
+                                                title="Đổi mật khẩu"
+                                            >
+                                                <span className="material-symbols-outlined text-[16px]">key</span>
+                                                Đổi MK
+                                            </button>
+                                            <button
+                                                onClick={() => setEditingProfile(profile)}
+                                                className="bg-white border border-neutral-soft rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-wider shadow-sm outline-none hover:bg-slate-50 hover:border-slate-300 transition-all flex items-center gap-2 text-text-muted hover:text-primary"
+                                            >
+                                                <span className="material-symbols-outlined text-[16px]">edit</span>
+                                                Sửa
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}

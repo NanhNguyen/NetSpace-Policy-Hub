@@ -34,4 +34,12 @@ export class UsersController {
   async updateProfile(@Param('id') id: string, @Body() data: { email: string; full_name: string; role_id: number }) {
     return this.usersService.updateProfile(id, data);
   }
+
+  @Patch('profiles/:id/password')
+  async updatePassword(@Param('id') id: string, @Body('password') password?: string) {
+    if (!password) {
+      throw new Error('Password is required');
+    }
+    return this.usersService.updateAdminPassword(id, password);
+  }
 }

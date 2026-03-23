@@ -38,6 +38,12 @@ let UsersController = class UsersController {
     async updateProfile(id, data) {
         return this.usersService.updateProfile(id, data);
     }
+    async updatePassword(id, password) {
+        if (!password) {
+            throw new Error('Password is required');
+        }
+        return this.usersService.updateAdminPassword(id, password);
+    }
 };
 exports.UsersController = UsersController;
 __decorate([
@@ -82,6 +88,14 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "updateProfile", null);
+__decorate([
+    (0, common_1.Patch)('profiles/:id/password'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)('password')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "updatePassword", null);
 exports.UsersController = UsersController = __decorate([
     (0, common_1.Controller)('users'),
     __metadata("design:paramtypes", [users_service_1.UsersService])

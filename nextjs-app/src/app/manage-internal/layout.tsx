@@ -32,6 +32,7 @@ const navItems = [
 
 import { supabase } from '@/lib/db/client';
 import toast from 'react-hot-toast';
+import ChangePasswordModal from '@/components/ChangePasswordModal';
 
 export default function AdminLayout({
     children,
@@ -42,6 +43,7 @@ export default function AdminLayout({
     const router = useRouter();
     const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
     const [role, setRole] = useState<'ADMIN' | 'HR' | 'TICKET_MANAGER' | null>(null);
+    const [pwdModalOpen, setPwdModalOpen] = useState(false);
 
     useEffect(() => {
         let isMounted = true;
@@ -197,6 +199,13 @@ export default function AdminLayout({
                         Về trang chủ
                     </Link>
                     <button
+                        onClick={() => setPwdModalOpen(true)}
+                        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition-colors text-sm font-semibold text-left group"
+                    >
+                        <Settings className="w-5 h-5 group-hover:text-primary transition-colors" />
+                        Đổi mật khẩu
+                    </button>
+                    <button
                         onClick={handleLogout}
                         className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-500/20 text-red-400 transition-colors text-sm font-semibold text-left group"
                     >
@@ -205,6 +214,8 @@ export default function AdminLayout({
                     </button>
                 </div>
             </aside>
+
+            <ChangePasswordModal open={pwdModalOpen} onClose={() => setPwdModalOpen(false)} />
 
             {/* Main Content */}
             <main className="flex-1 ml-68 p-8 min-h-screen bg-slate-50/50 backdrop-blur-sm relative">

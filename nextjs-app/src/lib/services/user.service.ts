@@ -41,6 +41,15 @@ export const UserService = {
         return res.ok;
     },
 
+    async updatePassword(userId: string, password: string): Promise<boolean> {
+        const res = await fetch(`${API_URL}/users/profiles/${userId}/password`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password }),
+        });
+        return res.ok;
+    },
+
     async createProfile(data: { email: string; full_name: string; role_id: number; password?: string }): Promise<Profile> {
         const res = await fetch(`${API_URL}/users/create`, {
             method: 'POST',
