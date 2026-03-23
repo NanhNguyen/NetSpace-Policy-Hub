@@ -77,7 +77,7 @@ export default function PolicyModal({ policy, onClose, onSave }: PolicyModalProp
 
     return (
         <div
-            className="fixed inset-0 top-0 left-0 w-screen h-screen z-[9999] flex items-center justify-center p-4 sm:p-10 bg-slate-900/70 backdrop-blur-md animate-in fade-in duration-300"
+            className="fixed top-0 left-0 right-0 bottom-0 z-[9999] flex items-start justify-center p-4 sm:p-10 pt-20 bg-slate-900/70 backdrop-blur-md animate-in fade-in duration-300 pl-68"
             onClick={onClose}
         >
             <div
@@ -85,8 +85,8 @@ export default function PolicyModal({ policy, onClose, onSave }: PolicyModalProp
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
-                <div className="px-10 py-8 border-b border-gray-100 flex items-center justify-between bg-white flex-shrink-0">
-                    <div>
+                <div className="px-10 py-8 border-b border-gray-100 flex flex-col items-center justify-center bg-white flex-shrink-0 relative">
+                    <div className="text-center">
                         <h2 className="text-3xl font-black text-slate-900 tracking-tight">
                             {policy ? 'Chỉnh sửa Chính sách' : 'Thêm Chính sách Mới'}
                         </h2>
@@ -95,7 +95,7 @@ export default function PolicyModal({ policy, onClose, onSave }: PolicyModalProp
                     <button
                         type="button"
                         onClick={onClose}
-                        className="p-3 bg-slate-50 hover:bg-slate-100 rounded-2xl transition-all text-slate-400 hover:text-slate-900 shadow-sm border border-slate-100"
+                        className="absolute right-8 top-1/2 -translate-y-1/2 p-3 bg-slate-50 hover:bg-slate-100 rounded-2xl transition-all text-slate-400 hover:text-slate-900 shadow-sm border border-slate-100"
                     >
                         <X className="w-6 h-6" />
                     </button>
@@ -161,7 +161,7 @@ export default function PolicyModal({ policy, onClose, onSave }: PolicyModalProp
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                    <div className="grid grid-cols-1 gap-8">
                         <div className="space-y-2">
                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">
                                 Slug (URL tự động)
@@ -169,30 +169,12 @@ export default function PolicyModal({ policy, onClose, onSave }: PolicyModalProp
                             <input
                                 readOnly
                                 value={formData.slug}
-                                className="w-full px-5 py-4 bg-slate-100/50 border border-neutral-soft rounded-2xl text-sm font-mono text-slate-400 font-bold focus:outline-none transition-all cursor-not-allowed"
+                                className="w-full px-5 py-4 bg-slate-100/50 border border-neutral-soft rounded-2xl text-sm font-mono text-slate-400 font-bold focus:outline-none transition-all cursor-not-allowed text-center"
                                 placeholder="tu-dong-theo-tieu-de"
                             />
                         </div>
-
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">
-                                Biểu tượng (Material Icon)
-                            </label>
-                            <div className="flex gap-2">
-                                <input
-                                    value={formData.icon}
-                                    onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                                    className="flex-1 px-5 py-4 bg-slate-50 border border-neutral-soft rounded-2xl text-sm font-mono text-slate-600 focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all"
-                                    placeholder="description"
-                                />
-                                <div className="w-14 h-14 bg-slate-50 border border-neutral-soft rounded-2xl flex items-center justify-center text-primary shadow-inner">
-                                    <span className="material-symbols-outlined text-[24px]">{formData.icon}</span>
-                                </div>
-                            </div>
-                        </div>
                     </div>
-
-                    <div className="flex items-center gap-3 p-4 bg-slate-50 border border-slate-100 rounded-2xl w-fit">
+                    <div className="flex flex-wrap items-center gap-3 p-4 bg-slate-50 border border-slate-100 rounded-2xl w-fit">
                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Trạng thái:</label>
                         <button
                             type="button"
@@ -231,11 +213,11 @@ export default function PolicyModal({ policy, onClose, onSave }: PolicyModalProp
                 </form>
 
                 {/* Footer */}
-                <div className="px-10 py-8 border-t border-gray-100 flex gap-4 bg-white flex-shrink-0">
+                <div className="px-10 py-8 border-t border-gray-100 flex justify-center gap-4 bg-white flex-shrink-0">
                     <button
                         type="button"
                         onClick={onClose}
-                        className="flex-1 px-8 py-4 border border-slate-200 text-slate-500 font-black rounded-2xl hover:bg-slate-50 transition-all text-sm active:scale-95"
+                        className="px-12 py-4 border border-slate-200 text-slate-500 font-black rounded-2xl hover:bg-slate-50 transition-all text-sm active:scale-95"
                     >
                         Hủy bỏ
                     </button>
@@ -243,7 +225,7 @@ export default function PolicyModal({ policy, onClose, onSave }: PolicyModalProp
                         type="submit"
                         disabled={submitting}
                         onClick={handleSubmit as any}
-                        className="flex-[1.5] px-10 py-4 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-2xl transition-all shadow-2xl shadow-slate-900/30 flex items-center justify-center gap-3 disabled:opacity-50 text-sm active:scale-95"
+                        className="px-16 py-4 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-2xl transition-all shadow-2xl shadow-slate-900/30 flex items-center justify-center gap-3 disabled:opacity-50 text-sm active:scale-95"
                     >
                         {submitting ? (
                             <span className="material-symbols-outlined text-[20px] animate-spin">refresh</span>

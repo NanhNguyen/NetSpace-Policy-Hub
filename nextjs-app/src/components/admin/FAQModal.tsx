@@ -52,13 +52,15 @@ export default function FAQModal({ open, onClose, onSave, faq }: FAQModalProps) 
     };
 
     return (
-        <div className="fixed inset-0 top-0 left-0 w-screen h-screen z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300">
+        <div className="fixed top-0 left-0 right-0 bottom-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300 pl-68">
             <div className="bg-white rounded-[2.5rem] w-full max-w-lg shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 slide-in-from-bottom-4 duration-300 ease-out fill-mode-forwards">
-                <div className="flex items-center justify-between p-8 border-b border-neutral-soft bg-white/50">
-                    <h2 className="text-2xl font-black text-slate-900">
-                        {faq ? "Chỉnh sửa FAQ" : "Thêm FAQ mới"}
-                    </h2>
-                    <button onClick={onClose} className="p-2 hover:bg-slate-200 rounded-full transition-colors">
+                <div className="flex flex-col items-center justify-center p-8 border-b border-neutral-soft bg-white/50 relative">
+                    <div className="text-center">
+                        <h2 className="text-2xl font-black text-slate-900">
+                            {faq ? "Chỉnh sửa FAQ" : "Thêm FAQ mới"}
+                        </h2>
+                    </div>
+                    <button onClick={onClose} className="absolute right-8 top-1/2 -translate-y-1/2 p-2 hover:bg-slate-200 rounded-full transition-colors text-slate-400 hover:text-slate-900">
                         <X size={24} />
                     </button>
                 </div>
@@ -126,18 +128,18 @@ export default function FAQModal({ open, onClose, onSave, faq }: FAQModalProps) 
                         </div>
                     </div>
 
-                    <div className="flex justify-end gap-4 pt-4">
+                    <div className="flex justify-center gap-4 pt-4">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-8 py-3.5 rounded-2xl font-black text-sm text-text-muted hover:bg-slate-100 transition-colors"
+                            className="px-10 py-3.5 rounded-2xl font-black text-sm text-text-muted hover:bg-slate-100 transition-colors border border-slate-100"
                         >
-                            Hủy
+                            Hủy bỏ
                         </button>
                         <button
                             type="submit"
                             disabled={loading}
-                            className="px-10 py-3.5 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-black text-sm transition-all shadow-xl shadow-slate-900/20 active:scale-95 disabled:opacity-50"
+                            className="px-12 py-3.5 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-black text-sm transition-all shadow-xl shadow-slate-900/20 active:scale-95 disabled:opacity-50"
                         >
                             {loading ? "Đang lưu..." : "Lưu thay đổi"}
                         </button>

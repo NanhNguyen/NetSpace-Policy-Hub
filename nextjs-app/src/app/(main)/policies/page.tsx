@@ -90,7 +90,7 @@ function PoliciesContent() {
 
                 <div className="flex items-center gap-3 w-full sm:w-auto">
                     {/* Filter */}
-                    <div className="flex items-center bg-neutral-soft/30 p-1.5 rounded-2xl border border-neutral-soft flex-1 sm:flex-initial overflow-x-auto no-scrollbar">
+                    <div className="flex flex-wrap items-center bg-neutral-soft/30 p-1.5 rounded-2xl border border-neutral-soft flex-1 sm:flex-initial">
                         {categoriesList.map((cat) => (
                             <button
                                 key={cat.key}
