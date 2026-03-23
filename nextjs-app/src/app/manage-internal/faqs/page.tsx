@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Search, Edit2, Trash2, HelpCircle, GripVertical } from "lucide-react";
+import { Plus, Search, Edit2, Trash2, HelpCircle } from "lucide-react";
 import { FAQService } from "@/lib/services/faq.service";
 import { FAQ } from "@/types";
 import FAQModal from "@/components/admin/FAQModal";
@@ -12,6 +12,7 @@ export default function AdminFAQsPage() {
     const [search, setSearch] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedFaq, setSelectedFaq] = useState<FAQ | null>(null);
+    const [formData, setFormData] = useState<Partial<FAQ>>({});
 
     const loadFaqs = async () => {
         setLoading(true);
@@ -31,6 +32,13 @@ export default function AdminFAQsPage() {
 
     const handleAdd = () => {
         setSelectedFaq(null);
+        setFormData({
+            question: "",
+            answer: "",
+            category: "Chung",
+            published: true,
+            order_index: faqs.length > 0 ? Math.max(...faqs.map(f => f.order_index || 0)) + 1 : 1
+        });
         setIsModalOpen(true);
     };
 
@@ -50,28 +58,20 @@ export default function AdminFAQsPage() {
     };
 
     const handleSave = async (faqData: Partial<FAQ>) => {
-        if (selectedFaq) {
-            await FAQService.update(selectedFaq.id, faqData);
-        } else {
-            await FAQService.create(faqData);
-        }
-        loadFaqs();
-    };
-
-    const handleSeed = async () => {
-        if (!confirm("Hệ thống sẽ nạp các câu hỏi mẫu. Bạn có muốn tiếp tục?")) return;
-        setLoading(true);
         try {
-            const { seedFaqs } = await import("@/lib/seed-faqs");
-            await seedFaqs();
+            if (selectedFaq) {
+                await FAQService.update(selectedFaq.id, faqData);
+            } else {
+                await FAQService.create(faqData);
+            }
             await loadFaqs();
         } catch (error) {
-            console.error(error);
-            alert("Lỗi khi nạp dữ liệu mẫu.");
-        } finally {
-            setLoading(false);
+            console.error("Save FAQ failed:", error);
+            alert("Lỗi khi lưu dữ liệu.");
         }
     };
+
+
 
     const filtered = faqs.filter(f =>
         f.question.toLowerCase().includes(search.toLowerCase()) ||
@@ -89,16 +89,11 @@ export default function AdminFAQsPage() {
                     <p className="text-sm text-text-muted">Tạo và chỉnh sửa các câu hỏi thường gặp cho nhân viên.</p>
                 </div>
                 <div className="flex gap-3">
-                    <button
-                        onClick={handleSeed}
-                        disabled={loading}
-                        className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-600 px-6 py-3 rounded-xl font-bold text-sm transition-all border border-slate-200"
-                    >
-                        Nạp mẫu
-                    </button>
+
                     <button
                         onClick={handleAdd}
-                        className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-xl font-bold text-sm transition-all shadow-md active:scale-95"
+                        disabled={loading}
+                        className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-xl font-bold text-sm transition-all shadow-md active:scale-95 disabled:opacity-50"
                     >
                         <Plus size={18} />
                         Thêm FAQ
@@ -132,11 +127,11 @@ export default function AdminFAQsPage() {
                         <tbody className="divide-y divide-neutral-soft text-sm">
                             {loading ? (
                                 <tr>
-                                    <td colSpan={5} className="px-6 py-12 text-center text-text-muted">Đang tải dữ liệu...</td>
+                                    <td colSpan={3} className="px-6 py-12 text-center text-text-muted">Đang xử lý dữ liệu...</td>
                                 </tr>
                             ) : filtered.length === 0 ? (
                                 <tr>
-                                    <td colSpan={5} className="px-6 py-12 text-center text-text-muted">Không tìm thấy FAQ nào.</td>
+                                    <td colSpan={3} className="px-6 py-12 text-center text-text-muted">Không tìm thấy FAQ nào.</td>
                                 </tr>
                             ) : filtered.map((faq) => (
                                 <tr key={faq.id} className="hover:bg-slate-50/50 transition-colors group">
@@ -173,7 +168,7 @@ export default function AdminFAQsPage() {
             <FAQModal
                 open={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                faq={selectedFaq}
+                faq={selectedFaq || (formData as FAQ)}
                 onSave={handleSave}
             />
         </div>
