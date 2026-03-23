@@ -56,12 +56,24 @@ export default function HomePage() {
   async function handleSearch() {
     if (!query.trim()) return;
 
-    // Log search query (non-blocking)
-    fetch('/api/search-logs', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query: query.trim(), resultCount: 0 }),
-    }).catch(() => { });
+    // Calculate result count for logging (mimic the logic in PoliciesContent)
+    try {
+      const policies = await PolicyService.getAllPublished();
+      const searchTerm = query.trim().toLowerCase();
+      const filteredCount = policies.filter(p => 
+        (p.title || "").toLowerCase().includes(searchTerm) || 
+        (p.excerpt || "").toLowerCase().includes(searchTerm)
+      ).length;
+
+      // Log search query (non-blocking)
+      fetch('/api/search-logs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: query.trim(), resultCount: filteredCount }),
+      }).catch(() => { });
+    } catch (e) {
+      console.error('Failed to log search results:', e);
+    }
 
     router.push(`/policies?q=${encodeURIComponent(query.trim())}`);
   }
