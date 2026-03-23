@@ -24,7 +24,7 @@ let PoliciesController = class PoliciesController {
         return this.policiesService.create(policy);
     }
     findAll(published) {
-        const isPublished = published === 'true';
+        const isPublished = published === undefined ? undefined : published === 'true';
         return this.policiesService.findAll(isPublished);
     }
     findOne(id) {

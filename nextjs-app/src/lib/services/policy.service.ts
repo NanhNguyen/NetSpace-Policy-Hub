@@ -1,70 +1,27 @@
 import { Policy, PolicyCategory } from '@/types';
-import { POLICIES } from '../data';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-const mapLocalToApi = (p: any): Policy => ({
-    id: p.id || '',
-    slug: p.id || '',
-    title: p.title || '',
-    category: (p.cat || 'hr') as PolicyCategory,
-    excerpt: p.desc || p.excerpt || '',
-    content: p.body || p.content || '',
-    icon: p.icon || 'description',
-    published: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-});
 
 export const PolicyService = {
     async getAllPublished() {
         try {
             const resp = await fetch(`${API_URL}/policies?published=true`);
-            const apiData: Policy[] = resp.ok ? await resp.json() : [];
-
-            // Use Map for deduplication based on SLUG
-            const policyMap = new Map<string, Policy>();
-
-            // 1. Load local fallback data
-            POLICIES.forEach(p => {
-                const mapped = mapLocalToApi(p);
-                policyMap.set(mapped.slug, mapped);
-            });
-
-            // 2. Overwrite with API data (API always wins on slug overlap)
-            apiData.forEach(p => {
-                policyMap.set(p.slug, p);
-            });
-
-            return Array.from(policyMap.values());
+            if (!resp.ok) return [];
+            return await resp.json();
         } catch (error) {
-            console.warn('API Fetch failed, using local only:', error);
-            return POLICIES.map(mapLocalToApi);
+            console.error('API Fetch failed:', error);
+            return [];
         }
     },
 
     async getAllAdmin() {
         try {
             const resp = await fetch(`${API_URL}/policies`);
-            const apiData: Policy[] = resp.ok ? await resp.json() : [];
-
-            const policyMap = new Map<string, Policy>();
-
-            // Load local
-            POLICIES.forEach(p => {
-                const mapped = mapLocalToApi(p);
-                policyMap.set(mapped.slug, mapped);
-            });
-
-            // Overwrite with API
-            apiData.forEach(p => {
-                policyMap.set(p.slug, p);
-            });
-
-            return Array.from(policyMap.values());
+            if (!resp.ok) return [];
+            return await resp.json();
         } catch (error) {
-            console.warn('API Fetch All fail:', error);
-            return POLICIES.map(mapLocalToApi);
+            console.error('API Fetch All fail:', error);
+            return [];
         }
     },
 
@@ -74,8 +31,7 @@ export const PolicyService = {
             if (!resp.ok) throw new Error('Policy not found');
             return resp.json();
         } catch (error) {
-            const local = POLICIES.find(p => p.id === id);
-            if (local) return mapLocalToApi(local);
+            console.error('Fetch by ID failed:', error);
             throw error;
         }
     },
@@ -86,8 +42,7 @@ export const PolicyService = {
             if (!resp.ok) throw new Error('Policy not found');
             return resp.json();
         } catch (error) {
-            const local = POLICIES.find(p => p.id === slug);
-            if (local) return mapLocalToApi(local);
+            console.error('Fetch by slug failed:', error);
             throw error;
         }
     },

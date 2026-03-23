@@ -3,10 +3,11 @@
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { FAQS } from "@/lib/data";
+import { FAQService } from "@/lib/services/faq.service";
+import { FAQ } from "@/types";
 import HRModal from "@/components/HRModal";
 import TicketStatusModal from "@/components/TicketStatusModal";
-import { Search, HelpCircle } from "lucide-react";
+import { Search, HelpCircle, Loader2 } from "lucide-react";
 import { supabase } from "@/lib/db/client";
 
 const FAQ_CATS = [
@@ -19,6 +20,8 @@ const FAQ_CATS = [
 
 export default function FAQPage() {
     const router = useRouter();
+    const [faqs, setFaqs] = useState<FAQ[]>([]);
+    const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
     const [cat, setCat] = useState("all");
     const [openIdx, setOpenIdx] = useState<number | null>(null);
@@ -28,7 +31,19 @@ export default function FAQPage() {
 
     useEffect(() => {
         supabase.auth.getUser().then(({ data }) => setUser(data.user));
+        loadFaqs();
     }, []);
+
+    const loadFaqs = async () => {
+        try {
+            const data = await FAQService.getAll();
+            setFaqs(data);
+        } catch (error) {
+            console.error("Failed to load FAQs:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleAskHR = () => {
         if (!user) {
@@ -40,15 +55,15 @@ export default function FAQPage() {
 
     const filtered = useMemo(
         () =>
-            FAQS.filter((f) => {
-                const catOk = cat === "all" || f.cat === cat;
+            faqs.filter((f) => {
+                const catOk = cat === "all" || f.category.toLowerCase() === cat.toLowerCase();
                 const qOk =
                     !search ||
-                    f.q.toLowerCase().includes(search.toLowerCase()) ||
-                    f.a.toLowerCase().includes(search.toLowerCase());
+                    f.question.toLowerCase().includes(search.toLowerCase()) ||
+                    f.answer.toLowerCase().includes(search.toLowerCase());
                 return catOk && qOk;
             }),
-        [search, cat]
+        [faqs, search, cat]
     );
 
     function toggle(i: number) {
@@ -98,11 +113,16 @@ export default function FAQPage() {
                 </div>
 
                 {/* Accordion */}
-                {filtered.length > 0 ? (
+                {loading ? (
+                    <div className="flex flex-col items-center justify-center py-20 text-slate-400">
+                        <Loader2 className="animate-spin mb-4" size={40} />
+                        <p className="text-sm font-bold animate-pulse">Đang tải câu hỏi...</p>
+                    </div>
+                ) : filtered.length > 0 ? (
                     <div className="space-y-3">
                         {filtered.map((faq, i) => (
                             <div
-                                key={i}
+                                key={faq.id || i}
                                 className={`bg-white rounded-xl border overflow-hidden transition-colors ${openIdx === i ? "border-primary" : "border-neutral-soft"
                                     }`}
                             >
@@ -110,7 +130,7 @@ export default function FAQPage() {
                                     onClick={() => toggle(i)}
                                     className="w-full flex items-center justify-between text-left px-5 py-4 gap-4"
                                 >
-                                    <span className="font-semibold text-sm text-text-main leading-snug">{faq.q}</span>
+                                    <span className="font-semibold text-sm text-text-main leading-snug">{faq.question}</span>
                                     <span
                                         className={`material-symbols-outlined flex-shrink-0 text-text-muted text-[22px] transition-transform duration-300 ${openIdx === i ? "rotate-180" : ""
                                             }`}
@@ -120,10 +140,10 @@ export default function FAQPage() {
                                 </button>
                                 <div
                                     className="overflow-hidden transition-all duration-300 ease-in-out"
-                                    style={{ maxHeight: openIdx === i ? "400px" : "0" }}
+                                    style={{ maxHeight: openIdx === i ? "1000px" : "0" }}
                                 >
                                     <div className="px-5 pb-5 pt-0 text-sm text-text-muted leading-relaxed border-t border-neutral-soft pt-4">
-                                        {faq.a}
+                                        {faq.answer}
                                     </div>
                                 </div>
                             </div>

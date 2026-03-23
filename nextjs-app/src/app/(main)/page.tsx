@@ -60,7 +60,7 @@ export default function HomePage() {
     try {
       const policies = await PolicyService.getAllPublished();
       const searchTerm = query.trim().toLowerCase();
-      const filteredCount = policies.filter(p => 
+      const filteredCount = policies.filter((p: Policy) => 
         (p.title || "").toLowerCase().includes(searchTerm) || 
         (p.excerpt || "").toLowerCase().includes(searchTerm)
       ).length;

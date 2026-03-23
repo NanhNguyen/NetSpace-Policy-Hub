@@ -16,26 +16,12 @@ export const FAQService = {
     async getAll(): Promise<FAQ[]> {
         try {
             const resp = await fetch(`${API_URL}/faqs`);
-            const apiData: FAQ[] = resp.ok ? await resp.json() : [];
-
-            // Use Map for deduplication based on QUESTION text
-            const faqMap = new Map<string, FAQ>();
-
-            // 1. Load local fallback
-            FAQS.forEach((f, i) => {
-                const mapped = mapLocalToApi(f, i);
-                faqMap.set(mapped.question.toLowerCase().trim(), mapped);
-            });
-
-            // 2. Overwrite with API data
-            apiData.forEach(f => {
-                faqMap.set(f.question.toLowerCase().trim(), f);
-            });
-
-            return Array.from(faqMap.values()).sort((a, b) => (a.order_index || 0) - (b.order_index || 0));
+            if (!resp.ok) return [];
+            const apiData: FAQ[] = await resp.json();
+            return apiData.sort((a, b) => (a.order_index || 0) - (b.order_index || 0));
         } catch (error) {
-            console.warn('FAQ API failed, using local fallback:', error);
-            return FAQS.map(mapLocalToApi);
+            console.error('FAQ API failed:', error);
+            return [];
         }
     },
 

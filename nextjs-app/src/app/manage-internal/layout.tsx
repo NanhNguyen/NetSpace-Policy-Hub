@@ -219,10 +219,10 @@ export default function AdminLayout({
 
             {/* Main Content */}
             <main className="flex-1 ml-68 p-8 min-h-screen bg-slate-50/50 backdrop-blur-sm relative">
-                <div className="absolute top-6 right-8 z-50">
+                <div className="flex items-center justify-end mb-6 gap-6 relative z-50">
                     {(role === 'HR' || role === 'ADMIN') && <NotificationBell role="HR" />}
                 </div>
-                <div className="max-w-7xl mx-auto pt-6">
+                <div className="max-w-7xl mx-auto">
                     {children}
                 </div>
             </main>

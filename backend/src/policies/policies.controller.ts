@@ -13,7 +13,7 @@ export class PoliciesController {
 
     @Get()
     findAll(@Query('published') published?: string) {
-        const isPublished = published === 'true';
+        const isPublished = published === undefined ? undefined : published === 'true';
         return this.policiesService.findAll(isPublished);
     }
 
