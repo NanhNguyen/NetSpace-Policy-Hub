@@ -18,4 +18,9 @@ export declare class UsersService {
         password?: string;
     }): Promise<Profile>;
     updateRole(userId: string, roleId: number): Promise<Profile>;
+    updateProfile(userId: string, data: {
+        email: string;
+        full_name: string;
+        role_id: number;
+    }): Promise<Profile>;
 }

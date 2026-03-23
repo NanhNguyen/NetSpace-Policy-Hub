@@ -26,11 +26,26 @@ let TicketsController = class TicketsController {
     findAll() {
         return this.ticketsService.findAll();
     }
-    findByEmail(email) {
-        return this.ticketsService.findByEmail(email);
+    findByEmail(email, userId) {
+        return this.ticketsService.findByEmail(email, userId);
+    }
+    getStatsByTopic() {
+        return this.ticketsService.getStatsByTopic();
+    }
+    findOne(id) {
+        return this.ticketsService.findOne(id);
     }
     answer(id, answer) {
         return this.ticketsService.answer(id, answer);
+    }
+    async addMessage(id, content, sender_type, sender_id, sender_name) {
+        try {
+            return await this.ticketsService.addMessage(id, content, sender_type, sender_id, sender_name);
+        }
+        catch (e) {
+            console.error('Error adding message:', e);
+            throw new common_1.HttpException({ error: e.message, stack: e.stack }, 500);
+        }
     }
 };
 exports.TicketsController = TicketsController;
@@ -50,10 +65,24 @@ __decorate([
 __decorate([
     (0, common_1.Get)('search'),
     __param(0, (0, common_1.Query)('email')),
+    __param(1, (0, common_1.Query)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], TicketsController.prototype, "findByEmail", null);
+__decorate([
+    (0, common_1.Get)('stats/by-topic'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], TicketsController.prototype, "getStatsByTopic", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
-], TicketsController.prototype, "findByEmail", null);
+], TicketsController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id/answer'),
     __param(0, (0, common_1.Param)('id')),
@@ -62,6 +91,17 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], TicketsController.prototype, "answer", null);
+__decorate([
+    (0, common_1.Post)(':id/messages'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)('content')),
+    __param(2, (0, common_1.Body)('sender_type')),
+    __param(3, (0, common_1.Body)('sender_id')),
+    __param(4, (0, common_1.Body)('sender_name')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, String, String]),
+    __metadata("design:returntype", Promise)
+], TicketsController.prototype, "addMessage", null);
 exports.TicketsController = TicketsController = __decorate([
     (0, common_1.Controller)('tickets'),
     __metadata("design:paramtypes", [tickets_service_1.TicketsService])

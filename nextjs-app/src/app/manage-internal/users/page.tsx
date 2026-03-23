@@ -11,8 +11,9 @@ export default function AdminUsersPage() {
     const [roles, setRoles] = useState<Role[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
-    const [updating, setUpdating] = useState<string | null>(null);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [editingProfile, setEditingProfile] = useState<Profile | null>(null);
+    const [updating, setUpdating] = useState<string | null>(null);
 
     const loadData = async () => {
         setLoading(true);
@@ -30,27 +31,26 @@ export default function AdminUsersPage() {
         }
     };
 
-    const handleCreateUser = async (userData: { email: string; full_name: string; role_id: number; password?: string }) => {
+    const handleSaveUser = async (userData: { email: string; full_name: string; role_id: number; password?: string }) => {
         try {
-            await UserService.createProfile(userData);
+            if (editingProfile) {
+                await UserService.updateProfile(editingProfile.id, userData);
+            } else {
+                await UserService.createProfile(userData);
+            }
             await loadData();
+            setEditingProfile(null);
         } catch (error: any) {
             throw error;
         }
     };
 
-    useEffect(() => {
-        loadData();
-    }, []);
-
-    const handleRoleChange = async (userId: string, newRoleId: string) => {
+    const handleQuickRoleChange = async (userId: string, newRoleId: string) => {
         setUpdating(userId);
         try {
             const success = await UserService.updateRole(userId, parseInt(newRoleId));
             if (success) {
-                // Refresh local state
-                const updatedProfiles = await UserService.getAllProfiles();
-                setProfiles(updatedProfiles);
+                await loadData();
             } else {
                 alert("Không thể cập nhật quyền hạn.");
             }
@@ -59,25 +59,16 @@ export default function AdminUsersPage() {
         }
     };
 
+    useEffect(() => {
+        loadData();
+    }, []);
+
     const filtered = useMemo(() => {
         return profiles.filter(p =>
             p.email.toLowerCase().includes(search.toLowerCase()) ||
             (p.full_name || "").toLowerCase().includes(search.toLowerCase())
         );
     }, [profiles, search]);
-
-    const getRoleBadge = (roleCode: UserRoleType | undefined) => {
-        switch (roleCode) {
-            case 'ADMIN':
-                return <span className="bg-slate-900 text-white px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center gap-2"><Shield size={12} /> Full Admin</span>;
-            case 'HR':
-                return <span className="bg-indigo-50 text-indigo-600 border border-indigo-100 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center gap-2"><Award size={12} /> HR Manager</span>;
-            case 'TICKET_MANAGER':
-                return <span className="bg-emerald-50 text-emerald-600 border border-emerald-100 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center gap-2"><UserCheck size={12} /> Ticket Manager</span>;
-            default:
-                return <span className="bg-slate-100 text-slate-500 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center gap-2"><UserIcon size={12} /> Standard User</span>;
-        }
-    };
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
@@ -98,20 +89,26 @@ export default function AdminUsersPage() {
                         Làm mới
                     </button>
                     <button
-                        onClick={() => setIsCreateModalOpen(true)}
+                        onClick={() => { setEditingProfile(null); setIsCreateModalOpen(true); }}
                         className="flex items-center gap-2 bg-slate-900 border border-slate-900 text-white px-6 py-3 rounded-2xl font-bold text-sm transition-all shadow-xl shadow-slate-900/20 active:scale-95 hover:bg-slate-800"
                     >
                         <UserPlus size={18} className="text-primary" />
-                        Thêm nhân viên
+                        Cấp Tài Khoản
                     </button>
                 </div>
             </div>
 
-            {isCreateModalOpen && (
+            {(isCreateModalOpen || editingProfile) && (
                 <UserModal
                     roles={roles}
-                    onClose={() => setIsCreateModalOpen(false)}
-                    onSave={handleCreateUser}
+                    initialData={editingProfile ? {
+                        id: editingProfile.id,
+                        email: editingProfile.email,
+                        full_name: editingProfile.full_name || '',
+                        role_id: editingProfile.role_id
+                    } : undefined}
+                    onClose={() => { setIsCreateModalOpen(false); setEditingProfile(null); }}
+                    onSave={handleSaveUser}
                 />
             )}
 
@@ -135,8 +132,8 @@ export default function AdminUsersPage() {
                         <thead className="bg-slate-50/80 border-b border-neutral-soft">
                             <tr>
                                 <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted">Nhân viên</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted">Quyền hiện tại</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted text-right">Gán vai trò mới</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted">Quyền (Đổi nhanh)</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted text-right">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-neutral-soft text-sm">
@@ -167,22 +164,39 @@ export default function AdminUsersPage() {
                                         </div>
                                     </td>
                                     <td className="px-8 py-6">
-                                        {getRoleBadge(profile.role?.code)}
+                                        <div className="relative w-max">
+                                            {updating === profile.id ? (
+                                                <div className="flex items-center gap-2 px-3 py-1.5"><RefreshCw size={14} className="animate-spin text-primary" /><span className="text-[10px] font-bold">Cập nhật...</span></div>
+                                            ) : (
+                                                <select
+                                                    value={profile.role_id}
+                                                    onChange={(e) => handleQuickRoleChange(profile.id, e.target.value)}
+                                                    className={`appearance-none bg-slate-50 border border-neutral-soft rounded-xl px-4 py-2 pr-10 text-xs font-black outline-none focus:ring-4 focus:ring-primary/10 transition-all cursor-pointer ${profile.role?.code === 'ADMIN' ? 'text-slate-900 border-slate-900' :
+                                                            profile.role?.code === 'HR' ? 'text-indigo-600 border-indigo-200 bg-indigo-50/30' :
+                                                                profile.role?.code === 'TICKET_MANAGER' ? 'text-emerald-600 border-emerald-200 bg-emerald-50/30' :
+                                                                    'text-slate-500'
+                                                        }`}
+                                                >
+                                                    {roles.map(r => (
+                                                        <option key={r.id} value={r.id}>{r.name}</option>
+                                                    ))}
+                                                </select>
+                                            )}
+                                            {updating !== profile.id && (
+                                                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                                                    <span className="material-symbols-outlined text-[16px]">expand_more</span>
+                                                </div>
+                                            )}
+                                        </div>
                                     </td>
                                     <td className="px-8 py-6 text-right">
-                                        {updating === profile.id ? (
-                                            <div className="flex justify-end pr-4"><RefreshCw size={18} className="animate-spin text-primary" /></div>
-                                        ) : (
-                                            <select
-                                                value={profile.role_id}
-                                                onChange={(e) => handleRoleChange(profile.id, e.target.value)}
-                                                className="bg-white border border-neutral-soft rounded-xl px-4 py-2 text-xs font-black shadow-sm outline-none focus:border-primary transition-all hover:border-slate-300 cursor-pointer"
-                                            >
-                                                {roles.map(role => (
-                                                    <option key={role.id} value={role.id}>{role.name} ({role.code})</option>
-                                                ))}
-                                            </select>
-                                        )}
+                                        <button
+                                            onClick={() => setEditingProfile(profile)}
+                                            className="bg-white border border-neutral-soft rounded-xl px-4 py-2 text-xs font-black shadow-sm outline-none hover:bg-slate-50 hover:border-slate-300 transition-all flex items-center gap-2 ml-auto"
+                                        >
+                                            <span className="material-symbols-outlined text-[18px] text-primary">edit</span>
+                                            Sửa chi tiết
+                                        </button>
                                     </td>
                                 </tr>
                             ))}

@@ -10,7 +10,7 @@ import toast from "react-hot-toast";
 import NotificationBell from "./NotificationBell";
 
 const NAV_LINKS = [
-    { href: "/categories", label: "Chính Sách" },
+    { href: "/categories", label: "Danh mục" },
     { href: "/faq", label: "FAQ" },
 ];
 
@@ -21,41 +21,64 @@ export default function Header() {
     const [modalOpen, setModalOpen] = useState(false);
     const [loginPromptOpen, setLoginPromptOpen] = useState(false);
     const [user, setUser] = useState<any>(null);
+    const [isLoadingUser, setIsLoadingUser] = useState(true);
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const fetchProfile = async (id: string, email: string) => {
+        let isMounted = true;
+        
+        const fetchProfile = async (sessionUser: any) => {
             try {
                 const { UserService } = await import("@/lib/services/user.service");
-                const profile = await UserService.getProfile(id);
+                const profile = await UserService.getProfile(sessionUser.id);
+                if (!isMounted) return;
+                
                 if (profile) {
                     setUser({
-                        id: profile.id,
-                        email: profile.email,
-                        user_metadata: { full_name: profile.full_name, role: profile.role?.code }
+                        ...sessionUser,
+                        user_metadata: { 
+                            ...sessionUser.user_metadata,
+                            full_name: profile.full_name, 
+                            role: profile.role?.code 
+                        }
                     });
                 } else {
-                    setUser({ id, email });
+                    setUser(sessionUser);
                 }
             } catch (e) {
-                setUser({ id, email });
+                if (isMounted) setUser(sessionUser);
+            } finally {
+                if (isMounted) setIsLoadingUser(false);
             }
         };
 
-        // Initial check
-        supabase.auth.getUser().then(({ data }) => {
-            if (data.user) {
-                fetchProfile(data.user.id, data.user.email || "");
-            }
-        });
-
-        // Listen for changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-            if (session?.user) {
-                fetchProfile(session.user.id, session.user.email || "");
+        // Check active session immediately to avoid double fetching
+        const initUser = async () => {
+            const { data } = await supabase.auth.getSession();
+            if (data.session?.user) {
+                await fetchProfile(data.session.user);
             } else {
-                setUser(null);
+                if (isMounted) {
+                    setUser(null);
+                    setIsLoadingUser(false);
+                }
+            }
+        };
+
+        initUser();
+
+        // Listen for Auth changes (login/logout)
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+                if (session?.user) {
+                    fetchProfile(session.user);
+                }
+            } else if (event === 'SIGNED_OUT') {
+                if (isMounted) {
+                    setUser(null);
+                    setIsLoadingUser(false);
+                }
             }
         });
 
@@ -68,6 +91,7 @@ export default function Header() {
         document.addEventListener("mousedown", handleClickOutside);
 
         return () => {
+            isMounted = false;
             subscription.unsubscribe();
             document.removeEventListener("mousedown", handleClickOutside);
         };
@@ -110,8 +134,8 @@ export default function Header() {
         }
     };
 
-    const isAdmin = user?.email === 'admin@gmail.com' || user?.user_metadata?.role === 'ADMIN';
-    const showAskHR = !isAdmin;
+    // Show Ask HR for everyone so standard UI components don't randomly disappear
+    const showAskHR = true;
 
     return (
         <>
@@ -151,79 +175,63 @@ export default function Header() {
 
                     {/* CTA */}
                     <div className="flex items-center gap-3">
-                        {showAskHR && (
-                            <button
-                                onClick={handleAskHR}
-                                className="hidden sm:flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-4 py-2.5 rounded-lg text-sm font-bold transition-all shadow-sm shadow-primary/20 active:scale-95"
-                            >
-                                <span className="material-symbols-outlined text-[18px]">support_agent</span>
-                                Hỏi HR
-                            </button>
-                        )}
+                        <button
+                            onClick={handleAskHR}
+                            className="hidden sm:flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-4 py-2.5 rounded-lg text-sm font-bold transition-all shadow-sm shadow-primary/20 active:scale-95"
+                        >
+                            <span className="material-symbols-outlined text-[18px]">support_agent</span>
+                            Hỏi HR
+                        </button>
+
                         <div className="flex items-center gap-2 mr-2">
                             {user && <NotificationBell role="USER" />}
                         </div>
 
-                        {/* User Menu Dropdown */}
-                        <div className="relative" ref={menuRef}>
-                            <button
-                                onClick={() => setMenuOpen(!menuOpen)}
-                                className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200 hover:border-primary transition-all overflow-hidden group"
-                            >
-                                {user?.email ? (
+                        {/* Authentication Status UI */}
+                        {isLoadingUser ? (
+                            <div className="w-10 h-10 bg-slate-100 animate-pulse rounded-full" />
+                        ) : !user ? (
+                            <Link href="/auth/login" className="hidden sm:flex items-center justify-center bg-slate-100 hover:bg-primary hover:text-white px-5 py-2.5 rounded-xl text-sm font-bold text-slate-700 transition-all border border-slate-200">
+                                Đăng nhập
+                            </Link>
+                        ) : (
+                            <div className="relative" ref={menuRef}>
+                                <button
+                                    onClick={() => setMenuOpen(!menuOpen)}
+                                    className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200 hover:border-primary transition-all overflow-hidden group"
+                                >
                                     <div className="w-full h-full bg-primary/10 flex items-center justify-center text-primary font-black text-xs uppercase group-hover:bg-primary/20">
                                         {user.email.substring(0, 2)}
                                     </div>
-                                ) : (
-                                    <span className="material-symbols-outlined text-text-muted text-[22px] group-hover:text-primary">account_circle</span>
-                                )}
-                            </button>
+                                </button>
 
-                            {/* Dropdown Menu */}
-                            {menuOpen && (
-                                <div className="absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-xl border border-neutral-soft py-2 flex flex-col z-[60] animate-in fade-in slide-in-from-top-2 duration-200">
-                                    {user ? (
-                                        <>
-                                            <div className="px-4 py-3 border-b border-neutral-soft mb-2">
-                                                <p className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-0.5">Xin chào,</p>
-                                                <p className="text-sm font-black text-text-main truncate">{user.user_metadata?.full_name || user.email}</p>
-                                                <p className="text-[10px] text-text-muted truncate mt-0.5">{user.email}</p>
-                                            </div>
-                                            <Link
-                                                href="/tickets"
-                                                onClick={() => setMenuOpen(false)}
-                                                className="flex items-center gap-3 px-4 py-3 text-sm font-bold text-text-main hover:bg-slate-50 transition-colors"
-                                            >
-                                                <span className="material-symbols-outlined text-[20px] text-text-muted">history</span>
-                                                Yêu cầu của tôi
-                                            </Link>
-                                            <button
-                                                onClick={handleLogout}
-                                                className="flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 transition-colors border-t border-neutral-soft mt-2"
-                                            >
-                                                <span className="material-symbols-outlined text-[20px]">logout</span>
-                                                Đăng xuất
-                                            </button>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <div className="px-4 py-3 border-b border-neutral-soft mb-2">
-                                                <p className="text-xs font-bold text-text-main">Bạn chưa đăng nhập</p>
-                                                <p className="text-[10px] text-text-muted mt-0.5">Đăng nhập để xem thông tin</p>
-                                            </div>
-                                            <Link
-                                                href="/auth/login"
-                                                onClick={() => setMenuOpen(false)}
-                                                className="flex items-center gap-3 px-4 py-3 text-sm font-bold text-primary hover:bg-primary/5 transition-colors"
-                                            >
-                                                <span className="material-symbols-outlined text-[20px]">login</span>
-                                                Đăng nhập ngay
-                                            </Link>
-                                        </>
-                                    )}
-                                </div>
-                            )}
-                        </div>
+                                {/* Dropdown Menu */}
+                                {menuOpen && (
+                                    <div className="absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-xl border border-neutral-soft py-2 flex flex-col z-[60] animate-in fade-in slide-in-from-top-2 duration-200">
+                                        <div className="px-4 py-3 border-b border-neutral-soft mb-2">
+                                            <p className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-0.5">Xin chào,</p>
+                                            <p className="text-sm font-black text-text-main truncate">{user.user_metadata?.full_name || user.email}</p>
+                                            <p className="text-[10px] text-text-muted truncate mt-0.5">{user.email}</p>
+                                        </div>
+                                        <Link
+                                            href="/tickets"
+                                            onClick={() => setMenuOpen(false)}
+                                            className="flex items-center gap-3 px-4 py-3 text-sm font-bold text-text-main hover:bg-slate-50 transition-colors"
+                                        >
+                                            <span className="material-symbols-outlined text-[20px] text-text-muted">history</span>
+                                            Yêu cầu của tôi
+                                        </Link>
+                                        <button
+                                            onClick={handleLogout}
+                                            className="flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 transition-colors border-t border-neutral-soft mt-2"
+                                        >
+                                            <span className="material-symbols-outlined text-[20px]">logout</span>
+                                            Đăng xuất
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
                         {/* Hamburger */}
                         <button
@@ -248,19 +256,28 @@ export default function Header() {
                                     ? "bg-neutral-soft text-primary font-bold"
                                     : "hover:bg-neutral-soft"
                                     }`}
-                            >
+                                >
                                 {link.label}
                             </Link>
                         ))}
-                        {showAskHR && (
-                            <button
-                                onClick={() => { setMobileOpen(false); handleAskHR(); }}
-                                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary hover:bg-primary-dark text-white text-sm font-bold transition-colors mt-2"
+                        {/* Mobile Login / User Options */}
+                        {!user ? (
+                            <Link
+                                href="/auth/login"
+                                onClick={() => setMobileOpen(false)}
+                                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-slate-100 text-slate-800 text-sm font-bold mt-2"
                             >
-                                <span className="material-symbols-outlined text-[18px]">support_agent</span>
-                                Hỏi HR
-                            </button>
-                        )}
+                                <span className="material-symbols-outlined text-[18px]">login</span>
+                                Đăng nhập ngay
+                            </Link>
+                        ) : null}
+                        <button
+                            onClick={() => { setMobileOpen(false); handleAskHR(); }}
+                            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary hover:bg-primary-dark text-white text-sm font-bold transition-colors mt-2"
+                        >
+                            <span className="material-symbols-outlined text-[18px]">support_agent</span>
+                            Hỏi HR
+                        </button>
                     </div>
                 )}
             </header>

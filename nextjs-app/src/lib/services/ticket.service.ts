@@ -1,11 +1,17 @@
-import { Ticket } from "@/types";
+import { Ticket, TicketMessage } from "@/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 export const TicketService = {
     async getAll(): Promise<Ticket[]> {
-        const resp = await fetch(`${API_URL}/tickets`);
+        const resp = await fetch(`${API_URL}/tickets`, { cache: 'no-store' });
         if (!resp.ok) throw new Error('Failed to fetch tickets');
+        return resp.json();
+    },
+
+    async getById(id: string): Promise<Ticket> {
+        const resp = await fetch(`${API_URL}/tickets/${id}`, { cache: 'no-store' });
+        if (!resp.ok) throw new Error('Failed to fetch ticket');
         return resp.json();
     },
 
@@ -29,9 +35,27 @@ export const TicketService = {
         return resp.json();
     },
 
-    async getByEmail(email: string): Promise<Ticket[]> {
-        const resp = await fetch(`${API_URL}/tickets/search?email=${email}`);
+    async addMessage(id: string, messageData: Partial<TicketMessage>): Promise<TicketMessage> {
+        const resp = await fetch(`${API_URL}/tickets/${id}/messages`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(messageData),
+        });
+        if (!resp.ok) throw new Error('Failed to add message');
+        return resp.json();
+    },
+
+    async getByEmail(email: string, user_id?: string): Promise<Ticket[]> {
+        let url = `${API_URL}/tickets/search?email=${encodeURIComponent(email)}`;
+        if (user_id) url += `&userId=${encodeURIComponent(user_id)}`;
+        const resp = await fetch(url, { cache: 'no-store' });
         if (!resp.ok) throw new Error('Failed to search tickets');
+        return resp.json();
+    },
+
+    async getStatsByTopic(): Promise<any[]> {
+        const resp = await fetch(`${API_URL}/tickets/stats/by-topic`, { cache: 'no-store' });
+        if (!resp.ok) throw new Error('Failed to fetch stats');
         return resp.json();
     }
 };

@@ -46,7 +46,7 @@ let UsersService = class UsersService {
     async getAllProfiles() {
         return this.profilesRepository.find({
             relations: ['role'],
-            order: { createdAt: 'DESC' },
+            order: { created_at: 'DESC' },
         });
     }
     async getProfile(id) {
@@ -83,7 +83,7 @@ let UsersService = class UsersService {
                 id: userId,
                 email: data.email,
                 full_name: data.full_name,
-                roleId: data.role_id,
+                role_id: data.role_id,
             });
             return await this.profilesRepository.save(profile);
         }
@@ -95,7 +95,35 @@ let UsersService = class UsersService {
         const profile = await this.profilesRepository.findOneBy({ id: userId });
         if (!profile)
             throw new common_1.NotFoundException('Profile not found');
-        profile.roleId = roleId;
+        profile.role_id = roleId;
+        if (this.supabaseAdmin) {
+            const role = await this.rolesRepository.findOneBy({ id: roleId });
+            if (role) {
+                await this.supabaseAdmin.auth.admin.updateUserById(userId, {
+                    user_metadata: { role: role.code, role_id: roleId }
+                });
+            }
+        }
+        return await this.profilesRepository.save(profile);
+    }
+    async updateProfile(userId, data) {
+        const profile = await this.profilesRepository.findOneBy({ id: userId });
+        if (!profile)
+            throw new common_1.NotFoundException('Profile not found');
+        profile.email = data.email;
+        profile.full_name = data.full_name;
+        profile.role_id = data.role_id;
+        if (this.supabaseAdmin) {
+            const role = await this.rolesRepository.findOneBy({ id: data.role_id });
+            await this.supabaseAdmin.auth.admin.updateUserById(userId, {
+                email: data.email,
+                user_metadata: {
+                    full_name: data.full_name,
+                    role: role?.code || 'USER',
+                    role_id: data.role_id
+                }
+            });
+        }
         return await this.profilesRepository.save(profile);
     }
 };

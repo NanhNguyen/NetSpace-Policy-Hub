@@ -3,8 +3,8 @@ export declare class Profile {
     id: string;
     email: string;
     full_name: string;
-    roleId: number;
-    createdAt: Date;
-    updatedAt: Date;
+    role_id: number;
+    created_at: Date;
+    updated_at: Date;
     role: Role;
 }

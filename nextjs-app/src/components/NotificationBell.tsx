@@ -74,7 +74,9 @@ export default function NotificationBell({ role }: { role: 'ADMIN' | 'HR' | 'USE
             >
                 <span className="material-symbols-outlined text-text-muted text-[22px] group-hover:text-primary">notifications</span>
                 {unreadCount > 0 && (
-                    <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+                    <span className="absolute -top-1 -right-1 min-w-[20px] h-[20px] bg-red-500 text-white text-[10px] font-black rounded-full border-2 border-white flex items-center justify-center px-1 shadow-sm">
+                        {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
                 )}
             </button>
 

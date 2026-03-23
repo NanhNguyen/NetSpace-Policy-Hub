@@ -16,9 +16,9 @@ let Profile = class Profile {
     id;
     email;
     full_name;
-    roleId;
-    createdAt;
-    updatedAt;
+    role_id;
+    created_at;
+    updated_at;
     role;
 };
 exports.Profile = Profile;
@@ -37,15 +37,15 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)({ name: 'role_id', default: 4 }),
     __metadata("design:type", Number)
-], Profile.prototype, "roleId", void 0);
+], Profile.prototype, "role_id", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)({ name: 'created_at' }),
     __metadata("design:type", Date)
-], Profile.prototype, "createdAt", void 0);
+], Profile.prototype, "created_at", void 0);
 __decorate([
     (0, typeorm_1.UpdateDateColumn)({ name: 'updated_at' }),
     __metadata("design:type", Date)
-], Profile.prototype, "updatedAt", void 0);
+], Profile.prototype, "updated_at", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => role_entity_1.Role, (role) => role.profiles),
     (0, typeorm_1.JoinColumn)({ name: 'role_id' }),

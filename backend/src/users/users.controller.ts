@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Put } from '@nestjs/common';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -28,5 +28,10 @@ export class UsersController {
   @Patch('roles/:id')
   async updateRole(@Param('id') id: string, @Body('role_id') roleId: number) {
     return this.usersService.updateRole(id, roleId);
+  }
+
+  @Put('profiles/:id')
+  async updateProfile(@Param('id') id: string, @Body() data: { email: string; full_name: string; role_id: number }) {
+    return this.usersService.updateProfile(id, data);
   }
 }

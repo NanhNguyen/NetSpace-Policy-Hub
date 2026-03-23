@@ -12,15 +12,17 @@ const typeorm_1 = require("@nestjs/typeorm");
 const tickets_service_1 = require("./tickets.service");
 const tickets_controller_1 = require("./tickets.controller");
 const ticket_entity_1 = require("./entities/ticket.entity");
+const ticket_message_entity_1 = require("./entities/ticket-message.entity");
 const profile_entity_1 = require("../users/entities/profile.entity");
 let TicketsModule = class TicketsModule {
 };
 exports.TicketsModule = TicketsModule;
 exports.TicketsModule = TicketsModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([ticket_entity_1.Ticket, profile_entity_1.Profile])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([ticket_entity_1.Ticket, ticket_message_entity_1.TicketMessage, profile_entity_1.Profile])],
         controllers: [tickets_controller_1.TicketsController],
         providers: [tickets_service_1.TicketsService],
+        exports: [tickets_service_1.TicketsService],
     })
 ], TicketsModule);
 //# sourceMappingURL=tickets.module.js.map

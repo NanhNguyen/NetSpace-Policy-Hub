@@ -13,13 +13,13 @@ export class Profile {
   full_name: string;
 
   @Column({ name: 'role_id', default: 4 })
-  roleId: number;
+  role_id: number;
 
   @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
+  created_at: Date;
 
   @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
+  updated_at: Date;
 
   @ManyToOne(() => Role, (role) => role.profiles)
   @JoinColumn({ name: 'role_id' })

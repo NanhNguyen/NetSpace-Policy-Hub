@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Ticket } from './entities/ticket.entity';
+import { TicketMessage } from './entities/ticket-message.entity';
 import { MailService } from '../mail/mail.service';
 import { PushService } from '../notifications/push.service';
 import { Profile } from '../users/entities/profile.entity';
@@ -11,6 +12,8 @@ export class TicketsService {
     constructor(
         @InjectRepository(Ticket)
         private ticketsRepository: Repository<Ticket>,
+        @InjectRepository(TicketMessage)
+        private messageRepository: Repository<TicketMessage>,
         @InjectRepository(Profile)
         private profileRepository: Repository<Profile>,
         private mailService: MailService,
@@ -21,13 +24,12 @@ export class TicketsService {
         const newTicket = this.ticketsRepository.create(ticket);
         const saved = await this.ticketsRepository.save(newTicket);
 
-        // Notify HR via WebPush (if still requested)
+        // Notify HR
         this.pushService.notifyHR(
             'Thắc mắc mới từ nhân viên',
             `${saved.employee_name} vừa đặt một câu hỏi mới: "${saved.question}"`
         ).catch(err => console.error('Push error:', err));
 
-        // Create In-App Notification for HR
         this.pushService.createNotification({
             title: 'Thắc mắc mới từ nhân viên',
             message: `${saved.employee_name} vừa đặt một câu hỏi mới: "${saved.question}"`,
@@ -39,45 +41,140 @@ export class TicketsService {
     }
 
     async findAll(): Promise<Ticket[]> {
-        return this.ticketsRepository.find({ order: { created_at: 'DESC' } });
-    }
-
-    async findByEmail(email: string): Promise<Ticket[]> {
-        return this.ticketsRepository.find({
-            where: { employee_email: email },
-            order: { created_at: 'DESC' }
+        return this.ticketsRepository.find({ 
+            relations: ['messages'],
+            order: { created_at: 'DESC' } 
         });
     }
 
-    async answer(id: string, answer: string): Promise<Ticket> {
-        const ticket = await this.ticketsRepository.findOne({ where: { id } });
+    async findOne(id: string): Promise<Ticket> {
+        const ticket = await this.ticketsRepository.findOne({ 
+            where: { id },
+            relations: ['messages']
+        });
         if (!ticket) throw new NotFoundException('Ticket not found');
+        return ticket;
+    }
 
-        ticket.answer = answer;
+    async findByEmail(email: string, userId?: string): Promise<Ticket[]> {
+        const query = this.ticketsRepository.createQueryBuilder('ticket')
+            .leftJoinAndSelect('ticket.messages', 'messages');
+
+        if (userId) {
+            query.where('ticket.user_id = :userId', { userId })
+                 .orWhere('ticket.employee_email = :email', { email });
+        } else {
+            query.where('ticket.employee_email = :email', { email });
+        }
+        
+        query.orderBy('ticket.created_at', 'DESC')
+             .addOrderBy('messages.created_at', 'ASC');
+
+        return query.getMany();
+    }
+
+    async answer(id: string, answer: string): Promise<Ticket> {
+        const ticket = await this.findOne(id);
+        
+        ticket.answer = answer; // Keep for compatibility with old UI if needed
         ticket.status = 'answered';
         ticket.answered_at = new Date();
+        await this.ticketsRepository.save(ticket);
 
-        const updated = await this.ticketsRepository.save(ticket);
+        // Add to messages thread
+        const message = this.messageRepository.create({
+            ticket_id: id,
+            content: answer,
+            sender_type: 'hr',
+            sender_name: 'Phòng Nhân sự'
+        });
+        await this.messageRepository.save(message);
 
-        // Send email notification
+        // Notify Employee
         await this.mailService.sendTicketAnswer(
-            updated.employee_email,
-            updated.employee_name,
-            updated.question,
-            updated.answer
+            ticket.employee_email,
+            ticket.employee_name,
+            ticket.question,
+            answer
         );
 
-        // Find user by email and send in-app notification
-        const profile = await this.profileRepository.findOne({ where: { email: updated.employee_email } });
-        if (profile) {
+        const profile = await this.profileRepository.findOne({ where: { email: ticket.employee_email } });
+        const targetUserId = ticket.user_id || profile?.id;
+        
+        if (targetUserId) {
             this.pushService.createNotification({
                 title: 'Câu hỏi của bạn đã được trả lời',
-                message: `Phòng Nhân sự đã trả lời thắc mắc của bạn về: "${updated.question}"`,
-                user_id: profile.id,
+                message: `Phòng Nhân sự đã phản hồi thắc mắc của bạn`,
+                user_id: targetUserId,
                 link: '/tickets'
             }).catch(err => console.error('DB Notif error:', err));
         }
 
-        return updated;
+        return this.findOne(id);
+    }
+
+    async addMessage(id: string, content: string, sender_type: 'employee' | 'hr', sender_id?: string, sender_name?: string): Promise<TicketMessage> {
+        const ticket = await this.findOne(id);
+        
+        const message = this.messageRepository.create({
+            ticket_id: id,
+            content,
+            sender_type,
+            sender_id,
+            sender_name
+        });
+        const savedMessage = await this.messageRepository.save(message);
+
+        // Update ticket status
+        if (sender_type === 'employee') {
+            await this.ticketsRepository.update(id, {
+                status: 'open'
+            });
+            
+            // Notify HR via Push
+            this.pushService.notifyHR(
+                'Phản hồi mới từ nhân viên',
+                `${sender_name || ticket.employee_name} vừa gửi phản hồi mới cho yêu cầu #${id.split('-')[0]}`
+            ).catch(err => console.error('Push error:', err));
+            
+            // Notify HR via In-App DB
+            this.pushService.createNotification({
+                title: 'Phản hồi mới từ nhân viên',
+                message: `${sender_name || ticket.employee_name} vừa gửi phản hồi mới cho yêu cầu: "${ticket.topic || ticket.question.substring(0, 50)}"`,
+                role: 'HR',
+                link: '/manage-internal/tickets'
+            }).catch(err => console.error('DB Notif error:', err));
+            
+        } else {
+            await this.ticketsRepository.update(id, {
+                status: 'answered',
+                answered_at: new Date()
+            });
+            
+            // Notify Employee
+            const profile = await this.profileRepository.findOne({ where: { email: ticket.employee_email } });
+            const targetUserId = ticket.user_id || profile?.id;
+            if (targetUserId) {
+                this.pushService.createNotification({
+                    title: 'Phản hồi mới từ HR',
+                    message: `HR đã gửi phản hồi cho yêu cầu: "${ticket.topic || ticket.question.substring(0, 50)}"`,
+                    user_id: targetUserId,
+                    link: '/tickets'
+                }).catch(err => console.error('DB Notif error:', err));
+            }
+        }
+
+        return savedMessage;
+    }
+
+    async getStatsByTopic() {
+        return this.ticketsRepository
+            .createQueryBuilder('ticket')
+            .select('ticket.topic', 'topic')
+            .addSelect('COUNT(ticket.id)', 'count')
+            .addSelect('COUNT(CASE WHEN ticket.status = \'open\' THEN 1 END)', 'openCount')
+            .groupBy('ticket.topic')
+            .orderBy('count', 'DESC')
+            .getRawMany();
     }
 }

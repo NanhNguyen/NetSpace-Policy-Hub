@@ -12,4 +12,9 @@ export declare class UsersController {
         password?: string;
     }): Promise<import("./entities/profile.entity").Profile>;
     updateRole(id: string, roleId: number): Promise<import("./entities/profile.entity").Profile>;
+    updateProfile(id: string, data: {
+        email: string;
+        full_name: string;
+        role_id: number;
+    }): Promise<import("./entities/profile.entity").Profile>;
 }

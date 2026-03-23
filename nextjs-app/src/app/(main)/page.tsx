@@ -221,7 +221,7 @@ export default function HomePage() {
         </section>
 
         {/* CTA Banner */}
-        <section className="mt-20 px-4 sm:px-6">
+        <section className="mt-20 mb-20 px-4 sm:px-6">
           <div className="max-w-4xl mx-auto bg-primary rounded-3xl p-8 sm:p-14 flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl shadow-primary/20 text-white relative overflow-hidden">
             {/* Background blobs for depth */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-3xl -mr-32 -mt-32 rounded-full" />

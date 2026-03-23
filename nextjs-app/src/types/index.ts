@@ -20,6 +20,16 @@ export interface Profile {
 
 export type TicketStatus = 'open' | 'answered' | 'closed';
 
+export interface TicketMessage {
+    id: string;
+    ticket_id: string;
+    content: string;
+    sender_type: 'employee' | 'hr';
+    sender_id?: string | null;
+    sender_name?: string | null;
+    created_at: string;
+}
+
 export interface Policy {
     id: string;
     title: string;
@@ -40,6 +50,7 @@ export interface Ticket {
     employee_name: string;
     employee_email: string;
     topic?: string;
+    user_id?: string | null;
     question: string;
     answer?: string | null;
     status: TicketStatus;
@@ -47,6 +58,7 @@ export interface Ticket {
     answered_by?: string | null;
     created_at: string;
     answered_at?: string | null;
+    messages?: TicketMessage[];
 }
 
 export interface FAQ {

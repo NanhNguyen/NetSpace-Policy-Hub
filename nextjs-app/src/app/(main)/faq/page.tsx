@@ -140,7 +140,7 @@ export default function FAQPage() {
                 )}
 
                 {/* CTA */}
-                <div className="mt-12 bg-primary rounded-3xl p-10 text-center text-white shadow-2xl shadow-primary/20 relative overflow-hidden">
+                <div className="mt-12 mb-20 bg-primary rounded-3xl p-10 text-center text-white shadow-2xl shadow-primary/20 relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-48 h-48 bg-white/10 blur-3xl -ml-24 -mt-24 rounded-full" />
                     <div className="relative z-10">
                         <span className="material-symbols-outlined text-white text-[48px] mb-4 block">support_agent</span>

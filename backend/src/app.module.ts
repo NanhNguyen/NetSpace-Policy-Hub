@@ -15,6 +15,7 @@ import { Faq } from './faqs/entities/faq.entity';
 import { SearchLog } from './search-logs/entities/search-log.entity';
 import { PushSubscriptionEntity } from './tickets/entities/push-subscription.entity';
 import { NotificationEntity } from './notifications/entities/notification.entity';
+import { TicketMessage } from './tickets/entities/ticket-message.entity';
 
 // Polyfill for crypto.randomUUID for Node 18
 if (!global.crypto) {
@@ -34,7 +35,7 @@ import { Role } from './users/entities/role.entity';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: configService.get<string>('DATABASE_URL'),
-        entities: [Policy, Ticket, Faq, SearchLog, PushSubscriptionEntity, Profile, Role, NotificationEntity],
+        entities: [Policy, Ticket, Faq, SearchLog, PushSubscriptionEntity, Profile, Role, NotificationEntity, TicketMessage],
         synchronize: false,
       }),
     }),

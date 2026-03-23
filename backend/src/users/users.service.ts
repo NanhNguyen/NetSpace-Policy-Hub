@@ -37,7 +37,7 @@ export class UsersService {
   async getAllProfiles(): Promise<Profile[]> {
     return this.profilesRepository.find({
       relations: ['role'],
-      order: { createdAt: 'DESC' },
+      order: { created_at: 'DESC' },
     });
   }
 
@@ -81,7 +81,7 @@ export class UsersService {
         id: userId,
         email: data.email,
         full_name: data.full_name,
-        roleId: data.role_id,
+        role_id: data.role_id,
       });
       return await this.profilesRepository.save(profile);
     } catch (error) {
@@ -94,7 +94,42 @@ export class UsersService {
     const profile = await this.profilesRepository.findOneBy({ id: userId });
     if (!profile) throw new NotFoundException('Profile not found');
 
-    profile.roleId = roleId;
+    profile.role_id = roleId;
+
+    // Update role in Supabase Auth Metadata as well (for fast path auth)
+    if (this.supabaseAdmin) {
+      const role = await this.rolesRepository.findOneBy({ id: roleId });
+      if (role) {
+        await this.supabaseAdmin.auth.admin.updateUserById(userId, {
+          user_metadata: { role: role.code, role_id: roleId }
+        });
+      }
+    }
+
+    return await this.profilesRepository.save(profile);
+  }
+
+  async updateProfile(userId: string, data: { email: string; full_name: string; role_id: number }) {
+    const profile = await this.profilesRepository.findOneBy({ id: userId });
+    if (!profile) throw new NotFoundException('Profile not found');
+
+    profile.email = data.email;
+    profile.full_name = data.full_name;
+    profile.role_id = data.role_id;
+
+    // Sync with Supabase Auth
+    if (this.supabaseAdmin) {
+      const role = await this.rolesRepository.findOneBy({ id: data.role_id });
+      await this.supabaseAdmin.auth.admin.updateUserById(userId, {
+        email: data.email,
+        user_metadata: { 
+          full_name: data.full_name, 
+          role: role?.code || 'USER',
+          role_id: data.role_id 
+        }
+      });
+    }
+
     return await this.profilesRepository.save(profile);
   }
 }

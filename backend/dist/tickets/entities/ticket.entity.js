@@ -11,15 +11,19 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Ticket = void 0;
 const typeorm_1 = require("typeorm");
+const ticket_message_entity_1 = require("./ticket-message.entity");
 let Ticket = class Ticket {
     id;
     employee_name;
     employee_email;
+    topic;
+    user_id;
     question;
     answer;
     status;
     created_at;
     answered_at;
+    messages;
 };
 exports.Ticket = Ticket;
 __decorate([
@@ -34,6 +38,14 @@ __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Ticket.prototype, "employee_email", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Ticket.prototype, "topic", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Ticket.prototype, "user_id", void 0);
 __decorate([
     (0, typeorm_1.Column)('text'),
     __metadata("design:type", String)
@@ -54,6 +66,10 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'timestamptz', nullable: true }),
     __metadata("design:type", Date)
 ], Ticket.prototype, "answered_at", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => ticket_message_entity_1.TicketMessage, (message) => message.ticket),
+    __metadata("design:type", Array)
+], Ticket.prototype, "messages", void 0);
 exports.Ticket = Ticket = __decorate([
     (0, typeorm_1.Entity)('tickets')
 ], Ticket);

@@ -7,7 +7,9 @@ export async function POST(request: Request) {
         const ticket = await TicketService.create({
             employee_name: body.name,
             employee_email: body.email,
+            topic: body.topic,
             question: body.message,
+            user_id: body.user_id,
         });
         return NextResponse.json(ticket);
     } catch (error) {

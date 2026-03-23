@@ -17,21 +17,29 @@ export default function HRModal({ open, onClose, defaultTopic = "" }: HRModalPro
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [user, setUser] = useState<any>(null);
+    const [isLoadingUser, setIsLoadingUser] = useState(true);
     const nameRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (open) {
             setSubmitted(false);
             setError("");
+            setIsLoadingUser(true);
 
             const fetchUser = async () => {
-                const { data: { user: authUser } } = await supabase.auth.getUser();
-                if (authUser) {
-                    const { UserService } = await import("@/lib/services/user.service");
-                    const profile = await UserService.getProfile(authUser.id);
-                    setUser(authUser);
-                    setEmail(authUser.email || "");
-                    setName(profile?.full_name || authUser.user_metadata?.full_name || "");
+                try {
+                    const { data: { user: authUser } } = await supabase.auth.getUser();
+                    if (authUser) {
+                        const { UserService } = await import("@/lib/services/user.service");
+                        const profile = await UserService.getProfile(authUser.id);
+                        setUser(authUser);
+                        setEmail(authUser.email || "");
+                        setName(profile?.full_name || authUser.user_metadata?.full_name || "");
+                    }
+                } catch (e) {
+                    console.error(e);
+                } finally {
+                    setIsLoadingUser(false);
                 }
             };
 
@@ -96,9 +104,9 @@ export default function HRModal({ open, onClose, defaultTopic = "" }: HRModalPro
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Brand Header */}
-                <div className="bg-slate-900 px-8 py-8 text-white relative overflow-hidden">
+                <div className="bg-primary px-8 py-8 text-white relative overflow-hidden">
                     {/* Background decoration */}
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary rounded-full blur-[60px] opacity-20 -mr-16 -mt-16" />
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full blur-[60px] opacity-20 -mr-16 -mt-16" />
 
                     <div className="relative z-10 flex items-center justify-between">
                         <div className="flex items-center gap-4">
@@ -121,7 +129,12 @@ export default function HRModal({ open, onClose, defaultTopic = "" }: HRModalPro
                 </div>
 
                 <div className="px-8 py-8">
-                    {!submitted ? (
+                    {isLoadingUser ? (
+                        <div className="py-12 flex flex-col items-center justify-center gap-3">
+                            <span className="material-symbols-outlined animate-spin text-primary text-[32px]">sync</span>
+                            <p className="text-slate-500 font-medium text-sm">Đang tải biểu mẫu...</p>
+                        </div>
+                    ) : !submitted ? (
                         <>
                             <div className="mb-8">
                                 <p className="text-sm text-slate-500 leading-relaxed font-medium">
@@ -241,7 +254,7 @@ export default function HRModal({ open, onClose, defaultTopic = "" }: HRModalPro
                             </p>
                             <button
                                 onClick={handleClose}
-                                className="w-full max-w-[200px] flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-black transition-all mx-auto mt-10 shadow-xl active:scale-95"
+                                className="w-full max-w-[200px] flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-primary hover:bg-primary-dark text-white text-sm font-black transition-all mx-auto mt-10 shadow-xl active:scale-95 shadow-primary/20"
                             >
                                 <span className="material-symbols-outlined text-[18px]">done_all</span>
                                 Đã hiểu

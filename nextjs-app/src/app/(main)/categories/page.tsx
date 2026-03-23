@@ -15,7 +15,7 @@ export default function CategoriesPage() {
                 <span className="material-symbols-outlined text-[14px]">chevron_right</span>
                 <span className="font-semibold text-text-main">Danh mục</span>
             </nav>
-            <h1 className="text-3xl font-black text-text-main mb-2">Chính Sách</h1>
+            <h1 className="text-3xl font-black text-text-main mb-2">Danh mục Chính sách</h1>
             <p className="text-text-muted text-sm mb-10">Duyệt qua 6 lĩnh vực chính sách để tìm thông tin nhanh hơn.</p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
@@ -43,7 +43,7 @@ export default function CategoriesPage() {
             </div>
 
             {/* CTA */}
-            <div className="bg-primary rounded-3xl p-10 flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl shadow-primary/20 text-white relative overflow-hidden">
+            <div className="mb-20 bg-primary rounded-3xl p-10 flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl shadow-primary/20 text-white relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-3xl -mr-32 -mt-32 rounded-full" />
                 <div className="relative z-10 text-center md:text-left">
                     <h2 className="text-3xl font-black mb-2">Bạn có câu hỏi cụ thể?</h2>

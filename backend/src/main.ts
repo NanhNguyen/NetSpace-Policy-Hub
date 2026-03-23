@@ -11,7 +11,7 @@ async function bootstrap() {
 
   // Enable CORS for frontend
   app.enableCors({
-    origin: '*', // In production, specify the actual frontend URL
+    origin: true, // Dynamically allow the frontend origin
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });

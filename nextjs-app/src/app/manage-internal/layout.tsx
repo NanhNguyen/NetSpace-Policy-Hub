@@ -42,38 +42,91 @@ export default function AdminLayout({
     const [role, setRole] = useState<'ADMIN' | 'HR' | 'TICKET_MANAGER' | null>(null);
 
     useEffect(() => {
+        let isMounted = true;
+
         const checkAuth = async () => {
             if (pathname === '/manage-internal/login') {
-                setIsAuthenticated(true);
+                if (isMounted) setIsAuthenticated(true);
                 return;
             }
 
-            const { data: { user } } = await supabase.auth.getUser();
+            try {
+                // Check session using getSession to avoid unnecessary network calls
+                const { data: { session } } = await supabase.auth.getSession();
 
-            if (!user) {
-                router.push('/manage-internal/login');
-                return;
+                if (!session?.user) {
+                    if (isMounted) {
+                        setIsAuthenticated(false);
+                        router.push('/manage-internal/login');
+                    }
+                    return;
+                }
+
+                // FAST PATH: Use cached metadata inside Supabase JWT to skip redundant backend calls and instantly render
+                const metaRole = session.user.user_metadata?.role;
+                if (metaRole && metaRole !== 'USER' && isMounted) {
+                    setIsAuthenticated(true);
+                    setRole(metaRole);
+                    return; // Fast render!
+                }
+
+                // SLOW PATH: Fetch from backend directly if metadata is somewhat missing
+                const profile = await UserService.getProfile(session.user.id);
+                
+                // If profile is successfully fetched and it's a regular USER, restrict access
+                if (profile && profile.role?.code === 'USER') {
+                    await supabase.auth.signOut();
+                    if (isMounted) {
+                        setIsAuthenticated(false);
+                        router.push('/manage-internal/login?error=unauthorized');
+                    }
+                    return;
+                }
+
+                // If profile is missing but user is logged in, we let them view (perhaps network issue)
+                // However, if we do have a profile, set the role.
+                if (isMounted) {
+                    setIsAuthenticated(true);
+                    if (profile?.role) {
+                        setRole(profile.role.code as any);
+                    } else {
+                        // Fallback checking user_metadata if profile fails or is delayed
+                        const metaRole = session.user.user_metadata?.role;
+                        if (metaRole === 'ADMIN' || metaRole === 'HR' || metaRole === 'TICKET_MANAGER') {
+                            setRole(metaRole);
+                        } else if (session.user.email === 'admin@gmail.com') {
+                            setRole('ADMIN');
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("Auth check failed:", error);
             }
-
-            const profile = await UserService.getProfile(user.id);
-            if (!profile || !profile.role || profile.role.code === 'USER') {
-                // Not an admin/hr/manager role
-                await supabase.auth.signOut();
-                router.push('/manage-internal/login?error=unauthorized');
-                return;
-            }
-
-            setIsAuthenticated(true);
-            setRole(profile.role.code as any);
         };
 
         checkAuth();
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_OUT') {
+                if (isMounted) {
+                    setIsAuthenticated(false);
+                    setRole(null);
+                    router.push('/manage-internal/login');
+                }
+            }
+        });
+
+        return () => {
+            isMounted = false;
+            subscription.unsubscribe();
+        };
     }, [pathname, router]);
 
     const handleLogout = async () => {
         await supabase.auth.signOut();
         toast.success("Đăng xuất thành công!");
         setIsAuthenticated(false);
+        setRole(null);
         router.push('/manage-internal/login');
     };
 
@@ -106,7 +159,7 @@ export default function AdminLayout({
             {/* Sidebar */}
             <aside className="w-68 bg-slate-900 text-white flex flex-col fixed inset-y-0 left-0 shadow-2xl z-20 overflow-hidden">
                 <div className="p-6 border-b border-white/5 bg-white/5 backdrop-blur-sm">
-                    <Link href="/" className="flex items-center gap-3">
+                    <Link href="/manage-internal/dashboard" className="flex items-center gap-3">
                         <Logo className="w-10 h-10 shadow-lg shadow-indigo-500/10" hideText={true} />
                         <div className="flex flex-col">
                             <span className="font-extrabold text-lg tracking-tight leading-none text-white">NetSpace</span>
