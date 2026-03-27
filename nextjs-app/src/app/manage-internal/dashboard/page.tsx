@@ -45,10 +45,10 @@ export default function AdminDashboard() {
                 setTopQueries(searchTop.slice(0, 5));
 
                 setStats([
-                    { name: 'Tổng chính sách', value: policies.length.toString(), icon: FileText, color: 'blue', change: 'Live' },
-                    { name: 'Tổng câu hỏi FAQ', value: faqs.length.toString(), icon: MessageSquare, color: 'orange', change: 'Live' },
-                    { name: 'Tổng lượt tìm kiếm', value: (searchStats.total || 0).toLocaleString(), icon: TrendingUp, color: 'green', change: 'Tất cả' },
-                    { name: 'Queries 0 kết quả', value: (searchStats.zeroResults || 0).toString(), icon: AlertCircle, color: 'red', change: 'Cần chú ý' },
+                    { name: 'Tổng chính sách', value: (policies?.length || 0).toString(), icon: FileText, color: 'blue', change: 'Live' },
+                    { name: 'Tổng câu hỏi FAQ', value: (faqs?.length || 0).toString(), icon: MessageSquare, color: 'orange', change: 'Live' },
+                    { name: 'Tổng lượt tìm kiếm', value: (searchStats?.total || 0).toLocaleString(), icon: TrendingUp, color: 'green', change: 'Tất cả' },
+                    { name: 'Queries 0 kết quả', value: (searchStats?.zeroResults || 0).toString(), icon: AlertCircle, color: 'red', change: 'Cần chú ý' },
                 ]);
             } catch (err) {
                 console.error("Dashboard load failed", err);

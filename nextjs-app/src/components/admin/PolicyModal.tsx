@@ -53,13 +53,13 @@ export default function PolicyModal({ policy, onClose, onSave }: PolicyModalProp
     useEffect(() => {
         if (policy) {
             setFormData({
-                title: policy.title,
-                slug: policy.slug,
-                category: policy.category,
-                icon: policy.icon,
+                title: policy.title || '',
+                slug: policy.slug || '',
+                category: policy.category || 'hr',
+                icon: policy.icon || 'description',
                 excerpt: policy.excerpt || '',
-                content: policy.content,
-                published: policy.published,
+                content: policy.content || '',
+                published: policy.published ?? true,
                 pdf_url: policy.pdf_url || '',
             });
         }
