@@ -35,9 +35,30 @@ function PoliciesContent() {
         const load = async () => {
             try {
                 const data = await PolicyService.getAllPublished();
-                setPolicies(data);
+                // If API returns empty, fallback to local data to prevent "0 result" issues
+                if (data && data.length > 0) {
+                    setPolicies(data);
+                } else {
+                    const { POLICIES: fallbackPolicies } = await import("@/lib/data");
+                    // Map local layout to DB layout if needed
+                    const mapped = (fallbackPolicies as any[]).map((p, i) => ({
+                        id: p.id || i.toString(),
+                        title: p.title,
+                        category: p.cat || 'hr',
+                        excerpt: p.desc || p.excerpt || '',
+                        content: p.body || p.content || '',
+                        published: true,
+                        created_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString(),
+                        icon: p.icon || 'description',
+                        slug: p.id || 'policy-' + i
+                    }));
+                    setPolicies(mapped);
+                }
             } catch (err) {
-                console.error(err);
+                console.error('Failed to load policies, using fallback:', err);
+                const { POLICIES: fallbackPolicies } = await import("@/lib/data");
+                setPolicies(fallbackPolicies as any);
             } finally {
                 setLoading(false);
             }
@@ -46,14 +67,26 @@ function PoliciesContent() {
     }, []);
 
     const filtered = useMemo(() => {
+        const searchTerm = search.trim().toLowerCase();
         let data = policies.filter((p) => {
-            const catOk = filter === "all" || p.category === filter;
-            const qOk =
-                !search ||
-                (p.title || "").toLowerCase().includes(search.toLowerCase()) ||
-                (p.excerpt || "").toLowerCase().includes(search.toLowerCase());
+            const catOk = filter === "all" || p.category.toLowerCase() === filter.toLowerCase();
+            
+            if (!searchTerm) return catOk;
+
+            const title = (p.title || "").toLowerCase();
+            const excerpt = (p.excerpt || "").toLowerCase();
+            const category = (p.category || "").toLowerCase();
+            const catLabel = CATEGORIES[p.category as keyof typeof CATEGORIES]?.label.toLowerCase() || "";
+
+            const qOk = 
+                title.includes(searchTerm) || 
+                excerpt.includes(searchTerm) ||
+                category.includes(searchTerm) ||
+                catLabel.includes(searchTerm);
+
             return catOk && qOk;
         });
+
         if (sort === "name") data = [...data].sort((a, b) => a.title.localeCompare(b.title, "vi"));
         else if (sort === "updated") data = [...data].sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
         return data;
