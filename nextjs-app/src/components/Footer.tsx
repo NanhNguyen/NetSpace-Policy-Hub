@@ -33,7 +33,7 @@ export default function Footer() {
                                 <span className="w-1.5 h-1.5 rounded-full bg-slate-200 group-hover:bg-primary transition-colors"></span>
                                 Gửi Yêu cầu mới
                             </Link></li>
-                            <li className="pt-1"><a className="text-primary font-black hover:opacity-80 transition-opacity bg-primary/5 px-3 py-2 rounded-lg inline-block" href="mailto:hr@netspace.com.vn">abc@netspace.com</a></li>
+                            <li className="pt-1"><a className="text-primary font-black hover:opacity-80 transition-opacity bg-primary/5 px-3 py-2 rounded-lg inline-block" href="mailto:hr@netspace.vn">hr@netspace.vn</a></li>
                         </ul>
                     </div>
 
