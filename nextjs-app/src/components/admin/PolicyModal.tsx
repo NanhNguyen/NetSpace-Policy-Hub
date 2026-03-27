@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { X, Save, AlertCircle } from 'lucide-react';
+import { useEffect, useState, useRef } from 'react';
+import { X, Save, AlertCircle, FileText, Upload, Trash2, Eye } from 'lucide-react';
 import { Policy } from '@/types';
 import { CATEGORIES } from '@/lib/data';
 import dynamic from 'next/dynamic';
+import { StorageService } from '@/lib/services/storage.service';
 
 // Lazy-load to avoid SSR issues with contentEditable
 const RichTextEditor = dynamic(() => import('./RichTextEditor'), { ssr: false });
@@ -23,10 +24,13 @@ export default function PolicyModal({ policy, onClose, onSave }: PolicyModalProp
         icon: 'description',
         excerpt: '',
         content: '',
-        published: true, // Auto-publish by default
+        published: true,
+        pdf_url: '',
     });
     const [submitting, setSubmitting] = useState(false);
+    const [uploading, setUploading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const generateSlug = (text: string) => {
         return text.toLowerCase()
@@ -34,11 +38,10 @@ export default function PolicyModal({ policy, onClose, onSave }: PolicyModalProp
             .replace(/đ/g, 'd').replace(/Đ/g, 'd')
             .replace(/\s+/g, '-')
             .replace(/[^a-z0-9-]/g, '')
-            .replace(/-+/g, '-') // Replace multiple dashes with a single dash
-            .replace(/^-+|-+$/g, ''); // Trim dashes from start and end
+            .replace(/-+/g, '-') 
+            .replace(/^-+|-+$/g, '');
     };
 
-    // Auto-generate slug from title
     const handleTitleChange = (title: string) => {
         setFormData((prev) => ({
             ...prev,
@@ -57,9 +60,49 @@ export default function PolicyModal({ policy, onClose, onSave }: PolicyModalProp
                 excerpt: policy.excerpt || '',
                 content: policy.content,
                 published: policy.published,
+                pdf_url: policy.pdf_url || '',
             });
         }
     }, [policy]);
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (file.type !== 'application/pdf') {
+          setError('Chỉ chấp nhận tệp PDF.');
+          return;
+        }
+
+        if (file.size > 10 * 1024 * 1024) { // 10MB limit
+          setError('Tệp quá lớn. Vui lòng chọn tệp dưới 10MB.');
+          return;
+        }
+
+        setUploading(true);
+        setError(null);
+        try {
+          const url = await StorageService.uploadPolicyPdf(file, formData.slug || 'policy');
+          setFormData(prev => ({ ...prev, pdf_url: url }));
+        } catch (err: any) {
+          setError('Tải tệp lên thất bại: ' + err.message);
+        } finally {
+          setUploading(false);
+        }
+    };
+
+    const removePdf = async () => {
+        if (!formData.pdf_url) return;
+        setUploading(true);
+        try {
+          await StorageService.deleteFile(formData.pdf_url);
+          setFormData(prev => ({ ...prev, pdf_url: '' }));
+        } catch (err: any) {
+          setError('Xóa tệp thất bại.');
+        } finally {
+          setUploading(false);
+        }
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -161,7 +204,7 @@ export default function PolicyModal({ policy, onClose, onSave }: PolicyModalProp
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                         <div className="space-y-2">
                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">
                                 Slug (URL tự động)
@@ -173,7 +216,59 @@ export default function PolicyModal({ policy, onClose, onSave }: PolicyModalProp
                                 placeholder="tu-dong-theo-tieu-de"
                             />
                         </div>
+
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">
+                                Tài liệu bản gốc (PDF)
+                            </label>
+                            <div className="relative">
+                              {formData.pdf_url ? (
+                                <div className="flex items-center justify-between p-4 bg-primary/5 border border-primary/20 rounded-2xl animate-in zoom-in-95">
+                                  <div className="flex items-center gap-3 min-w-0">
+                                    <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary flex-shrink-0">
+                                      <FileText size={20} />
+                                    </div>
+                                    <div className="truncate">
+                                      <p className="text-xs font-black text-slate-900 truncate">Bản gốc đã được tải lên</p>
+                                      <a href={formData.pdf_url} target="_blank" rel="noopener noreferrer" className="text-[10px] font-bold text-primary hover:underline flex items-center gap-1">
+                                        <Eye size={12} /> Xem tệp
+                                      </a>
+                                    </div>
+                                  </div>
+                                  <button 
+                                    type="button"
+                                    onClick={removePdf}
+                                    className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                                  >
+                                    <Trash2 size={18} />
+                                  </button>
+                                </div>
+                              ) : (
+                                <div 
+                                  onClick={() => fileInputRef.current?.click()}
+                                  className={`flex flex-col items-center justify-center p-4 border-2 border-dashed rounded-2xl cursor-pointer transition-all hover:border-primary/50 hover:bg-primary/5 ${uploading ? 'opacity-50 pointer-events-none' : 'border-slate-200'}`}
+                                >
+                                  {uploading ? (
+                                    <span className="material-symbols-outlined animate-spin text-primary">sync</span>
+                                  ) : (
+                                    <>
+                                      <Upload size={20} className="text-slate-400 mb-1" />
+                                      <p className="text-[11px] font-black text-slate-400 uppercase tracking-wider">Tải lên file PDF</p>
+                                    </>
+                                  )}
+                                  <input 
+                                    ref={fileInputRef}
+                                    type="file" 
+                                    className="hidden" 
+                                    accept=".pdf"
+                                    onChange={handleFileChange}
+                                  />
+                                </div>
+                              )}
+                            </div>
+                        </div>
                     </div>
+
                     <div className="flex flex-wrap items-center gap-3 p-4 bg-slate-50 border border-slate-100 rounded-2xl w-fit">
                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Trạng thái:</label>
                         <button
@@ -223,7 +318,7 @@ export default function PolicyModal({ policy, onClose, onSave }: PolicyModalProp
                     </button>
                     <button
                         type="submit"
-                        disabled={submitting}
+                        disabled={submitting || uploading}
                         onClick={handleSubmit as any}
                         className="px-16 py-4 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-2xl transition-all shadow-2xl shadow-slate-900/30 flex items-center justify-center gap-3 disabled:opacity-50 text-sm active:scale-95"
                     >

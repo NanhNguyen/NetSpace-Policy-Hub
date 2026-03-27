@@ -86,12 +86,23 @@ export default function PolicyDetailPage({ params }: { params: Promise<{ id: str
                                 </span>
                             </div>
                             <div className="flex gap-3 mt-5 flex-wrap">
-                                <button
+                                 <button
                                     onClick={() => window.print()}
                                     className="flex items-center gap-2 text-sm font-semibold text-text-muted hover:text-primary transition-colors border border-neutral-soft px-4 py-2 rounded-lg no-print"
                                 >
                                     <span className="material-symbols-outlined text-[18px]">print</span>In
                                 </button>
+                                {policy.pdf_url && (
+                                    <a
+                                        href={policy.pdf_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-2 text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 transition-colors px-4 py-2 rounded-lg no-print shadow-lg shadow-slate-900/10"
+                                    >
+                                        <span className="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+                                        Bản gốc PDF
+                                    </a>
+                                )}
                                 <button
                                     onClick={copyLink}
                                     className={`flex items-center gap-2 text-sm font-semibold transition-colors border border-neutral-soft px-4 py-2 rounded-lg no-print ${copied ? "text-primary border-primary" : "text-text-muted hover:text-primary"}`}

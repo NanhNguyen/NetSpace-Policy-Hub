@@ -7,6 +7,7 @@ export declare class Policy {
     category: string;
     icon: string;
     published: boolean;
+    pdf_url: string;
     created_at: Date;
     updated_at: Date;
 }

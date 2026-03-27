@@ -26,6 +26,9 @@ export class Policy {
     @Column({ default: false })
     published: boolean;
 
+    @Column({ nullable: true })
+    pdf_url: string;
+
     @CreateDateColumn({ type: 'timestamptz' })
     created_at: Date;
 

@@ -39,6 +39,7 @@ export interface Policy {
     category: PolicyCategory;
     icon: string;
     published: boolean;
+    pdf_url?: string;
     attachments?: string[];
     created_by?: string;
     created_at: string;

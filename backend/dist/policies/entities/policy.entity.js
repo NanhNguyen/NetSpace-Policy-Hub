@@ -20,6 +20,7 @@ let Policy = class Policy {
     category;
     icon;
     published;
+    pdf_url;
     created_at;
     updated_at;
 };
@@ -56,6 +57,10 @@ __decorate([
     (0, typeorm_1.Column)({ default: false }),
     __metadata("design:type", Boolean)
 ], Policy.prototype, "published", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Policy.prototype, "pdf_url", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)({ type: 'timestamptz' }),
     __metadata("design:type", Date)
