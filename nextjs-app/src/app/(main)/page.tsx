@@ -70,7 +70,46 @@ export default function HomePage() {
                style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, #6366f1 1px, transparent 0)', backgroundSize: '40px 40px' }} />
         </div>
 
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 text-center">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
+          {/* Left Decorative Sidebar */}
+          <div className="hidden xl:block absolute left-0 top-1/2 -translate-y-1/2 w-48 animate-float">
+            <div className="bg-white/80 backdrop-blur-xl border border-white/40 p-5 rounded-[2rem] shadow-2xl ring-1 ring-primary/5">
+              <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary mb-4">
+                <span className="material-symbols-outlined text-[20px]">verified</span>
+              </div>
+              <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-800 mb-1">Chính chủ</h4>
+              <p className="text-[9px] text-slate-400 font-bold leading-relaxed">Nguồn thông tin chính thống từ NetSpace Corp.</p>
+            </div>
+            
+            <div className="mt-8 ml-10 p-4 bg-white/40 backdrop-blur-md rounded-[1.5rem] border border-white/20 shadow-lg animate-float-delayed flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+                <span className="material-symbols-outlined text-[16px]">security</span>
+              </div>
+              <span className="text-[9px] font-black uppercase text-slate-500">Bảo mật 100%</span>
+            </div>
+          </div>
+
+          {/* Right Decorative Sidebar */}
+          <div className="hidden xl:block absolute right-0 top-1/2 -translate-y-1/2 w-48">
+            <div className="animate-float-delayed">
+              <div className="bg-white/80 backdrop-blur-xl border border-white/40 p-5 rounded-[2rem] shadow-2xl ring-1 ring-primary/5">
+                <div className="w-10 h-10 bg-brand-blue/10 rounded-xl flex items-center justify-center text-brand-blue mb-4">
+                  <span className="material-symbols-outlined text-[20px]">bolt</span>
+                </div>
+                <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-800 mb-1">Tra cứu nhanh</h4>
+                <p className="text-[9px] text-slate-400 font-bold leading-relaxed">Tiết kiệm 80% thời gian tìm kiếm thủ công.</p>
+              </div>
+            </div>
+
+            <div className="mt-8 mr-10 p-4 bg-white/40 backdrop-blur-md rounded-[1.5rem] border border-white/20 shadow-lg animate-float flex items-center flex-row-reverse gap-3">
+              <div className="w-8 h-8 rounded-full bg-brand-purple/10 flex items-center justify-center text-brand-purple">
+                <span className="material-symbols-outlined text-[16px]">update</span>
+              </div>
+              <span className="text-[9px] font-black uppercase text-slate-500">Live Updates</span>
+            </div>
+          </div>
+
+          <div className="relative max-w-4xl mx-auto text-center py-10">
           <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md border border-slate-200/60 rounded-full px-5 py-2 mb-10 shadow-sm transition-transform hover:scale-105">
             <span className="flex h-2 w-2 rounded-full bg-primary animate-ping" />
             <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.25em]">NetSpace Internal Policy Hub</span>
@@ -131,7 +170,8 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
       <div className="bg-white/40 backdrop-blur-md border-y border-slate-200/60 transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex flex-wrap justify-center gap-8 sm:gap-20">
