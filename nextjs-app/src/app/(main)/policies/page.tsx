@@ -17,15 +17,18 @@ function PoliciesContent() {
     const [loading, setLoading] = useState(true);
 
     const categoriesList = useMemo(() => {
-        const uniqueKeys = Array.from(new Set(policies.map(p => p.category)));
+        // Group similar category names to prevent duplicate tabs (e.g., 'finance' and 'finances')
+        const normalizedKeys = Array.from(new Set(policies.map(p => {
+            const k = p.category.toLowerCase().trim();
+            if (k === 'finances') return 'finance';
+            return k;
+        })));
+
         const list = [{ key: "all", label: "Tất cả" }];
         
-        uniqueKeys.forEach(key => {
-            const lowKey = key.toLowerCase().trim();
-            const label = CATEGORIES[lowKey as keyof typeof CATEGORIES]?.label || (key.charAt(0).toUpperCase() + key.slice(1));
-            if (!list.find(item => item.key === key)) {
-                list.push({ key, label });
-            }
+        normalizedKeys.forEach(key => {
+            const label = CATEGORIES[key as keyof typeof CATEGORIES]?.label || (key.charAt(0).toUpperCase() + key.slice(1));
+            list.push({ key, label });
         });
         
         return list;
@@ -69,14 +72,16 @@ function PoliciesContent() {
     const filtered = useMemo(() => {
         const searchTerm = search.trim().toLowerCase();
         let data = policies.filter((p) => {
-            const catOk = filter === "all" || p.category.toLowerCase() === filter.toLowerCase();
+            const pCategory = p.category.toLowerCase().trim();
+            const normalizedCat = pCategory === 'finances' ? 'finance' : pCategory;
+            const catOk = filter === "all" || normalizedCat === filter.toLowerCase();
             
             if (!searchTerm) return catOk;
 
             const title = (p.title || "").toLowerCase();
             const excerpt = (p.excerpt || "").toLowerCase();
             const category = (p.category || "").toLowerCase();
-            const catLabel = CATEGORIES[p.category as keyof typeof CATEGORIES]?.label.toLowerCase() || "";
+            const catLabel = CATEGORIES[normalizedCat as keyof typeof CATEGORIES]?.label.toLowerCase() || "";
 
             const qOk = 
                 title.includes(searchTerm) || 
@@ -158,7 +163,10 @@ function PoliciesContent() {
             {filtered.length > 0 ? (
                 <div className="space-y-16">
                     {(() => {
-                        const categoriesPresent = Array.from(new Set(filtered.map(p => p.category)));
+                        const categoriesPresent = Array.from(new Set(filtered.map(p => {
+                            const k = p.category.toLowerCase().trim();
+                            return k === 'finances' ? 'finance' : k;
+                        })));
                         
                         // Sort so that known categories come first, then others alphabetically
                         const knownCats = Object.keys(CATEGORIES);
@@ -172,11 +180,13 @@ function PoliciesContent() {
                         });
 
                         return sortedCats.map((catKey) => {
-                             const catPolicies = filtered.filter(p => p.category === catKey);
-                            const lowKey = catKey.toLowerCase().trim();
-                            const meta = CATEGORIES[lowKey as keyof typeof CATEGORIES] || { 
-                                label: lowKey === "conduct" ? "Nội quy" : 
-                                       lowKey === "benefits" ? "Phúc lợi" :
+                             const catPolicies = filtered.filter(p => {
+                                 const k = p.category.toLowerCase().trim();
+                                 return (k === 'finances' ? 'finance' : k) === catKey;
+                             });
+                            const meta = CATEGORIES[catKey as keyof typeof CATEGORIES] || { 
+                                label: catKey === "conduct" ? "Nội quy" : 
+                                       catKey === "benefits" ? "Phúc lợi" :
                                        (catKey.charAt(0).toUpperCase() + catKey.slice(1)), 
                                 icon: catPolicies[0]?.icon || "description", 
                                 desc: "Tập hợp các quy định và chính sách thuộc danh mục này." 
