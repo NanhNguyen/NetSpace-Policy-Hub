@@ -78,7 +78,7 @@ export default function HomePage() {
                 <span className="material-symbols-outlined text-[20px]">verified</span>
               </div>
               <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-800 mb-1">Chính chủ</h4>
-              <p className="text-[9px] text-slate-400 font-bold leading-relaxed">Nguồn thông tin chính thống từ NetSpace Corp.</p>
+              <p className="text-[9px] text-slate-400 font-bold leading-relaxed">Nguồn thông tin chính thống từ NetSpace</p>
             </div>
             
             <div className="mt-8 ml-10 p-4 bg-white/40 backdrop-blur-md rounded-[1.5rem] border border-white/20 shadow-lg animate-float-delayed flex items-center gap-3">

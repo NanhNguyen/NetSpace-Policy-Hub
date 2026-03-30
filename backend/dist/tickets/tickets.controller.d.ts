@@ -10,4 +10,5 @@ export declare class TicketsController {
     findOne(id: string): Promise<Ticket>;
     answer(id: string, answer: string): Promise<Ticket>;
     addMessage(id: string, content: string, sender_type: 'employee' | 'hr', sender_id?: string, sender_name?: string): Promise<import("./entities/ticket-message.entity").TicketMessage>;
+    findSimilar(id: string): Promise<Ticket[]>;
 }

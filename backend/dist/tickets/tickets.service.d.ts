@@ -18,4 +18,5 @@ export declare class TicketsService {
     answer(id: string, answer: string): Promise<Ticket>;
     addMessage(id: string, content: string, sender_type: 'employee' | 'hr', sender_id?: string, sender_name?: string): Promise<TicketMessage>;
     getStatsByTopic(): Promise<any[]>;
+    findSimilar(id: string): Promise<Ticket[]>;
 }

@@ -57,5 +57,11 @@ export const TicketService = {
         const resp = await fetch(`${API_URL}/tickets/stats/by-topic`, { cache: 'no-store' });
         if (!resp.ok) throw new Error('Failed to fetch stats');
         return resp.json();
+    },
+
+    async getSimilar(id: string): Promise<Ticket[]> {
+        const resp = await fetch(`${API_URL}/tickets/${id}/similar`, { cache: 'no-store' });
+        if (!resp.ok) throw new Error('Failed to fetch similar tickets');
+        return resp.json();
     }
 };

@@ -47,6 +47,9 @@ let TicketsController = class TicketsController {
             throw new common_1.HttpException({ error: e.message, stack: e.stack }, 500);
         }
     }
+    findSimilar(id) {
+        return this.ticketsService.findSimilar(id);
+    }
 };
 exports.TicketsController = TicketsController;
 __decorate([
@@ -102,6 +105,13 @@ __decorate([
     __metadata("design:paramtypes", [String, String, String, String, String]),
     __metadata("design:returntype", Promise)
 ], TicketsController.prototype, "addMessage", null);
+__decorate([
+    (0, common_1.Get)(':id/similar'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], TicketsController.prototype, "findSimilar", null);
 exports.TicketsController = TicketsController = __decorate([
     (0, common_1.Controller)('tickets'),
     __metadata("design:paramtypes", [tickets_service_1.TicketsService])

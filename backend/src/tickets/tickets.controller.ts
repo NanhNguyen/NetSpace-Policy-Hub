@@ -51,4 +51,9 @@ export class TicketsController {
             throw new HttpException({ error: e.message, stack: e.stack }, 500);
         }
     }
+
+    @Get(':id/similar')
+    findSimilar(@Param('id') id: string) {
+        return this.ticketsService.findSimilar(id);
+    }
 }

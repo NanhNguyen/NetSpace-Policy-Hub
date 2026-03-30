@@ -151,6 +151,24 @@ let TicketsService = class TicketsService {
             .orderBy('count', 'DESC')
             .getRawMany();
     }
+    async findSimilar(id) {
+        const ticket = await this.findOne(id);
+        const words = ticket.question
+            .toLowerCase()
+            .replace(/[.,/?!;:"']/g, ' ')
+            .split(/\s+/)
+            .filter(w => w.length >= 3 && !['là', 'của', 'cho', 'này', 'trong', 'với'].includes(w));
+        if (words.length === 0)
+            return [];
+        const query = this.ticketsRepository.createQueryBuilder('ticket')
+            .where('ticket.id != :id', { id });
+        const conditions = words.map((word, i) => {
+            const param = `word${i}`;
+            return { sql: `ticket.question ILIKE :${param}`, paramName: param, value: `%${word}%` };
+        });
+        query.andWhere(`(${conditions.map(c => c.sql).join(' OR ')})`, conditions.reduce((acc, c) => ({ ...acc, [c.paramName]: c.value }), {}));
+        return query.take(10).getMany();
+    }
 };
 exports.TicketsService = TicketsService;
 exports.TicketsService = TicketsService = __decorate([

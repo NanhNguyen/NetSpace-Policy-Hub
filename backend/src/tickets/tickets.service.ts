@@ -177,4 +177,39 @@ export class TicketsService {
             .orderBy('count', 'DESC')
             .getRawMany();
     }
+
+    async findSimilar(id: string): Promise<Ticket[]> {
+        const ticket = await this.findOne(id);
+        
+        // Extract meaningful words (Vietnamese usually has words of 2-7 chars)
+        // We filter out common short words and very common ones
+        const words = ticket.question
+            .toLowerCase()
+            .replace(/[.,/?!;:"']/g, ' ')
+            .split(/\s+/)
+            .filter(w => w.length >= 3 && !['là', 'của', 'cho', 'này', 'trong', 'với'].includes(w));
+        
+        if (words.length === 0) return [];
+
+        // Build a query counts how many keywords match
+        const query = this.ticketsRepository.createQueryBuilder('ticket')
+            .where('ticket.id != :id', { id });
+        
+        // Using OR with ILIKE is simple and effective for this scale
+        // For better results, we could count occurrences, but Nest/TypeORM ILIKE is standard
+        const conditions = words.map((word, i) => {
+            const param = `word${i}`;
+            return { sql: `ticket.question ILIKE :${param}`, paramName: param, value: `%${word}%` };
+        });
+
+        // We want tickets that match AT LEAST 2 keywords if possible, 
+        // but for now let's just find any match and return them.
+        // If there are many, we could sort by relevance.
+        
+        query.andWhere(`(${conditions.map(c => c.sql).join(' OR ')})`, 
+            conditions.reduce((acc, c) => ({ ...acc, [c.paramName]: c.value }), {})
+        );
+
+        return query.take(10).getMany();
+    }
 }
