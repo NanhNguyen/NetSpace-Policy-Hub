@@ -57,7 +57,7 @@ export default function PolicyViewModal({ policy: initialPolicy, onClose }: Poli
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
-                <div className="bg-gradient-to-br from-slate-900 to-slate-800 px-5 sm:px-8 py-6 sm:py-8 text-white relative overflow-hidden flex-shrink-0">
+                <div className="bg-gradient-to-br from-primary to-[#2C5282] px-5 sm:px-8 py-6 sm:py-8 text-white relative overflow-hidden flex-shrink-0">
                     <div className="absolute top-0 right-0 w-48 h-48 bg-primary rounded-full blur-[80px] opacity-20 -mr-24 -mt-24 pointer-events-none" />
 
                     <div className="relative z-10 pr-10">
@@ -140,10 +140,21 @@ export default function PolicyViewModal({ policy: initialPolicy, onClose }: Poli
                 </div>
 
                 {/* Footer */}
-                <div className="px-5 sm:px-8 py-4 border-t border-slate-100 bg-slate-50 flex items-center justify-center flex-shrink-0">
+                <div className="px-5 sm:px-8 py-4 border-t border-slate-100 bg-slate-50 flex items-center justify-end gap-3 flex-shrink-0 flex-wrap">
+                    {policy.pdf_url && (
+                        <a
+                            href={`https://docs.google.com/viewer?url=${encodeURIComponent(policy.pdf_url)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-white border-2 border-primary text-primary hover:bg-primary hover:text-white rounded-xl text-sm font-black transition-all shadow-sm active:scale-95"
+                        >
+                            <span className="material-symbols-outlined text-[18px]">menu_book</span>
+                            Xem Bản Nguyên Văn (PDF/DOCX)
+                        </a>
+                    )}
                     <button
                         onClick={onClose}
-                        className="w-full sm:w-auto px-10 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-sm font-black transition-all shadow-lg active:scale-95"
+                        className="flex-1 sm:flex-none px-10 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-sm font-black transition-all shadow-lg active:scale-95"
                     >
                         Đóng lại
                     </button>

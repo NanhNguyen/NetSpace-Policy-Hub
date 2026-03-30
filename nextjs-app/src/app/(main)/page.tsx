@@ -43,7 +43,7 @@ export default function HomePage() {
         ]);
         setPopularPolicies(policies.slice(0, 5));
         if (keywordsData) {
-            setSuggestedKeywords(keywordsData.map((k: any) => k.word));
+          setSuggestedKeywords(keywordsData.map((k: any) => k.word));
         }
         // We can also fetch real updates if we had an updates table
       } catch (error) {
@@ -72,8 +72,7 @@ export default function HomePage() {
             <span className="text-xs font-bold text-text-muted uppercase tracking-wider">NetSpace Internal Policy Hub</span>
           </div>
           <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-6 leading-[1.05] text-slate-900">
-            Tìm Chính sách Công ty<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-purple via-primary to-brand-blue">Trong Vài Giây</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-purple via-primary to-brand-blue">Nội Quy và Quy Định</span>
           </h1>
           <p className="text-lg text-slate-500 mb-12 max-w-2xl mx-auto leading-relaxed font-medium">
             Trung tâm tra cứu chính sách nội bộ NetSpace. Mọi quy định, hướng dẫn và phúc lợi — tất cả ở một nơi, chuyên nghiệp và minh bạch.

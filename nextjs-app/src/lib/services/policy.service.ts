@@ -27,23 +27,36 @@ export const PolicyService = {
 
     async getById(id: string) {
         try {
+            // If ID is not a UUID, it might be a slug from fallback data
+            const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+            if (!uuidRegex.test(id) && id.includes('-')) {
+                return PolicyService.getBySlug(id).catch(() => null);
+            }
+
             const resp = await fetch(`${API_URL}/policies/${id}`);
-            if (!resp.ok) throw new Error('Policy not found');
+            if (!resp.ok) {
+                // If ID didn't work, maybe it was meant as a slug
+                if (resp.status === 404) {
+                    return PolicyService.getBySlug(id).catch(() => null);
+                }
+                return null;
+            }
             return resp.json();
         } catch (error) {
-            console.error('Fetch by ID failed:', error);
-            throw error;
+            console.error('Fetch by ID failed, trying slug fallback:', error);
+            // Fallback to slug just in case
+            return PolicyService.getBySlug(id).catch(() => null);
         }
     },
 
     async getBySlug(slug: string) {
         try {
             const resp = await fetch(`${API_URL}/policies/slug/${slug}`);
-            if (!resp.ok) throw new Error('Policy not found');
+            if (!resp.ok) return null;
             return resp.json();
         } catch (error) {
             console.error('Fetch by slug failed:', error);
-            throw error;
+            return null;
         }
     },
 
