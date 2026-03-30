@@ -1,12 +1,48 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import PWARegistration from "@/components/PWARegistration";
+import { Toaster } from 'react-hot-toast';
 
-const inter = Inter({
-  subsets: ["latin", "vietnamese"],
-  weight: ['400', '500', '600', '700', '800', '900'],
-  display: "swap",
+const zona = localFont({
+  src: [
+    {
+      path: "../../public/fonts/SVN-ZonaPro/SVN-ZonaPro-Thin.ttf",
+      weight: "100",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/SVN-ZonaPro/SVN-ZonaPro-Light.ttf",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/SVN-ZonaPro/SVN-ZonaPro-Regular.ttf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/SVN-ZonaPro/SVN-ZonaPro-SemiBold.ttf",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/SVN-ZonaPro/SVN-ZonaPro-Bold.ttf",
+      weight: "700",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/SVN-ZonaPro/SVN-ZonaPro-ExtraBold.ttf",
+      weight: "800",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/SVN-ZonaPro/SVN-ZonaPro-Black.ttf",
+      weight: "900",
+      style: "normal",
+    },
+  ],
+  variable: "--font-zona",
 });
 
 export const metadata: Metadata = {
@@ -21,8 +57,6 @@ export const metadata: Metadata = {
     apple: "/favicon.svg",
   },
 };
-
-import { Toaster } from 'react-hot-toast';
 
 export default function RootLayout({
   children,
@@ -41,7 +75,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className={`${inter.className} antialiased bg-bg-light text-text-main`}>
+      <body className={`${zona.variable} font-sans antialiased bg-bg-light text-text-main`}>
         <Toaster position="top-center" reverseOrder={false} />
         <PWARegistration />
         {children}

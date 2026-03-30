@@ -51,7 +51,7 @@ const policies = [
   {
     title: 'Cơ chế Cộng tác viên (CTV) Kinh doanh',
     slug: 'co-che-cong-tac-vien-kinh-doanh',
-    category: 'finances',
+    category: 'tài chính',
     icon: 'groups',
     excerpt: 'Mức thưởng và hoa hồng dành cho CTV mở rộng mạng lưới kinh doanh.',
     file: 'CƠ CHẾ CTV NETSPACE.pdf',

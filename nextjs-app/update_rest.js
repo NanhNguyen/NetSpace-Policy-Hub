@@ -32,90 +32,94 @@ async function run() {
   const { data: policies } = await supabase.from('policies').select('*');
 
   for (const p of policies) {
-    if (p.content && p.content.includes('<div class="md:col-span-2 bg-gradient-to-br from-blue-600 to-indigo-700 p-6')) {
-      // already beautifully bento'd by seed_policies.ts
-      continue;
-    }
-    
     let items = [];
     let icon = 'article';
     
-    if (p.slug === 'maternity') {
-       icon = 'pregnant_woman';
+    // DATA MAPPING BASED ON REAL POLICY DOCUMENTS
+    if (p.slug === 'remote-work') {
+       icon = 'home_work';
        items = [
-         { t: 'Nghỉ sinh 6 tháng', d: 'Hưởng 100% lương từ quỹ bảo hiểm theo luật định.', i: 'local_hospital', c: 'teal' },
-         { t: 'Trợ cấp Công ty', d: 'Tặng 3.000.000 VNĐ cùng hộp quà mừng chào đón em bé.', i: 'redeem', c: 'emerald' },
-         { t: 'Quyền làm việc tại nhà', d: 'Cho phép nhân sự nữ WFH linh hoạt trong 6 tháng đi làm lại.', i: 'home', c: 'cyan' },
-         { t: 'Đi lại linh hoạt', d: 'Cho phép đi làm trễ tối đa 2 giờ để vắt sữa / chăm bé.', i: 'schedule', c: 'orange' },
+         { t: 'Đăng ký LarkSuite', d: 'Phải đăng ký ít nhất 01 ngày trước khi thực hiện. Chờ TBP phê duyệt.', i: 'edit_calendar', c: 'blue' },
+         { t: 'Báo cáo 21:00', d: 'Nộp báo cáo công việc mỗi ngày trước 21:00 qua LarkSuite.', i: 'assignment_turned_in', c: 'emerald' },
+         { t: 'Thẩm quyền duyệt', d: 'Dưới 2 ngày: TBP + HCNS. Từ 2 ngày: Tổng Giám đốc phê duyệt.', i: 'rule', c: 'orange' },
+         { t: '100% Lương', d: 'Tính đủ lương nếu hoàn thành ≥ 90% công việc và báo cáo đúng hạn.', i: 'attach_money', c: 'teal' },
+       ];
+    } else if (p.slug === 'overtime-policy') {
+       icon = 'schedule';
+       items = [
+         { t: 'Thời hạn đăng ký', d: 'Ngày thường trước 18:00. Ngày nghỉ/Lễ trước 08:00 trên LarkSuite.', i: 'new_releases', c: 'rose' },
+         { t: 'Hạn cuối 23:00', d: 'Thời gian làm OT tối đa đến 23:00. Nghiêm cấm ở lại qua đêm.', i: 'nights_stay', c: 'indigo' },
+         { t: 'Tắt thiết bị điện', d: 'Phải kiểm tra và tắt toàn bộ điện/điều hòa trước khi rời văn phòng.', i: 'bolt', c: 'amber' },
+         { t: 'Người về cuối', d: 'Chịu trách nhiệm khóa cửa và kích hoạt hệ thống an ninh khu vực.', i: 'key', c: 'slate' },
+       ];
+    } else if (p.slug === 'uniform-policy') {
+       icon = 'checkroom';
+       items = [
+         { t: 'Thứ 2 & Thứ 6', d: 'Bắt buộc mặc đồng phục vào 2 ngày này. Ngoại lệ: Trời lạnh < 20°C.', i: 'calendar_today', c: 'blue' },
+         { t: 'Phạt 100.000đ', d: 'Mức phạt áp dụng cho mỗi lần quên mặc đồng phục vào ngày quy định.', i: 'warning', c: 'rose' },
+         { t: 'Cấp phát áo', d: 'Nhân viên chính thức: 02 áo. Thử việc: 01 áo (thêm 1 khi chính thức).', i: 'shopping_bag', c: 'emerald' },
+         { t: 'Mua thêm 150k', d: 'Giá mua thêm 150.000đ/áo. Chuyển khoản MB Bank Nhữ Hồng Nhung.', i: 'payments', c: 'teal' },
+       ];
+    } else if (p.slug === 'office-rules') {
+       icon = 'apartment';
+       items = [
+         { t: 'Dọn dẹp bàn', d: 'Sắp xếp tài liệu, đồ dùng gọn gàng và đẩy ghế vào gầm trước khi về.', i: 'cleaning_services', c: 'teal' },
+         { t: 'Tắt máy tính', d: 'Phải tắt màn hình và mọi thiết bị điện cá nhân khi rời chỗ làm.', i: 'desktop_windows', c: 'rose' },
+         { t: 'Báo cáo vi phạm', d: 'Chụp ảnh gửi hcns@netspace.vn nếu thấy thiết bị chưa tắt.', i: 'photo_camera', c: 'orange' },
+         { t: 'Mức phạt lũy tiến', d: 'Lần 2: 50.000đ/thiết bị. Lần 3+: 100.000đ/thiết bị bị để bật.', i: 'gavel', c: 'slate' },
+       ];
+    } else if (p.slug === 'social-media-policy') {
+       icon = 'public';
+       items = [
+         { t: 'Tài sản Công ty', d: 'Tất cả tài khoản (Facebook, TikTok...) là tài sản của NetSpace.', i: 'token', c: 'blue' },
+         { t: 'Bảo mật 2FA', d: 'Bắt buộc xác thực 2 lớp. Đổi mật khẩu định kỳ ít nhất 6 tháng/lần.', i: 'verified_user', c: 'emerald' },
+         { t: 'Phê duyệt nội dung', d: 'Mọi bài đăng phải qua phê duyệt. Không đăng tin sai lệch, chính trị.', i: 'fact_check', c: 'orange' },
+         { t: 'Bàn giao ngay', d: 'Bàn giao Full account + mã 2FA ngay khi nghỉ việc hoặc đổi vị trí.', i: 'assignment_return', c: 'rose' },
+       ];
+    } else if (p.slug === 'referral-policy') {
+       icon = 'person_add';
+       items = [
+         { t: 'Thưởng 1-10 triệu', d: 'Mức thưởng tùy theo cấp bậc vị trí được giới thiệu thành công.', i: 'card_giftcard', c: 'emerald' },
+         { t: 'Điều kiện nhận', d: 'Ứng viên vượt thử việc và ký hợp đồng lao động chính thức.', i: 'task_alt', c: 'blue' },
+         { t: 'Quy trình gửi CV', d: 'Gửi về hcns@netspace.vn. HR phản hồi trong 3-5 ngày làm việc.', i: 'mail', c: 'cyan' },
+         { t: 'Kỳ trả thưởng', d: 'Chi trả cùng kỳ lương gần nhất sau khi ứng viên ký HĐ chính thức.', i: 'payments', c: 'teal' },
+       ];
+    } else if (p.slug === 'maternity') {
+       icon = 'favorite';
+       items = [
+         { t: 'Nghỉ 6 tháng', d: 'Nghỉ thai sản theo luật định. NetSpace hỗ trợ thêm 1 tháng lương.', i: 'pregnant_woman', c: 'rose' },
+         { t: 'Thưởng 3.000.000đ', d: 'Trợ cấp một lần kèm quà tặng chúc mừng thành viên mới.', i: 'redeem', c: 'emerald' },
+         { t: 'WFH linh hoạt', d: 'Cho phép làm từ xa 100% linh hoạt trong 6 tháng sau khi quay lại.', i: 'home', c: 'cyan' },
+         { t: 'Về sớm 2 tiếng', d: 'Được đi muộn/về sớm tối đa 2 tiếng/ngày để chăm sóc bé.', i: 'schedule', c: 'orange' },
        ];
     } else if (p.slug === 'expense') {
-       icon = 'account_balance_wallet';
+       icon = 'payments';
        items = [
-         { t: 'Thái độ khi đi lại', d: 'Hóa đơn di chuyển (máy bay, tàu hỏa) được công ty trả theo khung quy định.', i: 'flight', c: 'blue' },
-         { t: 'Hạn mức khách sạn', d: 'Cấp bậc quản lý: 800K/đêm. Nhân viên: 500k/đêm (phải có hóa đơn đó).', i: 'bed', c: 'amber' },
-         { t: 'Phụ cấp lưu trú', d: 'Được công ty cấp thêm 200,000đ - 300,000đ tiền đi lại ăn uống/ngày ngoài lương cố định.', i: 'payments', c: 'emerald' },
-         { t: 'Nộp hóa đơn trong 7 ngày', d: 'Hoàn trả chứng từ vào form kế toán tối đa mùng 10 tháng sau.', i: 'receipt_long', c: 'rose' },
+         { t: 'Vé máy bay/Tàu', d: 'Hoàn trả 100% kinh phí đi lại phục vụ công việc được phê duyệt.', i: 'flight_takeoff', c: 'blue' },
+         { t: 'Khách sạn 1.5M', d: 'Hạn mức 1.5M VND/đêm trong nước hoặc 100 USD/đêm nước ngoài.', i: 'hotel', c: 'amber' },
+         { t: 'Ăn uống 300k', d: 'Hạn mức chi phí ăn uống tối đa 300.000 VNĐ/bữa khi đi công tác.', i: 'restaurant', c: 'emerald' },
+         { t: 'Báo cáo 15 ngày', d: 'Nộp báo cáo chi phí kèm hóa đơn tài chính trong vòng 15 ngày.', i: 'receipt_long', c: 'rose' },
        ];
     } else if (p.slug === 'payroll') {
-       icon = 'monetization_on';
+       icon = 'account_balance_wallet';
        items = [
-         { t: 'Lương cố định mùng 5', d: 'Công ty chốt công cuối tháng, ứng lương và trả lương minh bạch vào mùng 05 mỗi tháng.', i: 'event_available', c: 'emerald' },
-         { t: 'Thưởng quý năng lực', d: 'Mức thưởng lên đến 1-3 tháng lương đối với phòng ban Business xuất sắc.', i: 'trending_up', c: 'amber' },
-         { t: 'Bảo hiểm Xã Hội 100%', d: 'Bắt buộc toàn bộ nhân sự chính thức đều được NetSpace đóng BHXH, BHYT.', i: 'health_and_safety', c: 'blue' },
-         { t: 'Đánh giá tăng lương', d: 'Thực hiện Performance Review định kì 6 tháng/1 lần (Tập trung năng suất)', i: 'speed', c: 'purple' },
-       ];
-    } else if (p.slug === 'it-security') {
-       icon = 'security';
-       items = [
-         { t: 'Thông tin nội bộ', d: 'Mọi tài liệu nội bộ (Zalo, Trello, Google Drive) không được gửi ra máy trạm công cộng.', i: 'folder_off', c: 'rose' },
-         { t: 'Sử dụng Email', d: 'Email NetSpace (@netspace.com.vn) chỉ được dùng cho các hợp đồng, công việc nội bộ.', i: 'mail', c: 'cyan' },
-         { t: 'Kết nối mạng', d: 'Thận trọng kết nối WiFi công ty từ điện thoại, không chơi app lậu/VPN lạ.', i: 'wifi', c: 'orange' },
-         { t: 'Password', d: 'Đổi mật khẩu mọi thiết bị/email sau 90 ngày. Khuyến khích 10 ký tự.', i: 'lock_person', c: 'teal' },
-       ];
-    } else if (p.slug === 'ops-workflow') {
-       icon = 'manage_history';
-       items = [
-         { t: 'Check in khuôn mặt', d: 'Chấm công tự động trên LarkSuite lúc 8H30. Không quét trễ hạn.', i: 'face', c: 'blue' },
-         { t: 'Văn hóa Email', d: 'Trả lời mọi Email khẩn cấp trong 4 Giờ. Nếu OT thì sáng mai xử lý.', i: 'reply_all', c: 'orange' },
-         { t: 'Tổ chức Họp', d: 'Mỗi cuộc họp tối đa 45 phút, cần Agenda gửi trước.', i: 'groups', c: 'cyan' },
-         { t: 'Bàn sạch tươm tất', d: 'Làm mâm nào gọn mâm nấy. Cuối ngày dời sách, rửa cốc cá nhân.', i: 'cleaning_services', c: 'teal' },
-       ];
-    } else if (p.slug === 'onboarding') {
-       icon = 'emoji_people';
-       items = [
-         { t: 'Phổ biến quy tắc', d: 'Tuần đầu tiên là học nội quy và đọc tài liệu Onboarding của cty.', i: 'library_books', c: 'teal' },
-         { t: 'Cấp phát laptop', d: 'IT sẽ cấp laptop và cài đủ Account công ty trước thứ 3 hằng tuần.', i: 'laptop_mac', c: 'blue' },
-         { t: 'Buddy thân thiện', d: 'Được chỉ định một Buddy hướng dẫn tận tâm làm quen với 3 dự án nhỏ.', i: 'waving_hand', c: 'amber' },
-         { t: 'Báo cáo thử việc', d: 'Thử việc 2 tháng. Ngày 55 phải nộp bài báo cáo thành phẩm trên slide.', i: 'summarize', c: 'orange' },
-       ];
-    } else if (p.slug === 'device-policy') {
-       icon = 'devices';
-       items = [
-         { t: 'Cấp phát Máy', d: 'Laptop, PC cho nv lập trình/content được niêm phong cấu hình cứng.', i: 'memory', c: 'emerald' },
-         { t: 'Khấu hao Tài sản', d: 'Làm hỏng đổ cafe: Đền bù 30%-100% tuỳ tuổi thọ khai báo.', i: 'water_drop', c: 'rose' },
-         { t: 'Điều hòa & Điện', d: 'Sử dụng xong là phải tắt quạt và hệ thống tắt đèn.', i: 'bolt', c: 'amber' },
-         { t: 'Quyền cài phần mềm', d: 'Cấm cài Game crack trên máy cấp. Yêu cầu IT nếu muốn có app lạ.', i: 'gpp_bad', c: 'purple' },
+         { t: 'Ngày 25 hằng tháng', d: 'Lương được trả vào ngày 25. Chuyển khoản ngân hàng 100%.', i: 'event', c: 'emerald' },
+         { t: 'Kết cấu 80/20', d: '80% Lương cơ bản và 20% phụ cấp (xăng, ăn, điện thoại).', i: 'pie_chart', c: 'blue' },
+         { t: 'Review hằng năm', d: 'Đánh giá tăng lương định kỳ mỗi năm một lần vào tháng 4.', i: 'trending_up', c: 'amber' },
+         { t: 'Thưởng KPI', d: 'Thưởng hiệu suất theo quý dựa trên kết quả công việc thực tế.', i: 'workspace_premium', c: 'purple' },
        ];
     } else if (p.slug === 'annual-leave') {
-       icon = 'flight_takeoff';
+       icon = 'calendar_month';
        items = [
-         { t: 'Tiêu chuẩn 12 ngày', d: 'Nhân viên chính thức có 12 ngày Annual Leave (AL). Tính sau thử việc.', i: 'event', c: 'cyan' },
-         { t: 'Việc Tình Cảm', d: 'Đám cưới, đám tang nhân thân được nghỉ 3 - 5 ngày có lương hoàn toàn.', i: 'favorite', c: 'rose' },
-         { t: 'Hạn cuối Phép năm', d: 'Được cộng dồn phép tồn sang quý 1 năm đén hết 30/03.', i: 'hourglass_bottom', c: 'amber' },
-         { t: 'Báo hiệu nghỉ', d: 'Phải điền lịch Lark Approval nghỉ 1 ngày phải trước 2 ngày.', i: 'edit_notifications', c: 'blue' },
-       ];
-    } else if (p.slug === 'travel') {
-       icon = 'explore';
-       items = [
-         { t: 'Team Building định kỳ', d: 'Quỹ Du Lịch tài trợ đi Retreat 1 lần/ năm cho người thâm niên > 6m.', i: 'beach_access', c: 'teal' },
-         { t: 'Ngân sách Công tác', d: 'Trợ cấp khách sạn + Thêm 250k Phụ phí. Được công tác nước ngoài (Nếu Tech Lead).', i: 'globe_asia', c: 'blue' },
-         { t: 'Trang phục quy chuẩn', d: 'Mặc Polo NetSpace vào các ngày đi Team Builiding ngày 1.', i: 'checkroom', c: 'orange' }
+         { t: '12 - 18 ngày', d: 'Từ 12 ngày phép/năm, tăng dần theo thâm niên mỗi 2-3 năm.', i: 'date_range', c: 'cyan' },
+         { t: 'Chuyển phép 5 ngày', d: 'Cho phép chuyển tối đa 5 ngày phép thừa sang năm kế tiếp.', i: 'hourglass_top', c: 'amber' },
+         { t: 'Báo trước 1 tuần', d: 'Nghỉ 3-5 ngày báo trước 1 tuần. Nghỉ lẻ báo trước 3 ngày.', i: 'notification_important', c: 'rose' },
+         { t: 'Phép tình cảm', d: 'Hưởng thêm ngày nghỉ có lương cho việc hỷ, hiếu theo nội quy.', i: 'favorite', c: 'blue' },
        ];
     } else {
-       // generalized fallback if there are any others
        items = [
-         { t: 'Đọc kỹ thông tin', d: 'Vui lòng đọc kĩ các yêu cầu bắt buộc bên dưới.', i: 'info', c: 'slate' },
-         { t: 'Tuân thủ nội quy', d: 'Thực hiện văn hóa công sở đúng mực.', i: 'fact_check', c: 'slate' }
+         { t: 'Đọc kỹ thông tin', d: 'Vui lòng xem chi tiết file PDF nguyên văn bên dưới.', i: 'info', c: 'slate' },
+         { t: 'NetSpace Rule', d: 'Tuân thủ các quy định để xây dựng môi trường chuyên nghiệp.', i: 'fact_check', c: 'slate' }
        ];
     }
 
@@ -128,7 +132,7 @@ async function run() {
       })
       .eq('id', p.id);
       
-    console.log('Updated to BENTO', p.title);
+    console.log('Updated to ACCURATE BENTO', p.title);
   }
 }
 

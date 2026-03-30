@@ -61,26 +61,33 @@ export default function HomePage() {
   return (
     <>
       {/* HERO */}
-      <section className="relative py-28 overflow-hidden bg-white" aria-label="Tìm kiếm chính sách">
+      <section className="relative py-32 sm:py-40 overflow-hidden bg-white/50" aria-label="Tìm kiếm chính sách">
+        {/* Futuristic Background Elements */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute -top-20 -right-20 w-[500px] h-[500px] bg-brand-blue rounded-full opacity-[0.08] blur-[100px]" />
-          <div className="absolute bottom-0 -left-16 w-[400px] h-[400px] bg-brand-purple rounded-full opacity-[0.08] blur-[100px]" />
+          <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-primary rounded-full opacity-[0.05] blur-[120px] animate-pulse" />
+          <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-brand-blue rounded-full opacity-[0.05] blur-[100px] animate-pulse [animation-delay:2s]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full opacity-[0.1] mix-blend-overlay" 
+               style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, #6366f1 1px, transparent 0)', backgroundSize: '40px 40px' }} />
         </div>
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <div className="inline-flex items-center gap-2 bg-primary/5 border border-primary/10 rounded-full px-4 py-1.5 mb-8">
-            <span className="material-symbols-outlined text-primary text-[16px] animate-pulse">verified</span>
-            <span className="text-xs font-bold text-text-muted uppercase tracking-wider">NetSpace Internal Policy Hub</span>
+
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 text-center">
+          <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md border border-slate-200/60 rounded-full px-5 py-2 mb-10 shadow-sm transition-transform hover:scale-105">
+            <span className="flex h-2 w-2 rounded-full bg-primary animate-ping" />
+            <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.25em]">NetSpace Internal Policy Hub</span>
           </div>
-          <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-6 leading-[1.05] text-slate-900">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-purple via-primary to-brand-blue">Nội Quy và Quy Định</span>
+
+          <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-8 leading-[0.95] text-slate-900">
+            <span className="text-gradient text-glow">Nội Quy và<br />Quy Định</span>
           </h1>
-          <p className="text-lg text-slate-500 mb-12 max-w-2xl mx-auto leading-relaxed font-medium">
-            Trung tâm tra cứu chính sách nội bộ NetSpace. Mọi quy định, hướng dẫn và phúc lợi — tất cả ở một nơi, chuyên nghiệp và minh bạch.
+          
+          <p className="text-xl text-slate-500 mb-14 max-w-2xl mx-auto leading-relaxed font-medium">
+            Nền tảng số hóa chính sách — Truy cập nhanh, minh bạch và thông minh dành cho mọi nhân sự NetSpace.
           </p>
-          {/* Search bar */}
+
+          {/* Search bar with floating effect */}
           <div className="relative max-w-2xl mx-auto group" role="search">
-            <div className="absolute -inset-1.5 bg-gradient-to-r from-brand-purple to-brand-blue rounded-2xl blur-lg opacity-20 transition duration-500 group-focus-within:opacity-40" />
-            <div className="relative flex bg-white rounded-2xl border border-slate-100 shadow-2xl overflow-hidden p-1.5">
+            <div className="absolute -inset-2 bg-gradient-to-r from-primary via-brand-blue to-brand-purple rounded-[2rem] blur-xl opacity-20 transition duration-700 group-focus-within:opacity-40 group-hover:opacity-30" />
+            <div className="relative flex bg-white/90 backdrop-blur-2xl rounded-[1.75rem] border border-white shadow-2xl overflow-hidden p-2">
               <div className="flex items-center pl-4 text-slate-400">
                 <span className="material-symbols-outlined text-[24px]">search</span>
               </div>
@@ -101,36 +108,44 @@ export default function HomePage() {
               </button>
             </div>
           </div>
-          {/* Suggestions */}
-          <div className="flex flex-wrap justify-center gap-2 mt-8">
-            <span className="text-[10px] text-slate-400 font-black uppercase tracking-widest pt-1 mr-2">Gợi ý:</span>
-            {suggestedKeywords.map((s) => (
-              <button
-                key={s}
-                onClick={() => setQuery(s)}
-                className="text-xs px-4 py-2 bg-slate-50 hover:bg-primary hover:text-white text-slate-500 rounded-xl font-bold transition-all border border-slate-100 shadow-sm"
-              >
-                {s}
-              </button>
-            ))}
+          {/* Suggestions with higher highlight */}
+          <div className="flex flex-wrap justify-center items-center gap-3 mt-14 bg-white/40 p-1 rounded-[2.5rem] border border-white/60 shadow-xl max-w-3xl mx-auto backdrop-blur-md ring-1 ring-primary/20">
+            <div className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-full shadow-lg shadow-primary/20 group">
+              <span className="material-symbols-outlined text-[18px] animate-pulse">auto_awesome</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.25em] whitespace-nowrap">Từ khóa HOT</span>
+            </div>
+            <div className="flex flex-wrap justify-center gap-2">
+              {suggestedKeywords.map((s) => (
+                <button
+                  key={s}
+                  onClick={() => {
+                    setQuery(s);
+                    router.push(`/policies?q=${encodeURIComponent(s)}`);
+                  }}
+                  className="group relative flex items-center gap-1.5 text-xs px-5 py-2.5 bg-white hover:bg-primary hover:text-white text-slate-600 rounded-2xl font-black transition-all border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-1 active:scale-95"
+                >
+                  <span className="text-primary group-hover:text-white/50 text-[10px] transition-colors">#</span>
+                  {s}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Stats Bar */}
-      <div className="bg-white border-y border-slate-100 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-5 flex flex-wrap justify-center gap-8 sm:gap-16">
+      <div className="bg-white/40 backdrop-blur-md border-y border-slate-200/60 transition-all">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex flex-wrap justify-center gap-8 sm:gap-20">
           {[
             { icon: "description", text: "12 chính sách", color: "text-brand-blue" },
             { icon: "category", text: "6 danh mục", color: "text-primary" },
             { icon: "update", text: "Cập nhật tháng 3/2026", color: "text-brand-purple" },
             { icon: "support_agent", text: "HR sẵn sàng hỗ trợ", color: "text-indigo-500" },
           ].map(({ icon, text, color }) => (
-            <div key={icon} className="flex items-center gap-2.5 group cursor-default">
-              <div className={`w-9 h-9 rounded-full bg-slate-50 flex items-center justify-center transition-all group-hover:bg-slate-100`}>
-                <span className={`material-symbols-outlined ${color} text-[20px]`}>{icon}</span>
+            <div key={icon} className="flex items-center gap-3 group cursor-default">
+              <div className={`w-10 h-10 rounded-xl bg-white shadow-sm border border-slate-100 flex items-center justify-center transition-all group-hover:scale-110 group-hover:shadow-md group-hover:border-primary/20`}>
+                <span className={`material-symbols-outlined ${color} text-[22px]`}>{icon}</span>
               </div>
-              <span className="text-sm font-black text-slate-700 tracking-tight">{text}</span>
+              <span className="text-sm font-black text-slate-800 tracking-tight transition-colors group-hover:text-primary">{text}</span>
             </div>
           ))}
         </div>
@@ -148,21 +163,31 @@ export default function HomePage() {
               Xem tất cả <span className="material-symbols-outlined text-[18px]">east</span>
             </Link>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {Object.entries(CATEGORIES).map(([key, cat]) => (
               <Link
                 key={key}
                 href={`/policies?cat=${key}`}
-                className="category-card group bg-white p-8 rounded-3xl border border-slate-100 cursor-pointer text-left block hover:border-primary/30 transition-all hover:shadow-2xl hover:shadow-primary/10 active:scale-[0.98]"
+                className="group relative bg-white p-8 rounded-[2rem] border border-slate-100 cursor-pointer text-left block transition-all hover:border-primary/40 hover:shadow-[0_20px_50px_rgba(99,102,241,0.12)] hover:-translate-y-2 overflow-hidden active:scale-[0.98]"
               >
-                <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
-                  <span className="material-symbols-outlined text-primary group-hover:text-white text-[32px] transition-colors">{cat.icon}</span>
+                {/* Decorative background number/icon */}
+                <div className="absolute top-0 right-0 p-8 translate-x-4 -translate-y-4 opacity-[0.03] group-hover:opacity-[0.08] group-hover:scale-125 transition-all">
+                  <span className="material-symbols-outlined text-[100px]">{cat.icon}</span>
                 </div>
-                <h3 className="font-black text-xl sm:text-lg mb-2 text-slate-900 leading-tight">{cat.label}</h3>
-                <p className="text-sm sm:text-xs text-slate-400 font-bold leading-relaxed">{cat.desc}</p>
-                <div className="mt-6 flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-primary/40 group-hover:text-primary transition-colors">Xem chi tiết</span>
-                  <span className="material-symbols-outlined text-[20px] text-slate-300 group-hover:text-primary group-hover:translate-x-1 transition-all">east</span>
+
+                <div className="relative z-10">
+                  <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center mb-8 group-hover:bg-primary group-hover:text-white transition-all shadow-sm ring-4 ring-slate-50 group-hover:ring-primary/10">
+                    <span className="material-symbols-outlined text-primary group-hover:text-white text-[28px] transition-colors">{cat.icon}</span>
+                  </div>
+                  <h3 className="font-black text-xl mb-3 text-slate-900 leading-tight group-hover:text-primary transition-colors">{cat.label}</h3>
+                  <p className="text-sm text-slate-400 font-bold leading-relaxed mb-8">{cat.desc}</p>
+                  
+                  <div className="flex items-center justify-between pt-6 border-t border-slate-50 group-hover:border-primary/10 transition-colors">
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 group-hover:text-primary transition-colors delay-75">Khám phá ngay</span>
+                    <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all group-hover:translate-x-1">
+                      <span className="material-symbols-outlined text-[18px]">east</span>
+                    </div>
+                  </div>
                 </div>
               </Link>
             ))}

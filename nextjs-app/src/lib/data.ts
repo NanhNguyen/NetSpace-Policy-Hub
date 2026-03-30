@@ -36,7 +36,6 @@ export const CATEGORIES: Record<string, { label: string; icon: string; desc: str
   workplace: { label: "Nội quy Công sở", icon: "apartment", desc: "Quy tắc ứng xử, văn hóa nơi làm việc, an toàn văn phòng." },
   conduct: { label: "Quy tắc Ứng xử", icon: "gavel", desc: "Nội quy doanh nghiệp, kỷ luật và chuẩn mực hành vi." },
   finance: { label: "Tài chính", icon: "payments", desc: "Quản lý ngân sách, hoàn chi phí công tác." },
-  finances: { label: "Tài chính", icon: "payments", desc: "Quản lý ngân sách, hoàn chi phí công tác." },
   ops: { label: "Vận hành", icon: "settings", desc: "Quy trình hằng ngày, báo cáo, họp định kỳ." },
 };
 

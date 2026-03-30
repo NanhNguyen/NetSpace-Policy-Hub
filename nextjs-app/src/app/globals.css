@@ -9,7 +9,7 @@
   --color-neutral-soft: #f1f5f9;
   --color-text-main: #0f172a;
   --color-text-muted: #64748b;
-  --font-sans: 'Inter', sans-serif;
+  --font-sans: var(--font-zona), 'Inter', sans-serif;
 }
 
 @layer base {
@@ -28,9 +28,13 @@
   }
 
   body {
-    background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.05), transparent),
-      radial-gradient(circle at bottom left, rgba(14, 165, 233, 0.05), transparent),
-      #f8fafc;
+    background-color: #f8fafc;
+    background-image: 
+      radial-gradient(circle at top right, rgba(99, 102, 241, 0.08), transparent),
+      radial-gradient(circle at bottom left, rgba(14, 165, 233, 0.08), transparent),
+      linear-gradient(rgba(226, 232, 240, 0.3) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(226, 232, 240, 0.3) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
     min-height: 100vh;
     color: #0f172a;
     -webkit-font-smoothing: antialiased;
@@ -52,11 +56,23 @@
 
 @layer utilities {
   .glass {
-    @apply bg-white/70 backdrop-blur-lg border border-white/20 shadow-xl;
+    @apply bg-white/60 backdrop-blur-xl border border-white/40 shadow-2xl;
   }
 
-  .text-contrast {
-    @apply text-slate-900 font-bold contrast-125;
+  .glass-dark {
+    @apply bg-slate-900/40 backdrop-blur-xl border border-white/10 shadow-2xl;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-linear-to-r from-primary via-brand-blue to-brand-purple;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+  }
+
+  .tech-card {
+    @apply bg-white rounded-2xl border border-slate-200/60 shadow-sm transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1 hover:border-primary/30;
   }
 
   .shadow-card {
