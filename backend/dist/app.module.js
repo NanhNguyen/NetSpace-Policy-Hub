@@ -33,6 +33,7 @@ const profile_entity_1 = require("./users/entities/profile.entity");
 const role_entity_1 = require("./users/entities/role.entity");
 const keywords_module_1 = require("./keywords/keywords.module");
 const keyword_entity_1 = require("./keywords/entities/keyword.entity");
+const lark_module_1 = require("./auth/lark/lark.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -58,6 +59,7 @@ exports.AppModule = AppModule = __decorate([
             notifications_module_1.NotificationsModule,
             users_module_1.UsersModule,
             keywords_module_1.KeywordsModule,
+            lark_module_1.LarkModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

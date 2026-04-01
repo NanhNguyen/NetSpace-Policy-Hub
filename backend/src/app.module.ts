@@ -27,6 +27,7 @@ import { Profile } from './users/entities/profile.entity';
 import { Role } from './users/entities/role.entity';
 import { KeywordsModule } from './keywords/keywords.module';
 import { Keyword } from './keywords/entities/keyword.entity';
+import { LarkModule } from './auth/lark/lark.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { Keyword } from './keywords/entities/keyword.entity';
     NotificationsModule,
     UsersModule,
     KeywordsModule,
+    LarkModule,
   ],
   controllers: [AppController],
   providers: [AppService],

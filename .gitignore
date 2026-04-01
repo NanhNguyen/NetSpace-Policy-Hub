@@ -10,6 +10,9 @@ nextjs-app/.next/
 nextjs-app/.env*
 nextjs-app/build/
 
+backend/node_modules/
+backend/dist/
+backend/.env*
 backend/venv/
 backend/__pycache__/
 backend/*.pyc

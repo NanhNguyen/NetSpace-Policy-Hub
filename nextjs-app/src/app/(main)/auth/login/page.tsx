@@ -78,6 +78,27 @@ export default function LoginPage() {
                     >
                         {loading ? "Đang xử lý..." : "Đăng nhập ngay"}
                     </button>
+                    
+                    <div className="relative py-4">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-slate-200"></div>
+                        </div>
+                        <div className="relative flex justify-center text-sm">
+                            <span className="px-2 bg-white text-slate-400">Hoặc</span>
+                        </div>
+                    </div>
+
+                    <a
+                        href={`${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').replace(/\/$/, '')}/auth/lark/login`}
+                        className="w-full flex items-center justify-center gap-3 bg-white border-2 border-slate-200 hover:border-[#1F5BEC] hover:bg-blue-50/50 text-slate-700 font-bold py-3.5 rounded-xl transition-all active:scale-95"
+                    >
+                        {/* Lark Icon SVG */}
+                        <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM14.5 17.5L8 10V6.5L14.5 14V17.5Z" fill="#1F5BEC"/>
+                            <path d="M14.5 14L8 10L14.5 6.5V14Z" fill="#1F5BEC" opacity="0.6"/>
+                        </svg>
+                        Tiếp tục với Lark Suite
+                    </a>
                 </form>
 
                 <div className="mt-8 pt-8 border-t border-slate-100 text-center">
