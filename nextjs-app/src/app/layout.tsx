@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import PWARegistration from "@/components/PWARegistration";
+import AuthToastListener from "@/components/AuthToastListener";
 import { Toaster } from 'react-hot-toast';
 
 const zona = localFont({
@@ -76,8 +77,9 @@ export default function RootLayout({
         />
       </head>
       <body className={`${zona.variable} font-sans antialiased bg-bg-light text-text-main`}>
-        <Toaster position="top-center" reverseOrder={false} />
+        <Toaster position="bottom-right" reverseOrder={false} />
         <PWARegistration />
+        <AuthToastListener />
         {children}
       </body>
     </html>
