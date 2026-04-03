@@ -142,15 +142,31 @@ export default function PolicyViewModal({ policy: initialPolicy, onClose }: Poli
                 {/* Footer */}
                 <div className="px-5 sm:px-8 py-4 border-t border-slate-100 bg-slate-50 flex items-center justify-end gap-3 flex-shrink-0 flex-wrap">
                     {policy.pdf_url && (
-                        <a
-                            href={`https://docs.google.com/viewer?url=${encodeURIComponent(policy.pdf_url)}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                        <button
+                            onClick={() => {
+                                if (!policy.pdf_url) return;
+                                const isDoc = policy.pdf_url.toLowerCase().endsWith('.docx') || policy.pdf_url.toLowerCase().endsWith('.doc');
+                                const isLocal = window.location.hostname === 'localhost';
+                                
+                                if (isDoc) {
+                                    if (isLocal) {
+                                        alert("Tính năng xem trực tiếp file Word (.docx) yêu cầu link công khai. Trên bản Deploy (Render) sẽ xem được trực tiếp qua Google Docs Viewer. Ở bản máy cá nhân, file sẽ được tải về.");
+                                        window.open(policy.pdf_url, '_blank');
+                                    } else {
+                                        // Construct absolute URL for Google Docs Viewer
+                                        const fullUrl = window.location.origin + (policy.pdf_url.startsWith('/') ? '' : '/') + policy.pdf_url;
+                                        window.open(`https://docs.google.com/viewer?url=${encodeURIComponent(fullUrl)}&embedded=true`, '_blank');
+                                    }
+                                } else {
+                                    // PDF or other - open normally
+                                    window.open(policy.pdf_url, '_blank');
+                                }
+                            }}
                             className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-white border-2 border-primary text-primary hover:bg-primary hover:text-white rounded-xl text-sm font-black transition-all shadow-sm active:scale-95"
                         >
                             <span className="material-symbols-outlined text-[18px]">menu_book</span>
-                            Xem Bản Nguyên Văn (PDF/DOCX)
-                        </a>
+                            Xem Bản Nguyên Văn ({policy.pdf_url.split('.').pop()?.toUpperCase()})
+                        </button>
                     )}
                     <button
                         onClick={onClose}

@@ -1,8 +1,10 @@
-# User requested ignores
+# User requested ignores - SECURITY LOCK
 Chính sách và Quy chế/
+nextjs-app/public/policies/
+devdocs/
 skills/
 .stitch/
-devdocs/
+
 
 # Core project ignores
 nextjs-app/node_modules/
