@@ -65,7 +65,7 @@ export default function PolicyCard({ policy, variant = "default" }: PolicyCardPr
 
                 <button
                     onClick={() => setModalOpen(true)}
-                    className="w-full py-4 bg-primary text-white font-black rounded-2xl hover:bg-primary-dark transition-all text-[10px] uppercase tracking-[0.25em] text-center flex items-center justify-center gap-3 shadow-xl shadow-primary/20 hover:shadow-primary/30"
+                    className="w-full py-4 bg-primary text-white font-black rounded-2xl hover:bg-primary-dark transition-all text-[11px] uppercase tracking-[0.1em] text-center flex items-center justify-center gap-3 shadow-xl shadow-primary/20 hover:shadow-primary/30"
                 >
                     Đọc quy định trang nội bộ <span className="material-symbols-outlined text-[18px]">open_in_new</span>
                 </button>
