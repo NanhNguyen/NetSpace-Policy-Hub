@@ -13,7 +13,8 @@ export class LarkService {
     private configService: ConfigService,
     private usersService: UsersService
   ) {
-    const supabaseUrl = this.configService.get<string>('NEXT_PUBLIC_SUPABASE_URL');
+    const supabaseUrl = this.configService.get<string>('SUPABASE_URL') || 
+                        this.configService.get<string>('NEXT_PUBLIC_SUPABASE_URL');
     const serviceRoleKey = this.configService.get<string>('SUPABASE_SERVICE_ROLE_KEY');
     
     if (supabaseUrl && serviceRoleKey) {
