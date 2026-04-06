@@ -31,6 +31,7 @@ export default function PolicyModal({ policy, onClose, onSave }: PolicyModalProp
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const formRef = useRef<HTMLFormElement>(null);
 
     const generateSlug = (text: string) => {
         return text.toLowerCase()
@@ -62,8 +63,21 @@ export default function PolicyModal({ policy, onClose, onSave }: PolicyModalProp
                 published: policy.published ?? true,
                 pdf_url: policy.pdf_url || '',
             });
+
+            // Scroll to top when policy data is loaded
+            if (formRef.current) {
+                formRef.current.scrollTop = 0;
+            }
         }
     }, [policy]);
+
+    // Prevent background scroll
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, []);
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -120,7 +134,7 @@ export default function PolicyModal({ policy, onClose, onSave }: PolicyModalProp
 
     return (
         <div
-            className="fixed top-0 left-0 right-0 bottom-0 z-[9999] flex items-start justify-center p-4 sm:p-10 pt-20 bg-slate-900/70 backdrop-blur-md animate-in fade-in duration-300 pl-68"
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/70 backdrop-blur-md animate-in fade-in duration-300"
             onClick={onClose}
         >
             <div
@@ -145,7 +159,11 @@ export default function PolicyModal({ policy, onClose, onSave }: PolicyModalProp
                 </div>
 
                 {/* Scrollable form */}
-                <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-10 space-y-8 custom-scrollbar">
+                <form
+                    ref={formRef}
+                    onSubmit={handleSubmit}
+                    className="flex-1 overflow-y-auto p-10 space-y-8 custom-scrollbar"
+                >
                     {error && (
                         <div className="p-4 bg-red-50 border border-red-100 rounded-2xl flex items-center gap-3 text-red-600 text-sm font-bold animate-in shake">
                             <AlertCircle className="w-5 h-5 flex-shrink-0" />

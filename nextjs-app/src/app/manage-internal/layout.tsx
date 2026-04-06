@@ -55,8 +55,21 @@ export default function AdminLayout({
             }
 
             try {
-                // Check session using getSession to avoid unnecessary network calls
-                const { data: { session } } = await supabase.auth.getSession();
+                // Use getSession to check current auth state
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+                // If session error occurs (like Refresh Token Not Found), clean up
+                if (sessionError) {
+                    console.error("Supabase session error:", sessionError);
+                    if (sessionError.message.includes('Refresh Token Not Found') || sessionError.status === 401) {
+                        await supabase.auth.signOut();
+                        if (isMounted) {
+                            setIsAuthenticated(false);
+                            router.push('/manage-internal/login');
+                        }
+                        return;
+                    }
+                }
 
                 if (!session?.user) {
                     if (isMounted) {
@@ -66,18 +79,20 @@ export default function AdminLayout({
                     return;
                 }
 
-                // FAST PATH: Use cached metadata inside Supabase JWT to skip redundant backend calls and instantly render
+                // FAST PATH: Use cached metadata inside Supabase JWT
                 const metaRole = session.user.user_metadata?.role;
                 if (metaRole && metaRole !== 'USER' && isMounted) {
                     setIsAuthenticated(true);
                     setRole(metaRole);
-                    return; // Fast render!
+                    return;
                 }
 
-                // SLOW PATH: Fetch from backend directly if metadata is somewhat missing
-                const profile = await UserService.getProfile(session.user.id);
+                // SLOW PATH: Fetch from backend
+                const profile = await UserService.getProfile(session.user.id).catch(err => {
+                    console.warn("Backend profile fetch failed:", err);
+                    return null;
+                });
                 
-                // If profile is successfully fetched and it's a regular USER, restrict access
                 if (profile && profile.role?.code === 'USER') {
                     await supabase.auth.signOut();
                     if (isMounted) {
@@ -87,14 +102,11 @@ export default function AdminLayout({
                     return;
                 }
 
-                // If profile is missing but user is logged in, we let them view (perhaps network issue)
-                // However, if we do have a profile, set the role.
                 if (isMounted) {
                     setIsAuthenticated(true);
                     if (profile?.role) {
                         setRole(profile.role.code as any);
                     } else {
-                        // Fallback checking user_metadata if profile fails or is delayed
                         const metaRole = session.user.user_metadata?.role;
                         if (metaRole === 'ADMIN' || metaRole === 'HR' || metaRole === 'TICKET_MANAGER') {
                             setRole(metaRole);
@@ -104,7 +116,12 @@ export default function AdminLayout({
                     }
                 }
             } catch (error) {
-                console.error("Auth check failed:", error);
+                console.error("Auth check failed in layout:", error);
+                // On critical error, try to sign out to recover state
+                if (isMounted) {
+                    setIsAuthenticated(false);
+                    router.push('/manage-internal/login');
+                }
             }
         };
 
@@ -218,7 +235,7 @@ export default function AdminLayout({
             <ChangePasswordModal open={pwdModalOpen} onClose={() => setPwdModalOpen(false)} />
 
             {/* Main Content */}
-            <main className="flex-1 ml-68 p-8 min-h-screen bg-slate-50/50 backdrop-blur-sm relative">
+            <main className="flex-1 ml-68 p-8 min-h-screen bg-slate-50 relative">
                 <div className="flex items-center justify-end mb-6 gap-6 relative z-50">
                     {(role === 'HR' || role === 'ADMIN') && <NotificationBell role="HR" />}
                 </div>

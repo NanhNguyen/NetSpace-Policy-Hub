@@ -1,7 +1,7 @@
 "use client";
 
 import { FAQ } from "@/types";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { X } from "lucide-react";
 
 interface FAQModalProps {
@@ -14,6 +14,7 @@ interface FAQModalProps {
 export default function FAQModal({ open, onClose, onSave, faq }: FAQModalProps) {
     const [formData, setFormData] = useState<Partial<FAQ>>({});
     const [loading, setLoading] = useState(false);
+    const formRef = useRef<HTMLFormElement>(null);
 
     useEffect(() => {
         if (faq) {
@@ -27,7 +28,21 @@ export default function FAQModal({ open, onClose, onSave, faq }: FAQModalProps) 
                 order_index: 0
             });
         }
+        
+        // Scroll to top when data changes
+        if (formRef.current) {
+            formRef.current.scrollTop = 0;
+        }
     }, [faq, open]);
+
+    // Prevent background scroll
+    useEffect(() => {
+        if (!open) return;
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [open]);
 
     if (!open) return null;
 
@@ -46,8 +61,14 @@ export default function FAQModal({ open, onClose, onSave, faq }: FAQModalProps) 
     };
 
     return (
-        <div className="fixed top-0 left-0 right-0 bottom-0 z-[9999] flex items-start justify-center p-4 sm:p-6 pt-20 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300 pl-68">
-            <div className="bg-white rounded-[2.5rem] w-full max-w-lg shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 slide-in-from-bottom-4 duration-300 ease-out fill-mode-forwards">
+        <div 
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300"
+            onClick={onClose}
+        >
+            <div 
+                className="bg-white rounded-[2.5rem] w-full max-w-lg max-h-[85vh] shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col animate-in zoom-in-95 slide-in-from-bottom-4 duration-300 ease-out fill-mode-forwards"
+                onClick={(e) => e.stopPropagation()}
+            >
                 <div className="flex flex-col items-center justify-center p-8 border-b border-neutral-soft bg-white/50 relative">
                     <div className="text-center">
                         <h2 className="text-2xl font-black text-slate-900">
@@ -59,7 +80,11 @@ export default function FAQModal({ open, onClose, onSave, faq }: FAQModalProps) 
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-8 space-y-8 overflow-y-auto flex-1 custom-scrollbar">
+                <form
+                    ref={formRef}
+                    onSubmit={handleSubmit}
+                    className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar"
+                >
                     <div className="space-y-4">
                         <div className="space-y-2">
                             <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-text-muted ml-1">Câu hỏi</label>
