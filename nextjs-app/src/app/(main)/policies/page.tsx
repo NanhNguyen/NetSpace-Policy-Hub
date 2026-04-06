@@ -8,6 +8,8 @@ import PolicyCard from "@/components/PolicyCard";
 import { PolicyService } from "@/lib/services/policy.service";
 import { Policy } from "@/types";
 
+import { isValidPolicy } from "@/lib/policy-utils";
+
 function PoliciesContent() {
     const searchParams = useSearchParams();
     const [search, setSearch] = useState(searchParams.get("q") || "");
@@ -72,12 +74,15 @@ function PoliciesContent() {
     const filtered = useMemo(() => {
         const searchTerm = search.trim().toLowerCase();
         let data = policies.filter((p) => {
+            // New logic: Hide if either content is empty AND no real PDF
+            if (!isValidPolicy(p)) return false;
+
             const pCategory = p.category.toLowerCase().trim();
             const normalizedCat = pCategory === 'finances' ? 'finance' : pCategory;
             const catOk = filter === "all" || normalizedCat === filter.toLowerCase();
             
             if (!searchTerm) return catOk;
-
+            
             const title = (p.title || "").toLowerCase();
             const excerpt = (p.excerpt || "").toLowerCase();
             const category = (p.category || "").toLowerCase();

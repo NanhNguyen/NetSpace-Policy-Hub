@@ -6,6 +6,10 @@ import { Policy } from '@/types';
 import { CATEGORIES } from '@/lib/data';
 import { PolicyService } from '@/lib/services/policy.service';
 
+import toast from 'react-hot-toast';
+
+import { isDummyOrEmpty } from '@/lib/policy-utils';
+
 interface PolicyViewModalProps {
     policy: Policy | null;
     onClose: () => void;
@@ -46,6 +50,7 @@ export default function PolicyViewModal({ policy: initialPolicy, onClose }: Poli
 
     const catInfo = CATEGORIES[policy.category as keyof typeof CATEGORIES] || { label: policy.category, icon: 'description' };
     const updatedDate = new Date(policy.updated_at).toLocaleDateString('vi-VN');
+    const hasOriginal = !isDummyOrEmpty(policy.pdf_url);
 
     return (
         <div
@@ -141,33 +146,52 @@ export default function PolicyViewModal({ policy: initialPolicy, onClose }: Poli
 
                 {/* Footer */}
                 <div className="px-5 sm:px-8 py-4 border-t border-slate-100 bg-slate-50 flex items-center justify-end gap-3 flex-shrink-0 flex-wrap">
-                    {policy.pdf_url && (
-                        <button
-                            onClick={() => {
-                                if (!policy.pdf_url) return;
-                                const isDoc = policy.pdf_url.toLowerCase().endsWith('.docx') || policy.pdf_url.toLowerCase().endsWith('.doc');
-                                const isLocal = window.location.hostname === 'localhost';
-                                
-                                if (isDoc) {
-                                    if (isLocal) {
-                                        alert("Tính năng xem trực tiếp file Word (.docx) yêu cầu link công khai. Trên bản Deploy (Render) sẽ xem được trực tiếp qua Google Docs Viewer. Ở bản máy cá nhân, file sẽ được tải về.");
-                                        window.open(policy.pdf_url, '_blank');
-                                    } else {
-                                        // Construct absolute URL for Google Docs Viewer
-                                        const fullUrl = window.location.origin + (policy.pdf_url.startsWith('/') ? '' : '/') + policy.pdf_url;
-                                        window.open(`https://docs.google.com/viewer?url=${encodeURIComponent(fullUrl)}&embedded=true`, '_blank');
-                                    }
-                                } else {
-                                    // PDF or other - open normally
+                    <button
+                        onClick={() => {
+                            if (!hasOriginal) {
+                                toast("Bản gốc chính sách này đang được cập nhật. Vui lòng quay lại sau!", {
+                                    icon: 'ℹ️',
+                                    style: {
+                                        borderRadius: '1rem',
+                                        background: '#334155',
+                                        color: '#fff',
+                                        fontSize: '13px',
+                                        fontWeight: '800'
+                                    },
+                                });
+                                return;
+                            }
+                            if (!policy.pdf_url) return;
+                            const isDoc = policy.pdf_url.toLowerCase().endsWith('.docx') || policy.pdf_url.toLowerCase().endsWith('.doc');
+                            const isLocal = window.location.hostname === 'localhost';
+                            
+                            if (isDoc) {
+                                if (isLocal) {
+                                    alert("Tính năng xem trực tiếp file Word (.docx) yêu cầu link công khai. Trên bản Deploy (Render) sẽ xem được trực tiếp qua Google Docs Viewer. Ở bản máy cá nhân, file sẽ được tải về.");
                                     window.open(policy.pdf_url, '_blank');
+                                } else {
+                                    // Construct absolute URL for Google Docs Viewer
+                                    const fullUrl = window.location.origin + (policy.pdf_url.startsWith('/') ? '' : '/') + policy.pdf_url;
+                                    window.open(`https://docs.google.com/viewer?url=${encodeURIComponent(fullUrl)}&embedded=true`, '_blank');
                                 }
-                            }}
-                            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-white border-2 border-primary text-primary hover:bg-primary hover:text-white rounded-xl text-sm font-black transition-all shadow-sm active:scale-95"
-                        >
-                            <span className="material-symbols-outlined text-[18px]">menu_book</span>
-                            Xem Bản Nguyên Văn ({policy.pdf_url.split('.').pop()?.toUpperCase()})
-                        </button>
-                    )}
+                            } else {
+                                // PDF or other - open normally
+                                window.open(policy.pdf_url, '_blank');
+                            }
+                        }}
+                        className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 border-2 rounded-xl text-sm font-black transition-all shadow-sm active:scale-95 ${
+                            hasOriginal 
+                            ? "bg-white border-primary text-primary hover:bg-primary hover:text-white" 
+                            : "bg-slate-100 border-slate-200 text-slate-400 grayscale cursor-not-allowed"
+                        }`}
+                    >
+                        <span className="material-symbols-outlined text-[18px]">
+                            {hasOriginal ? "menu_book" : "update"}
+                        </span>
+                        {hasOriginal 
+                            ? `Xem Bản Nguyên Văn (${policy.pdf_url?.split('.').pop()?.toUpperCase()})` 
+                            : "Bản Gốc Đang Được Cập Nhật"}
+                    </button>
                     <button
                         onClick={onClose}
                         className="flex-1 sm:flex-none px-10 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-sm font-black transition-all shadow-lg active:scale-95"

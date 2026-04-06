@@ -13,6 +13,8 @@ import { supabase } from "@/lib/db/client";
 
 
 
+import { isValidPolicy } from "@/lib/policy-utils";
+
 export default function HomePage() {
   const [query, setQuery] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
@@ -41,7 +43,11 @@ export default function HomePage() {
           PolicyService.getAllPublished(),
           KeywordService.getActive().catch(() => [])
         ]);
-        setPopularPolicies(policies.slice(0, 5));
+        
+        // Filter out empty policies (those without content and without a real PDF)
+        const validPolicies = (policies || []).filter(isValidPolicy);
+        setPopularPolicies(validPolicies.slice(0, 5));
+        
         if (keywordsData) {
           setSuggestedKeywords(keywordsData.map((k: any) => k.word));
         }
