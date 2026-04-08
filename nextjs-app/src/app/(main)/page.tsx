@@ -77,8 +77,8 @@ export default function HomePage() {
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
-          {/* Left Decorative Sidebar */}
-          <div className="hidden xl:block absolute left-0 top-1/2 -translate-y-1/2 w-48 animate-float">
+          {/* Left Decorative Sidebar - Temporarily commented out */}
+          {/* <div className="hidden xl:block absolute left-0 top-1/2 -translate-y-1/2 w-48 animate-float">
             <div className="bg-white/80 backdrop-blur-xl border border-white/40 p-5 rounded-[2rem] shadow-2xl ring-1 ring-primary/5">
               <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary mb-4">
                 <span className="material-symbols-outlined text-[20px]">verified</span>
@@ -93,10 +93,10 @@ export default function HomePage() {
               </div>
               <span className="text-[9px] font-black uppercase text-slate-500">Bảo mật 100%</span>
             </div>
-          </div>
+          </div> */}
 
-          {/* Right Decorative Sidebar */}
-          <div className="hidden xl:block absolute right-0 top-1/2 -translate-y-1/2 w-48">
+          {/* Right Decorative Sidebar - Temporarily commented out */}
+          {/* <div className="hidden xl:block absolute right-0 top-1/2 -translate-y-1/2 w-48">
             <div className="animate-float-delayed">
               <div className="bg-white/80 backdrop-blur-xl border border-white/40 p-5 rounded-[2rem] shadow-2xl ring-1 ring-primary/5">
                 <div className="w-10 h-10 bg-brand-blue/10 rounded-xl flex items-center justify-center text-brand-blue mb-4">
@@ -113,13 +113,14 @@ export default function HomePage() {
               </div>
               <span className="text-[9px] font-black uppercase text-slate-500">Live Updates</span>
             </div>
-          </div>
+          </div> */}
 
           <div className="relative max-w-4xl mx-auto text-center py-10">
-          <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md border border-slate-200/60 rounded-full px-5 py-2 mb-10 shadow-sm transition-transform hover:scale-105">
+          {/* Blinking Badge - Temporarily commented out */}
+          {/* <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md border border-slate-200/60 rounded-full px-5 py-2 mb-10 shadow-sm transition-transform hover:scale-105">
             <span className="flex h-2 w-2 rounded-full bg-primary animate-ping" />
             <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.25em]">NetSpace Internal Policy Hub</span>
-          </div>
+          </div> */}
 
           <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-8 leading-[0.95] text-slate-900">
             <span className="text-gradient text-glow">Nội Quy và<br />Quy Định</span>
