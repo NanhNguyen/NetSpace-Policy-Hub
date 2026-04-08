@@ -20,6 +20,7 @@ export default function HomePage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [suggestedKeywords, setSuggestedKeywords] = useState<string[]>([]);
   const [popularPolicies, setPopularPolicies] = useState<Policy[]>([]);
+  const [allValidPolicies, setAllValidPolicies] = useState<Policy[]>([]);
   const [recentUpdates, setRecentUpdates] = useState<any[]>(UPDATES.slice(0, 5));
   const [user, setUser] = useState<any>(null);
   const router = useRouter();
@@ -46,6 +47,7 @@ export default function HomePage() {
         
         // Filter out empty policies (those without content and without a real PDF)
         const validPolicies = (policies || []).filter(isValidPolicy);
+        setAllValidPolicies(validPolicies);
         setPopularPolicies(validPolicies.slice(0, 5));
         
         if (keywordsData) {
@@ -126,7 +128,7 @@ export default function HomePage() {
             <span className="text-gradient text-glow">Nội Quy và<br />Quy Định</span>
           </h1>
           
-          <p className="text-xl text-slate-500 mb-14 max-w-2xl mx-auto leading-relaxed font-medium">
+          <p className="text-xl text-slate-800 mb-14 max-w-2xl mx-auto leading-relaxed font-black">
             Nền tảng số hóa chính sách — Truy cập nhanh, minh bạch và thông minh dành cho mọi nhân sự NetSpace.
           </p>
 
@@ -183,16 +185,62 @@ export default function HomePage() {
       <div className="bg-white/40 backdrop-blur-md border-y border-slate-200/60 transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex flex-wrap justify-center gap-8 sm:gap-20">
           {[
-            { icon: "description", text: "12 chính sách", color: "text-brand-blue" },
-            { icon: "category", text: "6 danh mục", color: "text-primary" },
-            { icon: "update", text: "Cập nhật tháng 3/2026", color: "text-brand-purple" },
-            { icon: "support_agent", text: "HR sẵn sàng hỗ trợ", color: "text-indigo-500" },
-          ].map(({ icon, text, color }) => (
-            <div key={icon} className="flex items-center gap-3 group cursor-default">
-              <div className={`w-10 h-10 rounded-xl bg-white shadow-sm border border-slate-100 flex items-center justify-center transition-all group-hover:scale-110 group-hover:shadow-md group-hover:border-primary/20`}>
-                <span className={`material-symbols-outlined ${color} text-[22px]`}>{icon}</span>
+            { 
+              icon: "description", 
+              text: `${allValidPolicies.length} chính sách`, 
+              color: "text-brand-blue",
+              title: "Danh sách chính sách",
+              list: allValidPolicies.map(p => p.title)
+            },
+            { 
+              icon: "category", 
+              text: `${Object.keys(CATEGORIES).length} danh mục`, 
+              color: "text-primary",
+              title: "Các chuyên mục",
+              list: Object.values(CATEGORIES).map(c => c.label)
+            },
+            { 
+              icon: "update", 
+              text: "Cập nhật tháng 3/2026", 
+              color: "text-brand-purple",
+              title: "Cập nhật mới",
+              list: recentUpdates.map(u => u.title)
+            },
+            { 
+              icon: "support_agent", 
+              text: "HR sẵn sàng hỗ trợ", 
+              color: "text-indigo-500",
+              title: "Kênh hỗ trợ",
+              list: ["Gửi Ticket thắc mắc", "Tra cứu câu hỏi cũ", "Liên hệ email HCNS", "Zalo hỗ trợ nội bộ"]
+            },
+          ].map(({ icon, text, color, title, list }) => (
+            <div key={icon} className="relative group cursor-default">
+              <div className="flex items-center gap-3 group/item">
+                <div className={`w-10 h-10 rounded-xl bg-white shadow-sm border border-slate-100 flex items-center justify-center transition-all group-hover/item:scale-110 group-hover/item:shadow-md group-hover/item:border-primary/20`}>
+                  <span className={`material-symbols-outlined ${color} text-[22px]`}>{icon}</span>
+                </div>
+                <span className="text-sm font-black text-slate-800 tracking-tight transition-colors group-hover/item:text-primary">{text}</span>
               </div>
-              <span className="text-sm font-black text-slate-800 tracking-tight transition-colors group-hover:text-primary">{text}</span>
+
+              {/* Advanced Tooltip */}
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                <div className="bg-white/95 backdrop-blur-xl border border-slate-200 rounded-2xl shadow-2xl p-5 min-w-[260px] max-h-[320px] overflow-y-auto scrollbar-thin">
+                  <div className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-3 pb-2 border-b border-slate-100 flex items-center justify-between">
+                    <span>{title}</span>
+                    <span className="bg-slate-100 px-2 py-0.5 rounded text-[8px]">{list.length}</span>
+                  </div>
+                  <ul className="space-y-2.5">
+                    {list.map((item, idx) => (
+                      <li key={idx} className="text-[11px] font-bold text-slate-700 flex items-start gap-2.5 leading-snug">
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1 flex-shrink-0" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                {/* Triangle arrow */}
+                <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-8 border-transparent border-t-white" />
+              </div>
             </div>
           ))}
         </div>
@@ -253,7 +301,7 @@ export default function HomePage() {
                 </Link>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {popularPolicies.map((p) => (
+                {popularPolicies.map((p: Policy) => (
                   <PolicyCard key={p.id} policy={p} variant="compact" />
                 ))}
               </div>
