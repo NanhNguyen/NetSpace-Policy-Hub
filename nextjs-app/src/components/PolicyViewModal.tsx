@@ -95,13 +95,15 @@ export default function PolicyViewModal({ policy: initialPolicy, onClose }: Poli
                         </div>
                     </div>
 
-                    {/* Close button */}
+                    {/* Close button with large hitbox */}
                     <button
                         onClick={onClose}
                         aria-label="Đóng"
-                        className="absolute top-4 right-4 w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition-all text-white border border-white/10 active:scale-90"
+                        className="absolute -top-1 -right-1 w-24 h-24 flex items-center justify-center transition-all active:scale-95 cursor-pointer z-[110] group"
                     >
-                        <span className="material-symbols-outlined text-[24px]">close</span>
+                        <div className="w-12 h-12 flex items-center justify-center bg-white/10 group-hover:bg-white/20 rounded-full transition-all text-white border border-white/30 shadow-2xl backdrop-blur-md group-hover:scale-110">
+                            <span className="material-symbols-outlined text-[24px]">close</span>
+                        </div>
                     </button>
                 </div>
 

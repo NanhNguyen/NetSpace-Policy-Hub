@@ -36,13 +36,19 @@ export default function TicketStatusModal({ open, onClose }: Props) {
     return (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
             <div className="bg-white rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-                <div className="flex items-center justify-between p-6 border-b border-neutral-soft bg-slate-50">
+                <div className="relative flex items-center justify-between p-6 border-b border-neutral-soft bg-slate-50">
                     <h2 className="text-xl font-black text-slate-900 flex items-center gap-2">
                         <Search className="text-primary" />
                         Tra cứu thắc mắc
                     </h2>
-                    <button onClick={onClose} className="w-12 h-12 flex items-center justify-center hover:bg-slate-200 rounded-full transition-colors" aria-label="Đóng">
-                        <span className="material-symbols-outlined text-[24px]">close</span>
+                    <button 
+                        onClick={onClose} 
+                        className="absolute right-0 top-0 w-20 h-full flex items-center justify-center transition-all active:scale-90 cursor-pointer group" 
+                        aria-label="Đóng"
+                    >
+                        <div className="w-10 h-10 flex items-center justify-center hover:bg-slate-200 rounded-full transition-colors text-slate-400 group-hover:text-slate-900">
+                            <span className="material-symbols-outlined text-[24px]">close</span>
+                        </div>
                     </button>
                 </div>
 

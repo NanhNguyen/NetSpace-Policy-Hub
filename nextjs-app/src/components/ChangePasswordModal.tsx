@@ -78,7 +78,7 @@ export default function ChangePasswordModal({ open, onClose }: ChangePasswordMod
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
-                <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-white">
+                <div className="relative px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-white">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
                             <Lock size={20} />
@@ -90,9 +90,12 @@ export default function ChangePasswordModal({ open, onClose }: ChangePasswordMod
                     </div>
                     <button 
                         onClick={onClose}
-                        className="p-2 hover:bg-slate-100 rounded-xl transition-all text-slate-400 hover:text-slate-900"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 w-16 h-16 flex items-center justify-center transition-all active:scale-90 cursor-pointer group"
+                        aria-label="Đóng"
                     >
-                        <X size={20} />
+                        <div className="w-10 h-10 flex items-center justify-center hover:bg-slate-100 rounded-xl transition-all text-slate-400 group-hover:text-slate-900">
+                            <X size={24} />
+                        </div>
                     </button>
                 </div>
 

@@ -118,14 +118,17 @@ export default function HRModal({ open, onClose, defaultTopic = "" }: HRModalPro
                                 <p className="text-[10px] uppercase tracking-[0.2em] font-black text-white/50 mt-0.5">NetSpace Policy Hub</p>
                             </div>
                         </div>
-                        <button
-                            onClick={handleClose}
-                            className="w-12 h-12 rounded-full hover:bg-white/10 flex items-center justify-center transition-all text-white/70 hover:text-white group border border-transparent hover:border-white/10"
-                            aria-label="Đóng"
-                        >
-                            <span className="material-symbols-outlined text-[24px] group-active:scale-90">close</span>
-                        </button>
                     </div>
+
+                    <button
+                        onClick={handleClose}
+                        className="absolute top-2 right-2 w-20 h-20 flex items-center justify-center transition-all active:scale-90 cursor-pointer z-50 group focus:outline-none"
+                        aria-label="Đóng"
+                    >
+                        <div className="w-12 h-12 rounded-full bg-white/10 group-hover:bg-white/20 flex items-center justify-center border border-white/30 shadow-xl backdrop-blur-md transition-all group-hover:scale-110 group-active:scale-95">
+                            <span className="material-symbols-outlined text-white text-[24px]">close</span>
+                        </div>
+                    </button>
                 </div>
 
                 <div className="px-8 py-8">
