@@ -93,8 +93,8 @@ export default function LoginPage() {
                             href={`${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').replace(/\/$/, '')}/auth/lark/login?appType=internal`}
                             className="w-full flex items-center justify-center gap-3 bg-white border-2 border-slate-200 hover:border-[#1F5BEC] hover:bg-blue-50/50 text-slate-700 font-bold py-3.5 rounded-xl transition-all active:scale-95 group"
                         >
-                            <img src="/lark_logo.png" alt="Lark Logo" className="w-6 h-6 object-contain grayscale group-hover:grayscale-0 transition-all" />
-                            Đăng nhập Nhân viên NetSpace
+                            <img src="/lark_logo.png" alt="Lark Logo" className="w-6 h-6 object-contain transition-all" />
+                            Đăng nhập cho Nhân viên chính thức
                         </a>
 
                         <a
@@ -102,9 +102,8 @@ export default function LoginPage() {
                             className="w-full flex items-center justify-center gap-3 bg-slate-900 border-2 border-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl transition-all active:scale-95"
                         >
                             <img src="/lark_logo.png" alt="Lark Logo" className="w-6 h-6 object-contain" />
-                            Dành cho Đối tác & CTV
+                            Đăng nhập cho Thực tập sinh
                         </a>
-                        <p className="text-[10px] text-center text-slate-400 mt-2">Dành cho cộng tác viên và cố vấn ngoại quốc</p>
                     </div>
                 </form>
 
