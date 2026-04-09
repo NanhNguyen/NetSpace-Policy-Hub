@@ -36,18 +36,16 @@ export default function Header() {
                 const profile = await UserService.getProfile(sessionUser.id);
                 if (!isMounted) return;
                 
-                if (profile) {
-                    setUser({
-                        ...sessionUser,
-                        user_metadata: { 
-                            ...sessionUser.user_metadata,
-                            full_name: profile.full_name, 
-                            role: profile.role?.code 
-                        }
-                    });
-                } else {
-                    setUser(sessionUser);
-                }
+                // Merge database profile with session metadata
+                // Prioritize the name from Lark if the database profile doesn't have a valid full_name
+                setUser({
+                    ...sessionUser,
+                    user_metadata: { 
+                        ...sessionUser.user_metadata,
+                        full_name: profile?.full_name || sessionUser.user_metadata?.full_name, 
+                        role: profile?.role?.code 
+                    }
+                });
             } catch (e) {
                 if (isMounted) setUser(sessionUser);
             } finally {
@@ -203,7 +201,11 @@ export default function Header() {
                                     className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200 hover:border-primary transition-all overflow-hidden group"
                                 >
                                     <div className="w-full h-full bg-primary/10 flex items-center justify-center text-primary font-black text-xs uppercase group-hover:bg-primary/20">
-                                        {user.email.substring(0, 2)}
+                                        {user.user_metadata?.avatar_url ? (
+                                            <img src={user.user_metadata.avatar_url} alt="User Avatar" className="w-full h-full object-cover" />
+                                        ) : (
+                                            (user.user_metadata?.full_name || user.email).substring(0, 2)
+                                        )}
                                     </div>
                                 </button>
 

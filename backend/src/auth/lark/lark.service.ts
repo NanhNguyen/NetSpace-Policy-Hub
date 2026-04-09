@@ -142,12 +142,46 @@ export class LarkService {
       }
     });
 
-    if (linkError) {
-        this.logger.error(`Supabase generateLink error: ${linkError.message}`);
-        throw new HttpException('Failed to authenticate via Supabase: ' + linkError.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    // Sync user metadata (Full Name and Avatar) from Lark to Supabase.
+    // This ensures that even existing users will have their names updated.
+    try {
+        const { data: listData } = await this.supabaseAdmin.auth.admin.listUsers();
+        const existingUser = listData.users.find(u => u.email === email);
+        
+        if (existingUser) {
+            const fullName = userInfo.name || userInfo.en_name;
+            const avatarUrl = userInfo.avatar_url;
+
+            // 1. Update Supabase Auth Metadata
+            await this.supabaseAdmin.auth.admin.updateUserById(existingUser.id, {
+                user_metadata: {
+                    full_name: fullName,
+                    avatar_url: avatarUrl
+                }
+            });
+            
+            // 2. Update public.users table if it exists
+            await this.supabaseAdmin
+                .from('users')
+                .update({ 
+                    full_name: fullName,
+                    avatar_url: avatarUrl,
+                    updated_at: new Date()
+                })
+                .eq('id', existingUser.id);
+            
+            this.logger.log(`Successfully synced profile for ${email}: ${fullName}`);
+        }
+    } catch (e) {
+        this.logger.warn(`Failed to sync user metadata for ${email}: ${e.message}`);
     }
 
     this.logger.log(`Magic link generated successfully. Redirecting user to Supabase verification...`);
-    return linkData.properties.action_link;
+    // Ensure properties is not null
+    const actionLink = linkData.properties?.action_link;
+    if (!actionLink) {
+        throw new HttpException('Failed to generate action link', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    return actionLink;
   }
 }
