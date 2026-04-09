@@ -152,12 +152,15 @@ export class LarkService {
             const fullName = userInfo.name || userInfo.en_name;
             const avatarUrl = userInfo.avatar_url;
 
-            // 1. Update Supabase Auth Metadata
+            // 1. Update Supabase Auth Metadata (Safe Merge)
+            const newMetadata = {
+                ...existingUser.user_metadata,
+                full_name: fullName,
+                avatar_url: avatarUrl
+            };
+
             await this.supabaseAdmin.auth.admin.updateUserById(existingUser.id, {
-                user_metadata: {
-                    full_name: fullName,
-                    avatar_url: avatarUrl
-                }
+                user_metadata: newMetadata
             });
             
             // 2. Update public.users table if it exists

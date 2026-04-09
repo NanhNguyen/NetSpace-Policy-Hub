@@ -110,7 +110,7 @@ export default function AdminLayout({
                         const metaRole = session.user.user_metadata?.role;
                         if (metaRole === 'ADMIN' || metaRole === 'HR' || metaRole === 'TICKET_MANAGER') {
                             setRole(metaRole);
-                        } else if (session.user.email === 'admin@gmail.com') {
+                        } else if (session.user.email === 'admin@gmail.com' || session.user.email === 'nanhnguyenprv247@gmail.com') {
                             setRole('ADMIN');
                         }
                     }
