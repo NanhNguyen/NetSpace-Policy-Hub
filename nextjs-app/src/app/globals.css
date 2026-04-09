@@ -90,6 +90,53 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  /* Interaction Utilities */
+  .interactive-scale {
+    @apply transition-transform duration-200 active:scale-95 cursor-pointer;
+  }
+
+  .hover-lift {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-xl;
+  }
+
+  .reveal-on-scroll {
+    animation: reveal linear both;
+    animation-timeline: view();
+    animation-range: entry 5% cover 20%;
+  }
+
+  @keyframes reveal {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.4) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+}
+
+/* Global button/link enhancements */
+button, a {
+  @apply transition-all duration-200 active:scale-[0.97];
 }
 
 /* Policy content typography (legacy site page) */

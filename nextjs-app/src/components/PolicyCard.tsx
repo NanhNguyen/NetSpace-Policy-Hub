@@ -45,7 +45,7 @@ export default function PolicyCard({ policy, variant = "default" }: PolicyCardPr
 
     return (
         <>
-            <div className="tech-card p-8 group active:scale-[0.98]">
+            <div className="tech-card p-8 group active:scale-[0.98] reveal-on-scroll">
                 <div className="flex items-center justify-between gap-4 mb-8">
                     <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-primary group-hover:text-white transition-all shadow-inner ring-4 ring-slate-50 group-hover:ring-primary/10">
                         <span className="material-symbols-outlined text-primary group-hover:text-white text-[28px] transition-colors">{policy.icon}</span>
