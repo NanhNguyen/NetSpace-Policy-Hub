@@ -24,22 +24,27 @@ export default function FAQPage() {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
     const [cat, setCat] = useState("all");
-    const [openIdx, setOpenIdx] = useState<number | null>(null);
     const [modalOpen, setModalOpen] = useState(false);
     const [checkModalOpen, setCheckModalOpen] = useState(false);
     const [user, setUser] = useState<any>(null);
 
     useEffect(() => {
-        supabase.auth.getUser().then(({ data }) => setUser(data.user));
+        supabase.auth.getUser()
+            .then(({ data }) => setUser(data.user))
+            .catch(err => console.error("Supabase auth error:", err));
         loadFaqs();
     }, []);
 
     const loadFaqs = async () => {
+        setLoading(true);
         try {
+            console.log("FAQPage: Loading FAQs...");
             const data = await FAQService.getAll();
-            setFaqs(data);
+            console.log("FAQPage: Data received", data?.length || 0, "items");
+            setFaqs(Array.isArray(data) ? data : []);
         } catch (error) {
-            console.error("Failed to load FAQs:", error);
+            console.error("Critical error in FAQPage.loadFaqs:", error);
+            setFaqs([]);
         } finally {
             setLoading(false);
         }
@@ -66,13 +71,11 @@ export default function FAQPage() {
         [faqs, search, cat]
     );
 
-    function toggle(i: number) {
-        setOpenIdx(openIdx === i ? null : i);
-    }
+
 
     return (
         <>
-            <main className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
+            <main className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
                 <nav className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-2 text-xs text-text-muted">
                         <Link href="/" className="hover:text-primary transition-colors">Trang chủ</Link>
@@ -112,39 +115,28 @@ export default function FAQPage() {
                     <h2 className="text-sm font-bold text-text-main uppercase tracking-wider">Câu hỏi được hỏi nhiều nhất</h2>
                 </div>
 
-                {/* Accordion */}
                 {loading ? (
                     <div className="flex flex-col items-center justify-center py-20 text-slate-400">
                         <Loader2 className="animate-spin mb-4" size={40} />
                         <p className="text-sm font-bold animate-pulse">Đang tải câu hỏi...</p>
                     </div>
                 ) : filtered.length > 0 ? (
-                    <div className="space-y-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {filtered.map((faq, i) => (
                             <div
                                 key={faq.id || i}
-                                className={`bg-white rounded-xl border overflow-hidden transition-colors ${openIdx === i ? "border-primary" : "border-neutral-soft"
-                                    }`}
+                                className="bg-white p-6 rounded-3xl border border-neutral-soft hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5 transition-all group flex flex-col h-full"
                             >
-                                <button
-                                    onClick={() => toggle(i)}
-                                    className="w-full flex items-center justify-between text-left px-5 py-4 gap-4"
-                                >
-                                    <span className="font-semibold text-sm text-text-main leading-snug">{faq.question}</span>
-                                    <span
-                                        className={`material-symbols-outlined flex-shrink-0 text-text-muted text-[22px] transition-transform duration-300 ${openIdx === i ? "rotate-180" : ""
-                                            }`}
-                                    >
-                                        expand_more
-                                    </span>
-                                </button>
-                                <div
-                                    className="overflow-hidden transition-all duration-300 ease-in-out"
-                                    style={{ maxHeight: openIdx === i ? "1000px" : "0" }}
-                                >
-                                    <div className="px-5 pb-5 pt-0 text-sm text-text-muted leading-relaxed border-t border-neutral-soft pt-4">
-                                        {faq.answer}
+                                <div className="flex items-start gap-4 mb-4">
+                                    <div className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary flex-shrink-0 group-hover:bg-primary group-hover:text-white transition-all">
+                                        <HelpCircle size={20} />
                                     </div>
+                                    <h3 className="font-black text-[15px] text-slate-900 leading-snug pt-1">
+                                        {faq.question}
+                                    </h3>
+                                </div>
+                                <div className="text-sm text-slate-500 leading-relaxed pl-14 font-medium flex-1">
+                                    {faq.answer}
                                 </div>
                             </div>
                         ))}

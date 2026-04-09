@@ -6,11 +6,11 @@ export const PolicyService = {
     async getAllPublished() {
         try {
             const resp = await fetch(`${API_URL}/policies?published=true`);
-            if (!resp.ok) return [];
+            if (!resp.ok) throw new Error('API unstable');
             return await resp.json();
         } catch (error) {
-            console.error('API Fetch failed:', error);
-            return [];
+            console.error('API Fetch failed, returning empty list:', error);
+            return []; // Fallback to empty if not reachable
         }
     },
 

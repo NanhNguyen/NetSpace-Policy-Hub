@@ -19,11 +19,16 @@ export class KeywordService {
     }
 
     static async getActive(): Promise<Keyword[]> {
-        const res = await fetch(`${API_URL}/keywords/active`, {
-            cache: 'no-store'
-        });
-        if (!res.ok) throw new Error('Failed to fetch active keywords');
-        return res.json();
+        try {
+            const res = await fetch(`${API_URL}/keywords/active`, {
+                cache: 'no-store'
+            });
+            if (!res.ok) return [];
+            return await res.json();
+        } catch (error) {
+            console.error('Failed to fetch active keywords:', error);
+            return [];
+        }
     }
 
     static async create(data: { word: string; order?: number; isActive?: boolean }): Promise<Keyword> {

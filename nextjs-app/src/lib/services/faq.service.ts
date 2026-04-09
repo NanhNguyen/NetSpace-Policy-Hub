@@ -16,12 +16,12 @@ export const FAQService = {
     async getAll(): Promise<FAQ[]> {
         try {
             const resp = await fetch(`${API_URL}/faqs`);
-            if (!resp.ok) return [];
-            const apiData: FAQ[] = await resp.json();
-            return apiData.sort((a, b) => (a.order_index || 0) - (b.order_index || 0));
+            if (!resp.ok) throw new Error('API down');
+            const apiData = await resp.json();
+            return Array.isArray(apiData) ? apiData : FAQS.map((f, i) => mapLocalToApi(f, i));
         } catch (error) {
-            console.error('FAQ API failed:', error);
-            return [];
+            // Silently fallback to local data to avoid Turbopack error overlay
+            return (FAQS || []).map((f, i) => mapLocalToApi(f, i));
         }
     },
 

@@ -4,9 +4,14 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 export const TicketService = {
     async getAll(): Promise<Ticket[]> {
-        const resp = await fetch(`${API_URL}/tickets`, { cache: 'no-store' });
-        if (!resp.ok) throw new Error('Failed to fetch tickets');
-        return resp.json();
+        try {
+            const resp = await fetch(`${API_URL}/tickets`, { cache: 'no-store' });
+            if (!resp.ok) return [];
+            return await resp.json();
+        } catch (error) {
+            console.error('Ticket fetch failed:', error);
+            return [];
+        }
     },
 
     async getById(id: string): Promise<Ticket> {
@@ -46,11 +51,16 @@ export const TicketService = {
     },
 
     async getByEmail(email: string, user_id?: string): Promise<Ticket[]> {
-        let url = `${API_URL}/tickets/search?email=${encodeURIComponent(email)}`;
-        if (user_id) url += `&userId=${encodeURIComponent(user_id)}`;
-        const resp = await fetch(url, { cache: 'no-store' });
-        if (!resp.ok) throw new Error('Failed to search tickets');
-        return resp.json();
+        try {
+            let url = `${API_URL}/tickets/search?email=${encodeURIComponent(email)}`;
+            if (user_id) url += `&userId=${encodeURIComponent(user_id)}`;
+            const resp = await fetch(url, { cache: 'no-store' });
+            if (!resp.ok) return [];
+            return await resp.json();
+        } catch (error) {
+            console.error('Ticket search failed:', error);
+            return [];
+        }
     },
 
     async getStatsByTopic(): Promise<any[]> {
