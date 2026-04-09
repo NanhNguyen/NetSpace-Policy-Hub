@@ -146,7 +146,7 @@ export class LarkService {
     // This ensures that even existing users will have their names updated.
     try {
         const { data: listData } = await this.supabaseAdmin.auth.admin.listUsers();
-        const existingUser = listData.users.find(u => u.email === email);
+        const existingUser = listData.users.find((u: any) => u.email === email);
         
         if (existingUser) {
             const fullName = userInfo.name || userInfo.en_name;
