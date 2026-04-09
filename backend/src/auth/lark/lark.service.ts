@@ -27,9 +27,14 @@ export class LarkService {
     }
   }
 
-  async getAppAccessToken(): Promise<string> {
-    const appId = this.configService.get<string>('LARK_APP_ID');
-    const appSecret = this.configService.get<string>('LARK_APP_SECRET');
+  async getAppAccessToken(appType: 'internal' | 'external' = 'internal'): Promise<string> {
+    const isExternal = appType === 'external';
+    const appId = isExternal 
+      ? this.configService.get<string>('LARK_APP_ID_EXTERNAL')
+      : this.configService.get<string>('LARK_APP_ID');
+    const appSecret = isExternal
+      ? this.configService.get<string>('LARK_APP_SECRET_EXTERNAL')
+      : this.configService.get<string>('LARK_APP_SECRET');
     
     try {
         const res = await axios.post('https://open.larksuite.com/open-apis/auth/v3/app_access_token/internal', {
@@ -38,13 +43,13 @@ export class LarkService {
         });
         return res.data.app_access_token;
     } catch (e: any) {
-        this.logger.error("Failed to get Lark app access token");
-        throw new HttpException('Failed to authenticate with Lark', HttpStatus.INTERNAL_SERVER_ERROR);
+        this.logger.error(`Failed to get Lark app access token for ${appType}`);
+        throw new HttpException(`Failed to authenticate with Lark (${appType})`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  async getUserAccessToken(code: string): Promise<string> {
-    const appToken = await this.getAppAccessToken();
+  async getUserAccessToken(code: string, appType: 'internal' | 'external' = 'internal'): Promise<string> {
+    const appToken = await this.getAppAccessToken(appType);
     try {
         const res = await axios.post('https://open.larksuite.com/open-apis/authen/v1/oidc/access_token', {
         grant_type: 'authorization_code',
@@ -90,7 +95,18 @@ export class LarkService {
     
     this.logger.log(`Processing callback with code: ${code?.substring(0, 5)}...`);
     
-    const userToken = await this.getUserAccessToken(code);
+    let appType: 'internal' | 'external' = 'internal';
+    let redirectPath = '';
+    
+    if (state) {
+        try {
+            const decodedState = JSON.parse(decodeURIComponent(state));
+            appType = decodedState.appType || 'internal';
+            redirectPath = decodedState.redirect || '';
+        } catch(e) {}
+    }
+
+    const userToken = await this.getUserAccessToken(code, appType);
     const userInfo = await this.getUserInfo(userToken);
     
     this.logger.log(`Lark User Info retrieved: ${JSON.stringify(userInfo)}`);
@@ -106,15 +122,10 @@ export class LarkService {
     this.logger.log(`Attempting to generate magic link for email: ${email}`);
 
     let redirectUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
-    if (state) {
-        try {
-            const decodedState = JSON.parse(decodeURIComponent(state));
-            if (decodedState.redirect) {
-                const base = redirectUrl.replace(/\/$/, "");
-                const path = decodedState.redirect.replace(/^\//, "");
-                redirectUrl = `${base}/${path}`;
-            }
-        } catch(e) {}
+    if (redirectPath) {
+        const base = redirectUrl.replace(/\/$/, "");
+        const path = redirectPath.replace(/^\//, "");
+        redirectUrl = `${base}/${path}`;
     }
 
     this.logger.log(`Final redirect URL after login will be: ${redirectUrl}`);

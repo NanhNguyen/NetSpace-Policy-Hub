@@ -11,24 +11,30 @@ export class LarkController {
   ) {}
 
   @Get('login')
-  login(@Query('redirect') redirectPath: string, @Res() res: Response) {
-    const appId = this.configService.get<string>('LARK_APP_ID');
+  login(
+    @Query('redirect') redirectPath: string, 
+    @Query('appType') appType: 'internal' | 'external' = 'internal',
+    @Res() res: Response
+  ) {
+    const isExternal = appType === 'external';
+    const appId = isExternal 
+      ? this.configService.get<string>('LARK_APP_ID_EXTERNAL')
+      : this.configService.get<string>('LARK_APP_ID');
+
     if (!appId) {
-       throw new HttpException('Lark config missing', HttpStatus.INTERNAL_SERVER_ERROR);
+       throw new HttpException('Lark config missing for type: ' + appType, HttpStatus.INTERNAL_SERVER_ERROR);
     }
     
-    // In production, you might want to use the actual registered domain.
     let baseUrl = this.configService.get<string>('API_BASE_URL') || 'http://localhost:4000';
     baseUrl = baseUrl.replace(/\/$/, '');
     const redirectUri = encodeURIComponent(`${baseUrl}/auth/lark/callback`);
     
-    // Pass state to persist redirect handling after login
     const stateObj = { 
-        redirect: redirectPath || ''
+        redirect: redirectPath || '',
+        appType: appType
     };
     const stateStr = encodeURIComponent(JSON.stringify(stateObj));
 
-    // Use the standard Lark OAuth v1/index endpoint
     const larkAuthUrl = `https://open.larksuite.com/open-apis/authen/v1/index?app_id=${appId}&redirect_uri=${redirectUri}&state=${stateStr}`;
     return res.redirect(larkAuthUrl);
   }
