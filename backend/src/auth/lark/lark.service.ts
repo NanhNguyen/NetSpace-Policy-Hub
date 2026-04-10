@@ -97,12 +97,14 @@ export class LarkService {
     
     let appType: 'internal' | 'external' = 'internal';
     let redirectPath = '';
+    let origin = '';
     
     if (state) {
         try {
             const decodedState = JSON.parse(decodeURIComponent(state));
             appType = decodedState.appType || 'internal';
             redirectPath = decodedState.redirect || '';
+            origin = decodedState.origin || '';
         } catch(e) {}
     }
 
@@ -121,7 +123,8 @@ export class LarkService {
 
     this.logger.log(`Attempting to generate magic link for email: ${email}`);
 
-    let redirectUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
+    // Priority: 1. Origin from state (Dynamic) 2. FRONTEND_URL env (Config) 3. Localhost (Fallback)
+    let redirectUrl = origin || this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
     if (redirectPath) {
         const base = redirectUrl.replace(/\/$/, "");
         const path = redirectPath.replace(/^\//, "");

@@ -31,6 +31,17 @@ export default function LoginPage() {
         }
     }
 
+    const handleLarkLogin = (appType: 'internal' | 'external') => {
+        const state = encodeURIComponent(JSON.stringify({ 
+            appType,
+            redirect: '/',
+            origin: window.location.origin 
+        }));
+        
+        const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').replace(/\/$/, '');
+        window.location.href = `${baseUrl}/auth/lark/login?appType=${appType}&state=${state}`;
+    };
+
     return (
         <div className="min-h-[80vh] flex items-center justify-center px-4 py-20 bg-slate-50">
             <div className="w-full max-w-md bg-white rounded-2xl shadow-xl shadow-slate-200/60 p-8 border border-slate-100">
@@ -89,21 +100,23 @@ export default function LoginPage() {
                     </div>
 
                     <div className="space-y-3">
-                        <a
-                            href={`${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').replace(/\/$/, '')}/auth/lark/login?appType=internal`}
+                        <button
+                            type="button"
+                            onClick={() => handleLarkLogin('internal')}
                             className="w-full flex items-center justify-center gap-3 bg-white border-2 border-slate-200 hover:border-[#1F5BEC] hover:bg-blue-50/50 text-slate-700 font-bold py-3.5 rounded-xl transition-all active:scale-95 group"
                         >
                             <img src="/lark_logo.png" alt="Lark Logo" className="w-6 h-6 object-contain transition-all" />
                             Đăng nhập cho Nhân viên chính thức
-                        </a>
+                        </button>
 
-                        <a
-                            href={`${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').replace(/\/$/, '')}/auth/lark/login?appType=external`}
+                        <button
+                            type="button"
+                            onClick={() => handleLarkLogin('external')}
                             className="w-full flex items-center justify-center gap-3 bg-slate-900 border-2 border-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl transition-all active:scale-95"
                         >
                             <img src="/lark_logo.png" alt="Lark Logo" className="w-6 h-6 object-contain" />
                             Đăng nhập cho Thực tập sinh
-                        </a>
+                        </button>
                     </div>
                 </form>
 
