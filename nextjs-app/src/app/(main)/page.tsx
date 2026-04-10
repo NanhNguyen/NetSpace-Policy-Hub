@@ -247,7 +247,7 @@ export default function HomePage() {
       </div>
 
       <main>
-        {/* CATEGORIES */}
+        {/* CATEGORIES - Temporarily hidden
         <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6" aria-labelledby="categories-heading">
           <div className="flex items-end justify-between mb-12 border-l-4 border-primary pl-6">
             <div>
@@ -265,7 +265,6 @@ export default function HomePage() {
                 href={`/policies?cat=${key}`}
                 className="group relative bg-white p-8 rounded-[2rem] border border-slate-100 cursor-pointer text-left block transition-all hover:border-primary/40 hover:shadow-[0_20px_50px_rgba(99,102,241,0.12)] hover:-translate-y-2 overflow-hidden active:scale-[0.98]"
               >
-                {/* Decorative background number/icon */}
                 <div className="absolute top-0 right-0 p-8 translate-x-4 -translate-y-4 opacity-[0.03] group-hover:opacity-[0.08] group-hover:scale-125 transition-all">
                   <span className="material-symbols-outlined text-[100px]">{cat.icon}</span>
                 </div>
@@ -288,11 +287,11 @@ export default function HomePage() {
             ))}
           </div>
         </section>
+        */}
 
-        {/* POPULAR + UPDATES */}
+        {/* POPULAR + UPDATES - Temporarily hidden
         <section className="py-16 bg-background" aria-label="Chính sách phổ biến và Cập nhật">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-12">
-            {/* Popular */}
             <div className="lg:col-span-2">
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-2xl font-bold text-text-main">Chính sách Phổ biến</h2>
@@ -307,7 +306,6 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Updates Timeline */}
             <div>
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-2xl font-bold text-text-main">Cập nhật Mới nhất</h2>
@@ -338,6 +336,7 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+        */}
 
         {/* CTA Banner */}
         <section className="mt-20 mb-20 px-4 sm:px-6">
