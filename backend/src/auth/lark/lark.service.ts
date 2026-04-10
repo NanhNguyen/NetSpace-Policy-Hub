@@ -121,10 +121,17 @@ export class LarkService {
       throw new HttpException('Lark account must have an associated email address or mobile', HttpStatus.BAD_REQUEST);
     }
 
-    this.logger.log(`Attempting to generate magic link for email: ${email}`);
+    this.logger.log(`Attempting to generate magic link for email: ${email} | Origin from state: ${origin}`);
 
-    // Priority: 1. Origin from state (Dynamic) 2. FRONTEND_URL env (Config) 3. Localhost (Fallback)
-    let redirectUrl = origin || this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
+    // Priority: 1. Origin from state (Dynamic) 2. Configured FRONTEND_URL 3. Verified Production URL 4. Localhost
+    const productionUrl = 'https://netspace-policy-hub.vercel.app';
+    let redirectUrl = origin || this.configService.get<string>('FRONTEND_URL') || productionUrl || 'http://localhost:3000';
+    
+    // Safety check: if we are NOT on localhost but redirect is localhost, force production
+    if (origin && !origin.includes('localhost') && redirectUrl.includes('localhost')) {
+        redirectUrl = productionUrl;
+    }
+
     if (redirectPath) {
         const base = redirectUrl.replace(/\/$/, "");
         const path = redirectPath.replace(/^\//, "");
