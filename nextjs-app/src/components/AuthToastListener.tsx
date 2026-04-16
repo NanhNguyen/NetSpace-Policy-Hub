@@ -17,6 +17,11 @@ export default function AuthToastListener() {
                         id: 'auth-success', // Prevent duplicate toasts
                     });
                     lastSessionId.current = session.user.id;
+                    
+                    // Clean up URL if it contains access_token from Magic Link
+                    if (window.location.hash.includes('access_token')) {
+                        window.history.replaceState(null, '', window.location.pathname + window.location.search);
+                    }
                 }
             } else if (event === 'SIGNED_OUT') {
                 if (lastSessionId.current) {
