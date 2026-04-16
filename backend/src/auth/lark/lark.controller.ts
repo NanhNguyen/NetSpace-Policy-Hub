@@ -14,6 +14,7 @@ export class LarkController {
   login(
     @Query('redirect') redirectPath: string, 
     @Query('appType') appType: 'internal' | 'external' = 'internal',
+    @Query('state') state: string,
     @Res() res: Response
   ) {
     const isExternal = appType === 'external';
@@ -29,11 +30,14 @@ export class LarkController {
     baseUrl = baseUrl.replace(/\/$/, '');
     const redirectUri = encodeURIComponent(`${baseUrl}/auth/lark/callback`);
     
-    const stateObj = { 
-        redirect: redirectPath || '',
-        appType: appType
-    };
-    const stateStr = encodeURIComponent(JSON.stringify(stateObj));
+    let stateStr = state ? encodeURIComponent(state) : '';
+    if (!stateStr) {
+        const stateObj = { 
+            redirect: redirectPath || '',
+            appType: appType
+        };
+        stateStr = encodeURIComponent(JSON.stringify(stateObj));
+    }
 
     const larkAuthUrl = `https://open.larksuite.com/open-apis/authen/v1/index?app_id=${appId}&redirect_uri=${redirectUri}&state=${stateStr}`;
     return res.redirect(larkAuthUrl);
@@ -53,8 +57,16 @@ export class LarkController {
         const magicLink = await this.larkService.processLarkCallback(code, state);
         return res.redirect(magicLink);
     } catch (e: any) {
+        let frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
+        if (state) {
+            try {
+                const decodedState = JSON.parse(decodeURIComponent(state));
+                if (decodedState.origin) {
+                    frontendUrl = decodedState.origin;
+                }
+            } catch (err) {}
+        }
         // Redirect to login page with error
-        const frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
         return res.redirect(`${frontendUrl}/auth/login?error=${encodeURIComponent(e.message || 'Unknown error')}`);
     }
   }
