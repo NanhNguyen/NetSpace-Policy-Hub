@@ -101,11 +101,23 @@ export class LarkService {
     
     if (state) {
         try {
-            const decodedState = JSON.parse(decodeURIComponent(state));
-            appType = decodedState.appType || 'internal';
-            redirectPath = decodedState.redirect || '';
-            origin = decodedState.origin || '';
-        } catch(e) {}
+            // First try to parse directly (Nest might have decoded it)
+            // Then try decodeURIComponent if it fails
+            let decoded;
+            try {
+                decoded = JSON.parse(state);
+            } catch (e) {
+                decoded = JSON.parse(decodeURIComponent(state));
+            }
+            
+            appType = decoded.appType || 'internal';
+            redirectPath = decoded.redirect || '';
+            origin = decoded.origin || '';
+            
+            this.logger.log(`Parsed state - appType: ${appType}, redirect: ${redirectPath}, origin: ${origin}`);
+        } catch(e) {
+            this.logger.warn(`Failed to parse state: ${state}. Error: ${e.message}`);
+        }
     }
 
     const userToken = await this.getUserAccessToken(code, appType);
