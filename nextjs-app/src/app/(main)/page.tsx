@@ -351,7 +351,7 @@ export default function HomePage() {
             </div>
             <button
               onClick={handleAskHR}
-              className="relative z-10 whitespace-nowrap px-10 py-4 bg-white text-primary font-black rounded-2xl hover:bg-slate-50 transition-all shadow-xl active:scale-95"
+              className="relative z-10 whitespace-nowrap px-10 py-4 bg-white text-primary font-black rounded-2xl hover:bg-white hover:shadow-[0_20px_40px_rgba(255,255,255,0.3)] hover:-translate-y-1.5 hover:scale-105 transition-all duration-300 shadow-xl active:scale-95"
             >
               Gửi yêu cầu ngay
             </button>

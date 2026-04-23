@@ -160,7 +160,7 @@ export default function FAQPage() {
                         <p className="text-white/80 font-bold mb-8 max-w-sm mx-auto">Nếu danh sách FAQ không giải đáp được thắc mắc, hãy gửi câu hỏi trực tiếp cho đội ngũ HR.</p>
                         <button
                             onClick={handleAskHR}
-                            className="inline-flex items-center gap-2 bg-white text-primary px-10 py-4 rounded-2xl font-black text-sm hover:bg-slate-50 transition-all shadow-xl active:scale-95"
+                            className="inline-flex items-center gap-2 bg-white text-primary px-10 py-4 rounded-2xl font-black text-sm hover:bg-white hover:shadow-[0_20px_40px_rgba(255,255,255,0.3)] hover:-translate-y-1.5 hover:scale-105 transition-all duration-300 shadow-xl active:scale-95"
                         >
                             <span className="material-symbols-outlined text-[20px]">chat</span>
                             Gửi câu hỏi cho HR ngay

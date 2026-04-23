@@ -138,7 +138,7 @@ function PoliciesContent() {
                             <button
                                 key={cat.key}
                                 onClick={() => setFilter(cat.key)}
-                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${filter === cat.key
+                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap cursor-pointer ${filter === cat.key
                                     ? "bg-white text-primary shadow-sm ring-1 ring-black/5"
                                     : "text-text-muted hover:text-text-main"
                                     }`}

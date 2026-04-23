@@ -1,6 +1,29 @@
 import React from "react";
+import Image from "next/image";
 
-export default function Logo({ className = "w-auto h-8", hideText = false }: { className?: string, hideText?: boolean }) {
+export default function Logo({ 
+    className = "w-auto h-8", 
+    hideText = false,
+    useImage = true 
+}: { 
+    className?: string, 
+    hideText?: boolean,
+    useImage?: boolean
+}) {
+    if (useImage) {
+        return (
+            <div className={`${className} flex items-center relative overflow-hidden`}>
+                <Image 
+                    src="/final-logo.png" 
+                    alt="NetSpace Logo" 
+                    fill
+                    className="object-contain"
+                    priority
+                />
+            </div>
+        );
+    }
+
     return (
         <div className={`${className} flex items-center`}>
             <svg
@@ -54,3 +77,4 @@ export default function Logo({ className = "w-auto h-8", hideText = false }: { c
         </div>
     );
 }
+
