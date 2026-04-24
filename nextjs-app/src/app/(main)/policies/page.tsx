@@ -71,8 +71,32 @@ function PoliciesContent() {
         load();
     }, []);
 
+    // Debounced search logging
+    useEffect(() => {
+        const searchTerm = search.trim().toLowerCase();
+        if (!searchTerm) return;
+
+        const timeoutId = setTimeout(() => {
+            const resultCount = policies.filter(p => {
+                if (!isValidPolicy(p)) return false;
+                const title = (p.title || "").toLowerCase();
+                const excerpt = (p.excerpt || "").toLowerCase();
+                return title.includes(searchTerm) || excerpt.includes(searchTerm);
+            }).length;
+
+            fetch('/api/search-logs', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: search.trim(), resultCount }),
+            }).catch(() => {});
+        }, 1000); // Wait 1s after last stroke to log
+
+        return () => clearTimeout(timeoutId);
+    }, [search, policies]);
+
     const filtered = useMemo(() => {
         const searchTerm = search.trim().toLowerCase();
+        
         let data = policies.filter((p) => {
             // New logic: Hide if either content is empty AND no real PDF
             if (!isValidPolicy(p)) return false;

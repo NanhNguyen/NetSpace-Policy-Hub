@@ -63,6 +63,21 @@ export default function HomePage() {
 
   async function handleSearch() {
     if (!query.trim()) return;
+    
+    // Log search to analytics
+    try {
+      fetch('/api/search-logs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          query: query.trim(), 
+          resultCount: allValidPolicies.filter(p => 
+            p.title.toLowerCase().includes(query.trim().toLowerCase())
+          ).length 
+        }),
+      });
+    } catch (e) {}
+
     router.push(`/policies?q=${encodeURIComponent(query.trim())}`);
   }
 

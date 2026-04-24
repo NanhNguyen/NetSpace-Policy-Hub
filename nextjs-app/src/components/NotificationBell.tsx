@@ -31,7 +31,7 @@ export default function NotificationBell({ role }: { role: 'ADMIN' | 'HR' | 'USE
                 userId = user.id;
             }
 
-            const res = await fetch(`${API_URL}/notifications/${userId}/${role}`);
+            const res = await fetch(`${API_URL}/notifications/${userId}/${role.toUpperCase()}`, { cache: 'no-store' });
             if (res.ok) {
                 const data = await res.json();
                 setNotifications(data);
@@ -90,8 +90,8 @@ export default function NotificationBell({ role }: { role: 'ADMIN' | 'HR' | 'USE
             // 1. Aggressive local update
             setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
             
-            // 2. Background server update
-            fetch(`${API_URL}/notifications/read-all/${userId}/${role}`, { method: 'PATCH' }).catch(console.error);
+            // 2. Background server update - Use uppercase role to match DB
+            await fetch(`${API_URL}/notifications/read-all/${userId}/${role.toUpperCase()}`, { method: 'PATCH' }).catch(console.error);
         } catch (err) {
             console.error(err);
         }
@@ -102,22 +102,15 @@ export default function NotificationBell({ role }: { role: 'ADMIN' | 'HR' | 'USE
     return (
         <div className="relative" ref={menuRef}>
             <button 
-                onClick={async () => {
+                onClick={() => {
                     const becomingOpen = !open;
                     setOpen(becomingOpen);
                     
-                    if (becomingOpen) {
-                        try {
-                            const { data: { user } } = await supabase.auth.getUser();
-                            if (user) {
-                                // 1. Fetch latest first
-                                await fetchNotifications(user.id);
-                                // 2. Mark everything currently in the list as read
-                                handleReadAll(user.id);
-                            }
-                        } catch (err) {
-                            console.error(err);
-                        }
+                    if (becomingOpen && unreadCount > 0) {
+                        // Mark as read in background, no await needed here for instant UI
+                        supabase.auth.getUser().then(({ data: { user } }) => {
+                            if (user) handleReadAll(user.id);
+                        });
                     }
                 }}
                 className="relative w-10 h-10 rounded-full hover:bg-neutral-soft flex items-center justify-center transition-colors group"

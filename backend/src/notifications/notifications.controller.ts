@@ -21,7 +21,11 @@ export class NotificationsController {
     }
 
     @Patch('read-all/:userId/:role')
-    markAllAsRead(@Param('userId') userId: string, @Param('role') role: string) {
-        return this.pushService.markAllAsRead(userId, role);
+    async markAllAsRead(@Param('userId') userId: string, @Param('role') role: string) {
+        try {
+            return await this.pushService.markAllAsRead(userId, role);
+        } catch (e: any) {
+            return { error: e.message || e };
+        }
     }
 }

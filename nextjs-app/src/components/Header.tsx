@@ -29,21 +29,21 @@ export default function Header() {
 
     useEffect(() => {
         let isMounted = true;
-        
+
         const fetchProfile = async (sessionUser: any) => {
             try {
                 const { UserService } = await import("@/lib/services/user.service");
                 const profile = await UserService.getProfile(sessionUser.id);
                 if (!isMounted) return;
-                
+
                 // Merge database profile with session metadata
                 // Prioritize the name from Lark if the database profile doesn't have a valid full_name
                 setUser({
                     ...sessionUser,
-                    user_metadata: { 
+                    user_metadata: {
                         ...sessionUser.user_metadata,
-                        full_name: profile?.full_name || sessionUser.user_metadata?.full_name, 
-                        role: profile?.role?.code 
+                        full_name: profile?.full_name || sessionUser.user_metadata?.full_name,
+                        role: profile?.role?.code
                     }
                 });
             } catch (e) {
@@ -223,7 +223,7 @@ export default function Header() {
                                             className="flex items-center gap-3 px-4 py-3 text-sm font-bold text-text-main hover:bg-slate-50 transition-colors"
                                         >
                                             <span className="material-symbols-outlined text-[20px] text-text-muted">history</span>
-                                            Yêu cầu của tôi
+                                            Câu hỏi của tôi
                                         </Link>
                                         <button
                                             onClick={() => { setMenuOpen(false); setPwdModalOpen(true); }}
@@ -267,7 +267,7 @@ export default function Header() {
                                     ? "bg-neutral-soft text-primary font-bold"
                                     : "hover:bg-neutral-soft"
                                     }`}
-                                >
+                            >
                                 {link.label}
                             </Link>
                         ))}
@@ -301,7 +301,7 @@ export default function Header() {
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setLoginPromptOpen(false)}>
                     <div className="bg-white rounded-3xl p-8 max-w-sm w-full mx-4 shadow-2xl scale-in-center animate-in zoom-in-95 duration-200 relative" onClick={e => e.stopPropagation()}>
                         {/* Close button */}
-                        <button 
+                        <button
                             onClick={() => setLoginPromptOpen(false)}
                             className="absolute top-4 right-4 w-12 h-12 flex items-center justify-center rounded-full hover:bg-slate-100 transition-all text-slate-400 hover:text-slate-600 active:scale-90"
                             aria-label="Đóng"

@@ -88,11 +88,19 @@ export class PushService implements OnModuleInit {
     }
 
     async markAllAsRead(userId: string, role: string) {
-        await this.notificationRepo.createQueryBuilder()
-            .update()
-            .set({ is_read: true })
-            .where('(user_id = :userId OR role = :role)', { userId, role })
-            .andWhere('is_read = false')
-            .execute();
+        console.log(`[PUSH] markAllAsRead called with userId: ${userId}, role: ${role}`);
+        try {
+            const result = await this.notificationRepo.createQueryBuilder()
+                .update()
+                .set({ is_read: true })
+                .where('is_read = :isRead', { isRead: false })
+                .andWhere('(user_id = :userId OR role = :role)', { userId, role })
+                .execute();
+            console.log(`[PUSH] markAllAsRead updated rows: ${result.affected}`);
+            return result;
+        } catch (e: any) {
+            console.error('[PUSH] Error in markAllAsRead', e);
+            throw e;
+        }
     }
 }
