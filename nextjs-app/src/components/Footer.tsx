@@ -46,7 +46,6 @@ export default function Footer() {
                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Bản quyền thuộc về ©2026 NetSpace</p>
                     <div className="flex gap-8">
                         <Link href="/faq" className="text-[10px] font-black text-slate-400 hover:text-primary transition-colors uppercase tracking-widest">Hỏi đáp</Link>
-                        <Link href="/auth/login" className="text-[10px] font-black text-slate-400 hover:text-primary transition-colors uppercase tracking-widest">Quản trị</Link>
                     </div>
                 </div>
             </div>
