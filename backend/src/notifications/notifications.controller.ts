@@ -19,4 +19,9 @@ export class NotificationsController {
     markAsRead(@Param('id') id: string) {
         return this.pushService.markAsRead(id);
     }
+
+    @Patch('read-all/:userId/:role')
+    markAllAsRead(@Param('userId') userId: string, @Param('role') role: string) {
+        return this.pushService.markAllAsRead(userId, role);
+    }
 }

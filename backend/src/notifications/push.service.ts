@@ -86,4 +86,13 @@ export class PushService implements OnModuleInit {
     async markAsRead(id: string) {
         await this.notificationRepo.update(id, { is_read: true });
     }
+
+    async markAllAsRead(userId: string, role: string) {
+        await this.notificationRepo.createQueryBuilder()
+            .update()
+            .set({ is_read: true })
+            .where('(user_id = :userId OR role = :role)', { userId, role })
+            .andWhere('is_read = false')
+            .execute();
+    }
 }

@@ -22,12 +22,16 @@ export default function NotificationBell({ role }: { role: 'ADMIN' | 'HR' | 'USE
     const menuRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
 
-    const fetchNotifications = async () => {
+    const fetchNotifications = async (userIdParam?: string) => {
         try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
+            let userId = userIdParam;
+            if (!userId) {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) return;
+                userId = user.id;
+            }
 
-            const res = await fetch(`${API_URL}/notifications/${user.id}/${role}`);
+            const res = await fetch(`${API_URL}/notifications/${userId}/${role}`);
             if (res.ok) {
                 const data = await res.json();
                 setNotifications(data);
@@ -53,6 +57,16 @@ export default function NotificationBell({ role }: { role: 'ADMIN' | 'HR' | 'USE
 
     const handleRead = async (id: string, link?: string) => {
         try {
+            // If it's already read, just navigate
+            const notif = notifications.find(n => n.id === id);
+            if (notif?.is_read) {
+                if (link) {
+                    router.push(link);
+                    setOpen(false);
+                }
+                return;
+            }
+
             await fetch(`${API_URL}/notifications/${id}/read`, { method: 'PATCH' });
             setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
             if (link) {
@@ -64,12 +78,48 @@ export default function NotificationBell({ role }: { role: 'ADMIN' | 'HR' | 'USE
         }
     };
 
+    const handleReadAll = async (userIdParam?: string) => {
+        try {
+            let userId = userIdParam;
+            if (!userId) {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) return;
+                userId = user.id;
+            }
+            
+            // 1. Aggressive local update
+            setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+            
+            // 2. Background server update
+            fetch(`${API_URL}/notifications/read-all/${userId}/${role}`, { method: 'PATCH' }).catch(console.error);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
     const unreadCount = notifications.filter(n => !n.is_read).length;
 
     return (
         <div className="relative" ref={menuRef}>
             <button 
-                onClick={() => { setOpen(!open); fetchNotifications(); }}
+                onClick={async () => {
+                    const becomingOpen = !open;
+                    setOpen(becomingOpen);
+                    
+                    if (becomingOpen) {
+                        try {
+                            const { data: { user } } = await supabase.auth.getUser();
+                            if (user) {
+                                // 1. Fetch latest first
+                                await fetchNotifications(user.id);
+                                // 2. Mark everything currently in the list as read
+                                handleReadAll(user.id);
+                            }
+                        } catch (err) {
+                            console.error(err);
+                        }
+                    }
+                }}
                 className="relative w-10 h-10 rounded-full hover:bg-neutral-soft flex items-center justify-center transition-colors group"
             >
                 <span className="material-symbols-outlined text-text-muted text-[22px] group-hover:text-primary">notifications</span>

@@ -34,10 +34,6 @@ export default function TicketReplyModal({ open, onClose, ticket, onRefresh }: T
         try {
             const data = await TicketService.getById(ticket.id);
             setLocalTicket(data);
-            
-            // Fetch similar ones
-            const similar = await TicketService.getSimilar(ticket.id);
-            setSimilarTickets(similar);
         } catch (err) {
             console.error(err);
         }
@@ -83,10 +79,10 @@ export default function TicketReplyModal({ open, onClose, ticket, onRefresh }: T
         }
     };
 
-    const handleOpenFaq = () => {
+    const handleOpenFaq = (customAnswer?: string) => {
         const q = localTicket?.question || "";
         const hrMsgs = localTicket?.messages?.filter(m => m.sender_type === 'hr') || [];
-        const a = hrMsgs.length > 0 ? hrMsgs[hrMsgs.length - 1].content : "Liên hệ phòng NS để biết thêm chi tiết.";
+        const a = customAnswer || (hrMsgs.length > 0 ? hrMsgs[hrMsgs.length - 1].content : "Liên hệ phòng NS để biết thêm chi tiết.");
         setFaqData({ question: q, answer: a, category: "hr" });
         setShowFaqModal(true);
     };
@@ -125,7 +121,7 @@ export default function TicketReplyModal({ open, onClose, ticket, onRefresh }: T
                     </div>
                     <div className="flex items-center gap-2">
                         {localTicket?.messages?.some((m) => m.sender_type === "hr") && (
-                            <button onClick={handleOpenFaq} title="Đưa câu hỏi lên FAQ" className="px-3 py-1.5 flex items-center gap-2 bg-brand-blue/10 text-brand-blue hover:bg-brand-blue/20 rounded-xl transition-colors font-bold text-xs">
+                            <button onClick={() => handleOpenFaq()} title="Đưa câu hỏi lên FAQ" className="px-3 py-1.5 flex items-center gap-2 bg-brand-blue/10 text-brand-blue hover:bg-brand-blue/20 rounded-xl transition-colors font-bold text-xs">
                                 <BookmarkPlus size={16} />
                                 <span className="hidden sm:inline">Lưu FAQ</span>
                             </button>
@@ -141,31 +137,6 @@ export default function TicketReplyModal({ open, onClose, ticket, onRefresh }: T
 
                 {/* Conversation Body */}
                 <div className="flex-1 overflow-y-auto p-6 space-y-8 bg-slate-50/20">
-                    {/* Hot Topic Alert */}
-                    {similarTickets.length >= 2 && (
-                        <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/60 p-5 rounded-3xl shadow-sm mb-2 flex gap-4 items-start animate-in slide-in-from-top-4 duration-500">
-                            <div className="w-10 h-10 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-600 shrink-0 shadow-inner">
-                                <AlertTriangle size={20} />
-                            </div>
-                            <div className="flex-1">
-                                <div className="flex items-center justify-between">
-                                    <h4 className="text-sm font-black text-amber-900 tracking-tight uppercase">Phát hiện chủ đề lặp lại (Chạm mốc 3+)</h4>
-                                    <span className="bg-amber-200/50 text-amber-700 text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest">Gợi ý FAQ</span>
-                                </div>
-                                <p className="text-xs text-amber-700/80 font-bold mt-1 leading-relaxed">
-                                    Đã có <span className="text-amber-900">{similarTickets.length + 1} nhân viên</span> hỏi về vấn đề tương tự. Bạn nên cân nhắc tổng kết câu trả lời và đưa lên Cẩm nang FAQ.
-                                </p>
-                                <div className="mt-4 flex flex-wrap gap-2">
-                                    <button 
-                                        onClick={handleOpenFaq}
-                                        className="text-[10px] font-black bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-xl transition-all shadow-md shadow-amber-500/20 active:scale-95 flex items-center gap-1.5"
-                                    >
-                                        <BookmarkPlus size={14} /> TIẾN HÀNH TẠO FAQ NGAY
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
 
                     {/* Original Question */}
                     <div className="flex gap-4 max-w-[90%]">
@@ -197,8 +168,17 @@ export default function TicketReplyModal({ open, onClose, ticket, onRefresh }: T
                                         {format(new Date(msg.created_at), "HH:mm dd/MM", { locale: vi })}
                                         {isHR && <span className="text-xs font-black text-slate-700">NetSpace HR</span>}
                                     </div>
-                                    <div className={`px-5 py-3.5 rounded-2xl shadow-sm text-sm font-medium leading-relaxed ${isHR ? 'bg-primary text-white rounded-tr-sm' : 'bg-white border border-slate-200 text-slate-800 rounded-tl-sm'}`}>
+                                    <div className={`px-5 py-3.5 rounded-2xl shadow-sm text-sm font-medium leading-relaxed group/msg relative ${isHR ? 'bg-primary text-white rounded-tr-sm' : 'bg-white border border-slate-200 text-slate-800 rounded-tl-sm'}`}>
                                         {msg.content}
+                                        {isHR && (
+                                            <button 
+                                                onClick={() => handleOpenFaq(msg.content)}
+                                                className="absolute -left-10 top-1/2 -translate-y-1/2 p-2 bg-white border border-slate-200 rounded-xl text-primary opacity-0 group-hover/msg:opacity-100 transition-all shadow-sm hover:scale-110 active:scale-95"
+                                                title="Đưa phản hồi này lên FAQ"
+                                            >
+                                                <BookmarkPlus size={14} />
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -224,13 +204,24 @@ export default function TicketReplyModal({ open, onClose, ticket, onRefresh }: T
                             className="flex-1 bg-transparent px-4 py-3 text-sm font-semibold text-slate-700 outline-none resize-none"
                             placeholder="Nhập nội dung phản hồi tiếp theo..."
                         />
-                        <button
-                            type="submit"
-                            disabled={loading || !reply.trim()}
-                            className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${!reply.trim() || loading ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-slate-900 text-white shadow-lg  hover:scale-105 active:scale-95'}`}
-                        >
-                            {loading ? <RefreshCw size={20} className="animate-spin" /> : <Send size={20} className="ml-0.5" />}
-                        </button>
+                        <div className="flex gap-2">
+                            <button
+                                type="button"
+                                onClick={() => handleOpenFaq()}
+                                disabled={!localTicket?.messages?.some(m => m.sender_type === 'hr')}
+                                className="w-12 h-12 rounded-xl border-2 border-slate-200 flex items-center justify-center text-slate-400 hover:text-brand-blue hover:border-brand-blue/30 hover:bg-brand-blue/5 transition-all disabled:opacity-30 disabled:cursor-not-allowed group"
+                                title="Đẩy thắc mắc này lên FAQ"
+                            >
+                                <BookmarkPlus size={20} className="group-hover:scale-110 transition-transform" />
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={loading || !reply.trim()}
+                                className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${!reply.trim() || loading ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-slate-900 text-white shadow-lg  hover:scale-105 active:scale-95'}`}
+                            >
+                                {loading ? <RefreshCw size={20} className="animate-spin" /> : <Send size={20} className="ml-0.5" />}
+                            </button>
+                        </div>
                     </form>
                     <p className="text-[10px] text-slate-400 font-bold px-4 mt-3 flex items-center gap-1.5">
                         <span className="w-1 h-1 bg-slate-300 rounded-full"></span>
