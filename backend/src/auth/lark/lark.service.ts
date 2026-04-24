@@ -133,14 +133,19 @@ export class LarkService {
       throw new HttpException('Lark account must have an associated email address or mobile', HttpStatus.BAD_REQUEST);
     }
 
-    this.logger.log(`Attempting to generate magic link for email: ${email} | Origin from state: ${origin}`);
+    this.logger.log(`[LarkAuth] email: ${email} | origin: ${origin} | redirectPath: ${redirectPath}`);
 
-    // Priority: 1. Origin from state (Dynamic) 2. Configured FRONTEND_URL 3. Verified Production URL 4. Localhost
-    const productionUrl = 'https://netspace-policy-hub.vercel.app';
-    let redirectUrl = origin || this.configService.get<string>('FRONTEND_URL') || productionUrl || 'http://localhost:3000';
+    const productionUrl = 'https://chinhsach.ricasso.io.vn';
     
-    // Safety check: if we are NOT on localhost but redirect is localhost, force production
+    // Determine the base redirect URL
+    let redirectUrl = origin || this.configService.get<string>('FRONTEND_URL') || productionUrl;
+    
+    // Safety check: Avoid sticking to localhost
     if (origin && !origin.includes('localhost') && redirectUrl.includes('localhost')) {
+        redirectUrl = productionUrl;
+    }
+
+    if (redirectUrl.includes('vercel.app')) {
         redirectUrl = productionUrl;
     }
 
@@ -150,11 +155,11 @@ export class LarkService {
         redirectUrl = `${base}/${path}`;
     }
 
-    this.logger.log(`Final redirect URL after login will be: ${redirectUrl}`);
+    this.logger.log(`[LarkAuth] Target Redirect: ${redirectUrl}`);
 
     const { data: linkData, error: linkError } = await this.supabaseAdmin.auth.admin.generateLink({
       type: 'magiclink',
-      email: email.includes('@') ? email : `${email}@lark.internal`, // Dummy email if it's a mobile number
+      email: email.includes('@') ? email : `${email}@lark.internal`,
       options: {
           redirectTo: redirectUrl,     
           data: {
@@ -163,6 +168,13 @@ export class LarkService {
           }
       }
     });
+
+    if (linkError) {
+        this.logger.error(`[LarkAuth] Supabase Error: ${linkError.message}`);
+        throw new HttpException(`Auth Error: ${linkError.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    this.logger.log(`[LarkAuth] Magic link generated successfully for ${email}`);
 
     // Sync user metadata (Full Name and Avatar) from Lark to Supabase.
     // This ensures that even existing users will have their names updated.

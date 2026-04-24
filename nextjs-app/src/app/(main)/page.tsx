@@ -69,7 +69,7 @@ export default function HomePage() {
   return (
     <>
       {/* HERO */}
-      <section className="relative py-32 sm:py-40 overflow-hidden bg-white/50" aria-label="Tìm kiếm chính sách">
+      <section className="relative pt-10 sm:pt-12 pb-24 sm:pb-32 overflow-hidden bg-white/50" aria-label="Tìm kiếm chính sách">
         {/* Futuristic Background Elements */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-primary rounded-full opacity-[0.05] blur-[120px] animate-pulse" />
@@ -117,7 +117,7 @@ export default function HomePage() {
             </div>
           </div> */}
 
-          <div className="relative max-w-4xl mx-auto text-center py-10">
+          <div className="relative max-w-4xl mx-auto text-center pt-0 pb-10">
           {/* Blinking Badge - Temporarily commented out */}
           {/* <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md border border-slate-200/60 rounded-full px-5 py-2 mb-10 shadow-sm transition-transform hover:scale-105">
             <span className="flex h-2 w-2 rounded-full bg-primary animate-ping" />

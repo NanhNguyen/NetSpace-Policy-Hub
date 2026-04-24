@@ -140,7 +140,7 @@ export default function Header() {
     return (
         <>
             <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-neutral-soft shadow-sm">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-4 py-4">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-4 py-3">
                     {/* Logo with Secret Access */}
                     <div className="flex items-center gap-3.5 flex-shrink-0">
                         <Link href="/" className="hover:opacity-80 transition-opacity">

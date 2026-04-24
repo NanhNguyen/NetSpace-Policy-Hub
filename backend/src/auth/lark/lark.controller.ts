@@ -1,10 +1,12 @@
-import { Controller, Get, Query, Res, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Query, Res, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { LarkService } from './lark.service';
 import type { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 
 @Controller('auth/lark')
 export class LarkController {
+  private readonly logger = new Logger(LarkController.name);
+
   constructor(
     private readonly larkService: LarkService,
     private configService: ConfigService
@@ -30,15 +32,23 @@ export class LarkController {
     baseUrl = baseUrl.replace(/\/$/, '');
     const redirectUri = encodeURIComponent(`${baseUrl}/auth/lark/callback`);
     
-    let stateStr = state ? encodeURIComponent(state) : '';
-    if (!stateStr) {
-        const stateObj = { 
-            redirect: redirectPath || '',
-            appType: appType
-        };
-        stateStr = encodeURIComponent(JSON.stringify(stateObj));
+    let stateObj: any = {};
+    if (state) {
+        try {
+            stateObj = JSON.parse(state);
+        } catch (e) {}
     }
 
+    // Capture redirect from anywhere
+    const finalRedirect = redirectPath || stateObj.redirect || '';
+    stateObj.redirect = finalRedirect;
+    stateObj.appType = appType;
+    if (!stateObj.origin) {
+        // Fallback origin if missing
+        stateObj.origin = this.configService.get<string>('FRONTEND_URL') || 'https://chinhsach.ricasso.io.vn';
+    }
+
+    const stateStr = encodeURIComponent(JSON.stringify(stateObj));
     const larkAuthUrl = `https://open.larksuite.com/open-apis/authen/v1/index?app_id=${appId}&redirect_uri=${redirectUri}&state=${stateStr}`;
     return res.redirect(larkAuthUrl);
   }
@@ -55,6 +65,7 @@ export class LarkController {
 
     try {
         const magicLink = await this.larkService.processLarkCallback(code, state);
+        this.logger.log(`[LarkAuth V2] Magic link generated, redirecting user...`);
         return res.redirect(magicLink);
     } catch (e: any) {
         let frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';

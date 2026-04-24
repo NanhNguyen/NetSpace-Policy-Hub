@@ -175,6 +175,10 @@ export default function AdminLayout({
         return <>{children}</>;
     }
 
+    if (isAuthenticated === false) {
+        return null;
+    }
+
     return (
         <div className="flex min-h-screen bg-slate-50 text-text-main">
             {/* Sidebar */}

@@ -2,14 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Lock, Mail, ShieldCheck, AlertCircle, Loader2 } from "lucide-react";
-import { UserService } from "@/lib/services/user.service";
+import { ShieldCheck, AlertCircle } from "lucide-react";
 import { supabase } from "@/lib/db/client";
 import toast from "react-hot-toast";
 
 export default function AdminLoginPage() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const router = useRouter();
@@ -18,33 +15,19 @@ export default function AdminLoginPage() {
 
     useEffect(() => {
         if (authError === "unauthorized") {
-            setError("Bạn không có quyền truy cập vào khu vực quản trị.");
+            setError("Tài khoản Lark của bạn không có quyền truy cập vào khu vực quản trị.");
         }
     }, [authError]);
 
-    const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        setError("");
-
-        try {
-            const res = await UserService.login(email, password);
-
-            if (res) {
-                // Double check if role is correct for Admin portal
-                if (res.profile.role?.code === 'USER') {
-                    await supabase.auth.signOut();
-                    throw new Error("Tài khoản của bạn là Nhân viên thường, không có quyền truy cập trang Quản trị.");
-                }
-                
-                toast.success(`Xin chào ${res.profile.full_name}! Chào mừng quay trở lại hệ thống quản trị.`);
-                router.push("/manage-internal/dashboard");
-            }
-        } catch (err: any) {
-            setError(err.message || "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
-        } finally {
-            setLoading(false);
-        }
+    const handleLarkLogin = (appType: 'internal' | 'external') => {
+        const state = encodeURIComponent(JSON.stringify({ 
+            appType,
+            redirect: '/manage-internal/dashboard',
+            origin: window.location.origin 
+        }));
+        
+        const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').replace(/\/$/, '');
+        window.location.href = `${baseUrl}/auth/lark/login?appType=${appType}&redirect=/manage-internal/dashboard&state=${state}`;
     };
 
     return (
@@ -61,47 +44,7 @@ export default function AdminLoginPage() {
                     </div>
                 </div>
 
-                <form onSubmit={handleLogin} className="p-10 space-y-6">
-                    <div className="space-y-4">
-                        <div>
-                            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-text-muted mb-2 ml-1">
-                                Email công việc
-                            </label>
-                            <div className="relative group">
-                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-primary transition-colors">
-                                    <Mail size={18} />
-                                </div>
-                                <input
-                                    type="email"
-                                    required
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="hr@gmail.com"
-                                    className="w-full bg-slate-50 border border-neutral-soft rounded-2xl py-4 pl-12 pr-4 focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all outline-none text-sm font-bold"
-                                />
-                            </div>
-                        </div>
-
-                        <div>
-                            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-text-muted mb-2 ml-1">
-                                Mật khẩu
-                            </label>
-                            <div className="relative group">
-                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-primary transition-colors">
-                                    <Lock size={18} />
-                                </div>
-                                <input
-                                    type="password"
-                                    required
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    placeholder="••••••••"
-                                    className="w-full bg-slate-50 border border-neutral-soft rounded-2xl py-4 pl-12 pr-4 focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all outline-none text-sm font-bold"
-                                />
-                            </div>
-                        </div>
-                    </div>
-
+                <div className="p-10 space-y-6">
                     {error && (
                         <div className="bg-red-50 text-red-600 text-xs font-bold p-4 rounded-2xl border border-red-100 flex items-start gap-3 animate-in fade-in slide-in-from-top-1">
                             <AlertCircle size={16} className="shrink-0 mt-0.5" />
@@ -109,22 +52,40 @@ export default function AdminLoginPage() {
                         </div>
                     )}
 
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 text-white font-black py-4 rounded-2xl transition-all shadow-xl shadow-slate-900/20 active:scale-[0.98] flex items-center justify-center gap-2"
-                    >
-                        {loading ? (
-                            <Loader2 className="animate-spin" size={20} />
-                        ) : (
-                            "Đăng nhập hệ thống"
-                        )}
-                    </button>
+                    <div className="space-y-3">
+                        <button
+                            type="button"
+                            onClick={() => handleLarkLogin('internal')}
+                            className="w-full h-16 bg-white border-2 border-slate-200 hover:border-primary hover:bg-slate-50 text-slate-900 font-bold rounded-2xl transition-all shadow-sm active:scale-[0.98] flex items-center justify-center gap-3"
+                        >
+                            <img src="/lark_logo.png" alt="Lark Logo" className="w-7 h-7 object-contain" />
+                            Đăng nhập Lark (Internal)
+                        </button>
 
-                    <div className="text-center pt-2">
-                        <p className="text-[10px] text-text-muted font-bold italic">Sử dụng tài khoản HR đã cấp để truy cập</p>
+                        <button
+                            type="button"
+                            onClick={() => handleLarkLogin('external')}
+                            className="w-full h-16 bg-slate-900 text-white hover:bg-slate-800 font-bold rounded-2xl transition-all shadow-xl shadow-slate-900/10 active:scale-[0.98] flex items-center justify-center gap-3"
+                        >
+                            <img src="/lark_logo.png" alt="Lark Logo" className="w-7 h-7 object-contain" />
+                            Đăng nhập Lark (External/Intern)
+                        </button>
+                        
+                        <p className="text-[10px] text-center text-text-muted font-bold uppercase tracking-widest px-4 mt-2">
+                            Yêu cầu tài khoản đã được cấp quyền Admin
+                        </p>
                     </div>
-                </form>
+
+                    <div className="text-center pt-4 border-t border-slate-50">
+                        <button 
+                            onClick={() => router.push('/')}
+                            className="text-xs font-bold text-slate-400 hover:text-primary transition-colors flex items-center justify-center gap-2 mx-auto"
+                        >
+                            <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+                            Quay về Trang chủ
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     );
