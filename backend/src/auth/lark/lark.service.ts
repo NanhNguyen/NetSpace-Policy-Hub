@@ -197,15 +197,35 @@ export class LarkService {
                 user_metadata: newMetadata
             });
             
-            // 2. Update public.users table if it exists
-            await this.supabaseAdmin
-                .from('users')
-                .update({ 
-                    full_name: fullName,
-                    avatar_url: avatarUrl,
-                    updated_at: new Date()
-                })
-                .eq('id', existingUser.id);
+            // 2. Upsert into public.profiles to ensure they show up in Admin Dashboard
+            const { data: existingProfile } = await this.supabaseAdmin
+                .from('profiles')
+                .select('id')
+                .eq('id', existingUser.id)
+                .single();
+
+            if (!existingProfile) {
+                // If the user doesn't exist in our profiles table, insert them as a normal USER (role_id = 4)
+                await this.supabaseAdmin
+                    .from('profiles')
+                    .insert({
+                        id: existingUser.id,
+                        email: existingUser.email,
+                        full_name: fullName,
+                        role_id: 4, 
+                        created_at: new Date(),
+                        updated_at: new Date()
+                    });
+            } else {
+                // Otherwise just update their name (useful if they changed their Lark name)
+                await this.supabaseAdmin
+                    .from('profiles')
+                    .update({ 
+                        full_name: fullName,
+                        updated_at: new Date()
+                    })
+                    .eq('id', existingUser.id);
+            }
             
             this.logger.log(`Successfully synced profile for ${email}: ${fullName}`);
         }
