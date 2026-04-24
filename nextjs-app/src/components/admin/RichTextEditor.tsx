@@ -13,37 +13,43 @@ interface RichTextEditorProps {
 
 const TEMPLATES = [
     {
-        name: 'Thẻ Thông tin (Xanh)',
+        name: 'Thẻ Thông tin (Xanh dương)',
         html: `
         <div class="bg-blue-50/50 border border-blue-100 p-6 rounded-3xl shadow-sm mb-6">
-            <h3 class="text-lg font-black text-blue-800 mb-3 flex items-center gap-2">
+            <h3 class="text-lg font-black text-blue-800 mb-3 mt-0 flex items-center gap-2">
                 <span class="material-symbols-outlined">info</span> Tiêu đề thông tin
             </h3>
-            <p class="text-sm text-slate-700">Nội dung chi tiết của thẻ thông tin ở đây...</p>
+            <p class="text-sm text-slate-700 mb-0">Nội dung chi tiết của thẻ thông tin ở đây...</p>
         </div>`
     },
     {
         name: 'Thẻ Cảnh báo (Đỏ)',
         html: `
         <div class="bg-red-50 border border-red-100 p-6 rounded-3xl shadow-sm mb-6">
-            <h3 class="text-lg font-black text-red-800 mb-3 flex items-center gap-2">
+            <h3 class="text-lg font-black text-red-800 mb-3 mt-0 flex items-center gap-2">
                 <span class="material-symbols-outlined">warning</span> Lưu ý quan trọng
             </h3>
-            <p class="text-sm text-slate-700">Nội dung cảnh báo hoặc quy định nghiêm ngặt...</p>
+            <p class="text-sm text-slate-700 mb-0">Nội dung cảnh báo hoặc quy định nghiêm ngặt...</p>
         </div>`
     },
     {
-        name: 'Lưới 2 Cột (Responsive)',
+        name: 'Thẻ Thành công (Xanh lá)',
         html: `
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div class="bg-slate-50 border border-slate-200 p-6 rounded-3xl">
-                <h4 class="font-black text-slate-800 mb-2">Cột 1</h4>
-                <p class="text-xs text-slate-600">Nội dung cột trái...</p>
-            </div>
-            <div class="bg-slate-50 border border-slate-200 p-6 rounded-3xl">
-                <h4 class="font-black text-slate-800 mb-2">Cột 2</h4>
-                <p class="text-xs text-slate-600">Nội dung cột phải...</p>
-            </div>
+        <div class="bg-green-50 border border-green-100 p-6 rounded-3xl shadow-sm mb-6">
+            <h3 class="text-lg font-black text-green-800 mb-3 mt-0 flex items-center gap-2">
+                <span class="material-symbols-outlined">check_circle</span> Chấp thuận / Nhấn mạnh
+            </h3>
+            <p class="text-sm text-slate-700 mb-0">Nội dung dành cho các điều kiện được chấp nhận hoặc khuyến khích...</p>
+        </div>`
+    },
+    {
+        name: 'Thẻ Quyền lợi (Tím)',
+        html: `
+        <div class="bg-purple-50 border border-purple-100 p-6 rounded-3xl shadow-sm mb-6">
+            <h3 class="text-lg font-black text-purple-800 mb-3 mt-0 flex items-center gap-2">
+                <span class="material-symbols-outlined">star</span> Điểm nhấn / Quyền lợi
+            </h3>
+            <p class="text-sm text-slate-700 mb-0">Nội dung dành cho các quyền lợi đặc biệt của nhân viên...</p>
         </div>`
     },
     {
@@ -51,8 +57,44 @@ const TEMPLATES = [
         html: `
         <div class="bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200 p-6 rounded-3xl text-center mb-6">
             <span class="material-symbols-outlined text-4xl text-amber-500 mb-2">military_tech</span>
-            <h3 class="text-xl font-black text-amber-900 mb-1">MỨC THƯỞNG 2 TRIỆU</h3>
-            <p class="text-xs text-amber-700">Dành cho các thành tích đặc biệt xuất sắc</p>
+            <h3 class="text-xl font-black text-amber-900 mb-1 mt-0">MỨC THƯỞNG ĐẶC BIỆT</h3>
+            <p class="text-xs text-amber-700 mb-0">Dành cho các thành tích đặc biệt xuất sắc</p>
+        </div>`
+    },
+    {
+        name: 'Lưới 2 Cột (Ngang)',
+        html: `
+        <div class="flex flex-col md:flex-row gap-6 mb-6">
+            <div class="flex-1 bg-slate-50 border border-slate-200 p-6 rounded-3xl">
+                <h4 class="font-black text-slate-800 mb-2 mt-0">Cột Trái</h4>
+                <p class="text-xs text-slate-600 mb-0">Nội dung cột trái...</p>
+            </div>
+            <div class="flex-1 bg-slate-50 border border-slate-200 p-6 rounded-3xl">
+                <h4 class="font-black text-slate-800 mb-2 mt-0">Cột Phải</h4>
+                <p class="text-xs text-slate-600 mb-0">Nội dung cột phải...</p>
+            </div>
+        </div>`
+    },
+    {
+        name: 'Lưới Quy Trình 3 Bước',
+        html: `
+        <div class="flex flex-col md:flex-row gap-4 mb-6 mt-4 relative">
+            <div class="block md:hidden absolute left-4 top-0 bottom-0 w-0.5 bg-slate-200 -z-10"></div>
+            <div class="flex-1 bg-white border border-slate-200 p-5 rounded-2xl relative shadow-sm ml-6 md:ml-0 overflow-visible">
+                <div class="absolute -top-3 -left-3 md:-top-4 md:-left-4 w-8 h-8 bg-slate-900 text-white font-black rounded-full flex items-center justify-center border-4 border-white shadow-sm text-sm">1</div>
+                <h4 class="font-black text-slate-800 mb-1 mt-2 text-sm">Bước 1</h4>
+                <p class="text-xs text-slate-600 mb-0">Mô tả chi tiết bước 1...</p>
+            </div>
+            <div class="flex-1 bg-white border border-slate-200 p-5 rounded-2xl relative shadow-sm ml-6 md:ml-0 overflow-visible">
+                <div class="absolute -top-3 -left-3 md:-top-4 md:-left-4 w-8 h-8 bg-slate-900 text-white font-black rounded-full flex items-center justify-center border-4 border-white shadow-sm text-sm">2</div>
+                <h4 class="font-black text-slate-800 mb-1 mt-2 text-sm">Bước 2</h4>
+                <p class="text-xs text-slate-600 mb-0">Mô tả chi tiết bước 2...</p>
+            </div>
+            <div class="flex-1 bg-white border border-slate-200 p-5 rounded-2xl relative shadow-sm ml-6 md:ml-0 overflow-visible">
+                <div class="absolute -top-3 -left-3 md:-top-4 md:-left-4 w-8 h-8 bg-slate-900 text-white font-black rounded-full flex items-center justify-center border-4 border-white shadow-sm text-sm">3</div>
+                <h4 class="font-black text-slate-800 mb-1 mt-2 text-sm">Bước 3</h4>
+                <p class="text-xs text-slate-600 mb-0">Mô tả chi tiết bước 3...</p>
+            </div>
         </div>`
     }
 ];
